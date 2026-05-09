@@ -1,0 +1,2292 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>经营分析中心 · Figma 原型稿</title>
+<style>
+  /* ============================================================
+   * Figma-style canvas (单文件高保真原型)
+   * 将所有 Frame 拼接在一张大画布上；右上 zoom 控制；左侧 Frame 导航。
+   * 颜色 / 间距 / 字体 与 src/index.css 对齐。
+   * ============================================================ */
+  :root {
+    --brand: #4F7CFF;
+    --brand-2: #6E5CFF;
+    --brand-3: #A259FF;
+    --brand-50: #F0F5FF;
+    --brand-100: #DBEAFE;
+    --title: #1F2329;
+    --body: #4E5969;
+    --muted: #86909C;
+    --disabled: #BFBFBF;
+    --border: #EEF0F3;
+    --border-strong: #D4DCEC;
+    --line: #F1F3F6;
+    --bg: #F5F7FA;
+    --card: #FFFFFF;
+    --section: #FAFBFC;
+    --soft: #F0F2F6;
+    --success: #00B42A;
+    --success-bg: #F6FFED;
+    --success-border: #D9F7BE;
+    --warning: #FF7D00;
+    --warning-bg: #FFF7E6;
+    --warning-border: #FFE7BA;
+    --error: #F53F3F;
+    --error-alt: #FF4D4F;
+    --gradient: linear-gradient(135deg, #4F7CFF 0%, #6E5CFF 100%);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-card-hover: 0 10px 24px rgba(15,23,42,0.08);
+    --shadow-tile-hover: 0 6px 16px rgba(15,23,42,0.06);
+    --shadow-primary: 0 2px 6px rgba(79,124,255,0.30);
+    --shadow-popover: 0 10px 32px rgba(15,23,42,0.12);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #1f2329;
+    color: #e5e7eb;
+    font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+  }
+  /* ===== 顶栏 (canvas chrome) ===== */
+  .canvas-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: 48px;
+    background: rgba(31,35,41,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid #303542;
+    display: flex; align-items: center; padding: 0 16px;
+    z-index: 100;
+    justify-content: space-between;
+  }
+  .canvas-bar h1 {
+    font-size: 14px; font-weight: 500; margin: 0;
+    color: #fff; display: flex; align-items: center; gap: 12px;
+  }
+  .canvas-bar h1 .badge {
+    background: var(--brand); padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; letter-spacing: 0.4px;
+  }
+  .canvas-bar .actions { display: flex; gap: 6px; align-items: center; }
+  .canvas-bar .zoom {
+    display: flex; align-items: center; gap: 2px;
+    background: #303542; border-radius: 6px; padding: 2px;
+  }
+  .canvas-bar .zoom button {
+    background: transparent; border: 0; color: #cbd5e1;
+    padding: 4px 10px; cursor: pointer; border-radius: 4px;
+    font-size: 12px;
+  }
+  .canvas-bar .zoom button:hover { background: #3f4654; color: #fff; }
+  .canvas-bar .zoom button.active { background: var(--brand); color: #fff; }
+  .canvas-bar a.tip { color: #94a3b8; text-decoration: none; font-size: 12px; padding: 4px 10px; }
+
+  /* ===== 左侧 frame 导航 ===== */
+  .frame-nav {
+    position: fixed; top: 48px; left: 0; bottom: 0; width: 220px;
+    background: #292d36; border-right: 1px solid #303542;
+    overflow-y: auto; padding: 12px 0;
+    z-index: 50;
+  }
+  .frame-nav .grp {
+    color: #94a3b8; font-size: 11px; letter-spacing: 0.4px; padding: 8px 16px;
+    text-transform: uppercase;
+  }
+  .frame-nav a {
+    display: block; padding: 6px 16px; color: #cbd5e1;
+    text-decoration: none; font-size: 12.5px; transition: background 0.15s;
+  }
+  .frame-nav a:hover { background: #303542; color: #fff; }
+  .frame-nav a code {
+    color: #94a3b8; font-size: 11px; margin-right: 8px;
+  }
+
+  /* ===== 画布区 ===== */
+  .canvas {
+    position: absolute; top: 48px; left: 220px; right: 0; bottom: 0;
+    overflow: auto;
+    background:
+      radial-gradient(circle at 20px 20px, #303542 1px, transparent 1px) 0 0/40px 40px,
+      #1f2329;
+  }
+  .canvas-inner {
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 120px;
+    transform-origin: top left;
+    transition: transform 0.2s ease;
+  }
+  .canvas-row {
+    display: flex; gap: 60px; align-items: flex-start;
+  }
+  .frame-label {
+    color: #cbd5e1; font-size: 13px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .frame-label code { color: #4F7CFF; background: #303542; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .frame-label .size { color: #64748b; font-size: 11px; }
+  .frame {
+    background: var(--bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    overflow: hidden;
+    color: var(--title);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* ============== App Shell ============== */
+  .app-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 24px; height: 56px; background: #fff;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; font-weight: 600;
+  }
+  .brand-logo {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--gradient); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; box-shadow: var(--shadow-primary);
+  }
+  .top-actions { display: flex; align-items: center; gap: 16px; }
+  .bell { position: relative; cursor: pointer; }
+  .bell::after {
+    content: '5'; position: absolute; top: -4px; right: -8px;
+    background: var(--error-alt); color: #fff; border-radius: 8px;
+    font-size: 10px; padding: 0 5px; line-height: 14px; min-width: 16px; text-align: center;
+  }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--warning) 0%, #FFB84F 100%);
+    color: #fff; font-weight: 600; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .app-body { display: flex; min-height: 844px; }
+  .app-sider {
+    width: 232px; flex-shrink: 0; background: #fff;
+    border-right: 1px solid var(--border);
+    padding: 8px 8px 16px;
+    overflow: hidden;
+  }
+  .menu-group { padding: 4px 4px 8px; border-top: 1px solid var(--line); }
+  .menu-group:first-child { border-top: 0; }
+  .menu-group-title {
+    font-size: 11.5px; color: var(--muted); font-weight: 500;
+    padding: 6px 8px; letter-spacing: 0.4px;
+    display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
+  }
+  .menu-group-title::before {
+    content: ''; width: 3px; height: 11px;
+    background: linear-gradient(180deg, var(--brand) 0%, var(--brand-3) 100%);
+    border-radius: 2px;
+  }
+  .menu-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  .menu-grid-1 { display: flex; flex-direction: column; gap: 2px; }
+  .menu-cell {
+    position: relative; display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px; border-radius: 6px; font-size: 12.5px;
+    color: var(--body); white-space: nowrap; overflow: hidden;
+  }
+  .menu-cell.active {
+    background: linear-gradient(90deg, rgba(79,124,255,0.10) 0%, rgba(79,124,255,0.04) 100%);
+    color: var(--brand); font-weight: 500;
+  }
+  .menu-cell.active::before {
+    content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+    width: 3px; background: var(--brand); border-radius: 0 2px 2px 0;
+  }
+  .menu-cell.solo {
+    padding: 9px 10px; font-size: 13px; font-weight: 500; color: var(--title);
+  }
+  .menu-group-feature {
+    background: linear-gradient(180deg, #fafbff 0%, transparent 100%);
+    border-radius: 8px; padding: 8px 4px 12px; margin: 6px 0;
+    border-top: 0;
+  }
+  .submenu {
+    padding-left: 18px; display: flex; flex-direction: column; gap: 1px; margin-top: 2px;
+  }
+  .submenu-cell {
+    display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+    font-size: 12px; color: var(--body); border-radius: 5px;
+  }
+  .submenu-cell .dot { width: 4px; height: 4px; border-radius: 50%; background: #d4dcec; }
+  .submenu-cell.active { background: rgba(79,124,255,0.08); color: var(--brand); font-weight: 500; }
+  .submenu-cell.active .dot { background: var(--brand); box-shadow: 0 0 0 3px rgba(79,124,255,0.15); }
+  .ai-launcher {
+    margin: 8px 8px 0; padding: 9px 12px; border-radius: 8px;
+    background: var(--gradient); color: #fff;
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 12px rgba(79,124,255,0.30);
+  }
+  .ai-launcher .plus {
+    margin-left: auto; width: 18px; height: 18px;
+    border-radius: 50%; background: rgba(255,255,255,0.2);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .app-content { flex: 1; padding: 20px 24px 32px; min-width: 0; overflow: hidden; }
+
+  /* ============== Common ============== */
+  .page-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 16px; gap: 16px; flex-wrap: wrap;
+  }
+  .page-title { font-size: 20px; font-weight: 600; color: var(--title); }
+  .page-subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .page-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    height: 32px; padding: 0 14px; border-radius: 6px;
+    border: 1px solid #d9d9d9; background: #fff; color: var(--title);
+    font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--brand); color: var(--brand); }
+  .btn-primary {
+    background: var(--gradient); color: #fff; border: 0;
+    box-shadow: var(--shadow-primary);
+  }
+  .btn-primary:hover { box-shadow: 0 4px 12px rgba(79,124,255,0.40); }
+  .btn-text { border: 0; background: transparent; color: var(--brand); padding: 0 8px; }
+  .btn-danger { color: var(--error); border-color: #fcd9d8; }
+  .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn-icon { width: 32px; padding: 0; justify-content: center; }
+  .input {
+    height: 32px; padding: 0 12px; border-radius: 6px;
+    border: 1px solid #d9d9d9; background: #fff; font-size: 13px;
+    width: 240px;
+  }
+  .input.lg { width: 100%; }
+  .input.with-icon { padding-left: 32px; background-position: 10px center; background-repeat: no-repeat; }
+  .topbar-search {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 18px;
+    background: var(--bg); font-size: 12.5px; color: var(--muted);
+    min-width: 240px;
+  }
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  .tabs .tab { padding: 12px 18px; font-size: 14px; color: var(--body); position: relative; cursor: pointer; }
+  .tabs .tab.active { color: var(--brand); font-weight: 500; }
+  .tabs .tab.active::after {
+    content: ''; position: absolute; left: 18px; right: 18px; bottom: -1px;
+    height: 2px; background: var(--brand);
+  }
+  .filter-chips { display: flex; gap: 8px; align-items: center; margin: 8px 0 12px; }
+  .chip {
+    height: 26px; padding: 0 10px; border-radius: 13px;
+    border: 1px solid var(--border-strong); background: #fff;
+    color: var(--body); font-size: 12px; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .chip.active { border-color: var(--brand); color: var(--brand); background: var(--brand-50); }
+  .tag-soft {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    background: var(--brand-50); color: var(--brand); border: 1px solid var(--brand-100);
+  }
+  .tag-soft.green { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+  .tag-soft.orange { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+  .tag-soft.purple { background: #f9f0ff; color: #722ed1; border-color: #efdbff; }
+
+  /* ============== Dashboard Card ============== */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .dashboard-card {
+    background: #fff; border-radius: 10px;
+    border: 1px solid var(--border); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .dashboard-card.hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--border-strong);
+  }
+  .dashboard-card .preview {
+    height: 144px; position: relative;
+    background: linear-gradient(135deg, #f0f5ff 0%, #f9f0ff 100%);
+  }
+  .dashboard-card .preview .pchart {
+    position: absolute; inset: 12px; background: #fff;
+    border-radius: 8px; border: 1px solid var(--border);
+    padding: 8px 10px;
+    display: flex; flex-direction: column;
+  }
+  .dashboard-card .preview .pchart-title { font-size: 11px; color: var(--body); font-weight: 500; }
+  .dashboard-card .preview .pchart-area { flex: 1; margin-top: 6px; }
+  .dashboard-card .info { padding: 12px 14px 14px; }
+  .dashboard-card .name { font-size: 14px; font-weight: 600; }
+  .dashboard-card .desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dashboard-card .meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; font-size: 11px; color: var(--muted);
+  }
+  .avatar-stack { display: inline-flex; }
+  .avatar-stack .avatar {
+    width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff;
+    margin-left: -6px; font-size: 11px; color: #fff; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .avatar-stack .avatar:first-child { margin-left: 0; }
+
+  /* ============== Template Card ============== */
+  .template-card {
+    border: 1px solid #e6eaf2; border-radius: 8px;
+    padding: 16px 16px 14px; background: #fff;
+    display: flex; flex-direction: column;
+  }
+  .template-card.hover {
+    border-color: var(--brand);
+    box-shadow: 0 4px 16px rgba(79,124,255,0.10);
+  }
+  .template-card .tname { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .template-card .tdesc { font-size: 12.5px; color: var(--body); line-height: 1.6;
+    height: 60px; overflow: hidden; }
+  .template-card .trow { display: flex; margin-top: 8px; font-size: 12px; color: var(--body); line-height: 1.6; }
+  .template-card .trow .tlabel { color: var(--muted); width: 40px; flex-shrink: 0; }
+  .template-card .trow .tvalue { flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .template-card .tbtn {
+    margin-top: 12px; padding: 7px 0;
+    border: 1px solid var(--brand); border-radius: 4px;
+    background: #fff; color: var(--brand);
+    font-size: 13px; text-align: center;
+  }
+  .template-card.hover .tbtn { background: var(--brand); color: #fff; }
+
+  /* ============== Section / Filter / Tile ============== */
+  .section-card {
+    background: #fff; border-radius: 10px; border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .section-head {
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-head h3 { font-size: 15px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px; }
+  .section-body { padding: 18px 20px; }
+
+  .filter-bar {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px; margin-bottom: 16px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px;
+  }
+  .filter-row { display: flex; align-items: center; gap: 8px; }
+  .filter-label { font-size: 13px; color: var(--body); width: 70px; text-align: right; flex-shrink: 0; }
+  .filter-actions-row { grid-column: 1/-1; display: flex; gap: 10px; padding-top: 4px; }
+
+  .chart-tile {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    display: flex; flex-direction: column; overflow: hidden; position: relative;
+  }
+  .chart-tile.editable { border: 1px solid #e6eaf2; }
+  .tile-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px 6px;
+  }
+  .tile-name { font-size: 13.5px; font-weight: 500; display: flex; gap: 6px; align-items: center; }
+  .tile-actions { display: flex; gap: 4px; color: var(--muted); }
+  .tile-actions .ic { width: 22px; height: 22px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+  .tile-actions .ic:hover { background: var(--brand-50); color: var(--brand); }
+  .tile-body { flex: 1; padding: 4px 10px 10px; min-height: 0; }
+  .boards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* KPI */
+  .kpi { padding: 16px 18px; height: 100%; display: flex; flex-direction: column; gap: 4px; }
+  .kpi .label { font-size: 12px; color: var(--muted); }
+  .kpi .num { font-size: 32px; font-weight: 600; color: var(--title); line-height: 1.1; }
+  .kpi .num.green { color: var(--success); }
+  .kpi .delta { font-size: 12px; }
+  .kpi .delta.up { color: var(--success); }
+  .kpi .delta.down { color: var(--error); }
+
+  /* Method-card / Selectable / Field-tray */
+  .method-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .method-card {
+    border: 1px solid #e6eaf2; border-radius: 10px; padding: 18px;
+    background: #fff; position: relative;
+  }
+  .method-card.active {
+    border-color: var(--brand);
+    background: linear-gradient(135deg, rgba(79,124,255,0.08), rgba(110,92,255,0.04));
+  }
+  .m-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--brand-50); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 10px; color: var(--brand);
+  }
+  .method-card.active .m-icon { background: var(--gradient); color: #fff; }
+  .m-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .m-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .m-check {
+    position: absolute; top: 10px; right: 10px;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+  }
+  .method-card.active .m-check {
+    border-color: var(--brand); background: var(--brand);
+    color: #fff; font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .selectable-row {
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px; background: #fff;
+  }
+  .selectable-row.active { border-color: var(--brand); background: var(--brand-50); }
+  .sr-icon { width: 30px; height: 30px; border-radius: 6px; background: var(--brand-50); display: flex; align-items: center; justify-content: center; color: var(--brand); }
+  .field-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 12px; font-size: 12px;
+    border: 1px solid var(--border-strong); background: var(--section); color: var(--body);
+  }
+  .field-chip.metric { border-color: rgba(79,124,255,0.4); color: var(--brand); background: var(--brand-50); }
+  .field-chip.dimension { border-color: rgba(0,180,42,0.4); color: var(--success); background: var(--success-bg); }
+  .field-chip .x { color: #bfbfbf; margin-left: 2px; cursor: pointer; }
+
+  /* Modal / Drawer / Popover */
+  .modal {
+    background: #fff; border-radius: 8px;
+    box-shadow: var(--shadow-popover);
+    color: var(--title);
+    overflow: hidden;
+  }
+  .modal-head {
+    padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .modal-body { padding: 24px; }
+  .modal-foot {
+    padding: 18px 24px; border-top: 1px solid var(--line);
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+  .drawer-mask {
+    position: relative; width: 1440px; height: 900px;
+    background: rgba(15,23,42,0.45); overflow: hidden;
+  }
+  .drawer {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 480px;
+    background: #fff; box-shadow: var(--shadow-popover);
+  }
+
+  /* Filter bar (dashboard) */
+  .dash-filters {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 18px; margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px;
+  }
+  .dash-filter-row { display: flex; align-items: center; gap: 8px; }
+  .dash-filter-label { font-size: 13px; color: var(--body); white-space: nowrap; }
+  .dash-filter-label .help { color: var(--muted); font-size: 11px; }
+  .pill-tabs {
+    display: inline-flex; background: var(--soft);
+    border-radius: 6px; padding: 2px;
+  }
+  .pill-tabs .pt {
+    padding: 4px 10px; font-size: 12px; color: var(--body); border-radius: 4px;
+  }
+  .pill-tabs .pt.active { background: #fff; color: var(--title); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .quick-btns { display: inline-flex; gap: 4px; }
+  .quick-btn {
+    padding: 4px 10px; font-size: 12px; color: var(--body);
+    border: 1px solid var(--border); border-radius: 4px; background: #fff;
+  }
+  .quick-btn.active { color: var(--brand); border-color: var(--brand); background: var(--brand-50); }
+  .shop-trigger {
+    display: flex; align-items: center; gap: 6px;
+    min-width: 320px; max-width: 460px; min-height: 32px;
+    padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fff;
+  }
+  .shop-trigger .tags { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+  .shop-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    height: 22px; padding: 0 6px; font-size: 12px; border-radius: 4px;
+    background: #fff; border: 1px solid var(--border-strong);
+  }
+  .shop-tag .mini {
+    font-size: 10px; padding: 1px 4px; border-radius: 3px; background: transparent;
+    border: 1px solid var(--brand); color: var(--brand); margin-right: 4px;
+  }
+  .shop-tag .mini.mall { border-color: var(--success); color: var(--success); }
+  .shop-tag .mini.live { border-color: var(--warning); color: var(--warning); }
+  .shop-trigger-more { font-size: 12px; color: var(--brand); background: var(--brand-50); padding: 1px 6px; border-radius: 8px; }
+
+  /* Steps */
+  .steps {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 0; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+  }
+  .step { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13.5px; }
+  .step .dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; border: 1.5px solid var(--border-strong);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--muted);
+  }
+  .step.active { color: var(--title); }
+  .step.active .dot { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .step.done .dot { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+  .step.done { color: var(--title); }
+  .steps .line { width: 36px; height: 1px; background: var(--border-strong); }
+
+  /* Table */
+  table.t {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    background: #fff; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  table.t th {
+    background: #fafbfc; color: var(--body); font-weight: 500;
+    text-align: left; padding: 10px 12px; font-size: 12.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.t td {
+    padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--title);
+  }
+  table.t tr:last-child td { border-bottom: 0; }
+
+  /* Mini bars used in preview */
+  .mini-bars { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; align-items: end; height: 100%; }
+  .mini-bars .b { background: linear-gradient(180deg, var(--brand), var(--brand-3)); border-radius: 2px 2px 0 0; opacity: 0.85; }
+
+  /* SVG charts */
+  .svg-chart { width: 100%; height: 100%; display: block; }
+
+  /* Annotation pills (used between frames) */
+  .anno {
+    color: #94a3b8; font-size: 12px;
+    background: #303542; padding: 4px 12px; border-radius: 999px;
+    align-self: center;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ===================== Canvas Top Bar ===================== -->
+<div class="canvas-bar">
+  <h1>
+    <span class="badge">FIGMA</span>
+    经营分析中心 · 自助分析 · 完整原型稿
+    <span style="color:#94a3b8;font-weight:400;">17 frames · v1.0</span>
+  </h1>
+  <div class="actions">
+    <a class="tip" href="design-system.md">design-system.md</a>
+    <a class="tip" href="screens.md">screens.md</a>
+    <a class="tip" href="user-flows.md">user-flows.md</a>
+    <div class="zoom" id="zoom">
+      <button data-z="0.5">50%</button>
+      <button data-z="0.75">75%</button>
+      <button data-z="1" class="active">100%</button>
+      <button data-z="1.25">125%</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Frame Navigation ===================== -->
+<nav class="frame-nav">
+  <div class="grp">列表页</div>
+  <a href="#A1"><code>A1</code> 我的仪表盘</a>
+  <a href="#A2"><code>A2</code> 仪表盘模板</a>
+  <a href="#A3"><code>A3</code> 卡片操作菜单</a>
+  <div class="grp">仪表盘构建</div>
+  <a href="#B1"><code>B1</code> 步骤1·基本信息</a>
+  <a href="#B2"><code>B2</code> 步骤2·数据源</a>
+  <a href="#B2a"><code>B2a</code> 数据源·模板</a>
+  <a href="#B2b"><code>B2b</code> 数据源·已有报表</a>
+  <a href="#B2c"><code>B2c</code> 数据源·直接创建</a>
+  <a href="#B3"><code>B3</code> 步骤3·看板</a>
+  <a href="#B3a"><code>B3a</code> 图表编辑</a>
+  <div class="grp">仪表盘详情</div>
+  <a href="#C1"><code>C1</code> 仪表盘详情</a>
+  <a href="#C2"><code>C2</code> 数据源明细</a>
+  <a href="#C3"><code>C3</code> 选择店铺</a>
+  <a href="#C4"><code>C4</code> 导出菜单</a>
+  <div class="grp">协同 / 分享 / 权限</div>
+  <a href="#D1"><code>D1</code> 分享 Modal</a>
+  <a href="#D2"><code>D2</code> 协同 Modal</a>
+  <a href="#D3"><code>D3</code> 权限 Drawer</a>
+  <div class="grp">自助报表</div>
+  <a href="#E1"><code>E1</code> 自助报表列表</a>
+  <a href="#E2"><code>E2</code> 模板选择</a>
+  <div class="grp">占位</div>
+  <a href="#F1"><code>F1</code> 通用模块占位</a>
+</nav>
+
+<!-- ===================== Canvas ===================== -->
+<main class="canvas">
+  <div class="canvas-inner" id="canvasInner">
+
+    <!-- ============================================================ -->
+    <!-- ROW 1: 列表页 A1 / A2 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+      <!-- ---------- A1 我的仪表盘 ---------- -->
+      <section id="A1">
+        <div class="frame-label"><code>A1</code>自助仪表盘列表 · 我的仪表盘 <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <!-- TopBar -->
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions">
+              <span class="bell">🔔</span>
+              <div class="user-avatar">陈</div>
+            </div>
+          </div>
+          <div class="app-body">
+            <!-- Sider 完整菜单 (示意；其余 frame 共用同款 sider 占位) -->
+            <div class="app-sider">
+              <div class="menu-group"><div class="menu-group-title">概况</div>
+                <div class="menu-grid-2">
+                  <div class="menu-cell">营业概况</div><div class="menu-cell">商品概况</div>
+                  <div class="menu-cell">客户概况</div><div class="menu-cell">经营报表</div>
+                  <div class="menu-cell">财务报表</div>
+                </div>
+              </div>
+              <div class="menu-group"><div class="menu-group-title">商品交易</div>
+                <div class="menu-grid-2"><div class="menu-cell">商品洞察</div><div class="menu-cell">库存分析</div></div>
+              </div>
+              <div class="menu-group"><div class="menu-group-title">客户分析</div>
+                <div class="menu-grid-2">
+                  <div class="menu-cell">客户洞察</div><div class="menu-cell">会员分析</div>
+                  <div class="menu-cell">积分分析</div><div class="menu-cell">储值分析</div>
+                </div>
+              </div>
+              <div class="menu-group"><div class="menu-group-title">营销分析</div>
+                <div class="menu-grid-2"><div class="menu-cell">营销概况</div><div class="menu-cell">插件分析</div></div>
+              </div>
+              <div class="menu-group"><div class="menu-group-title">流量分析</div>
+                <div class="menu-grid-2">
+                  <div class="menu-cell">流量概况</div><div class="menu-cell">页面分析</div>
+                  <div class="menu-cell">推广分析</div><div class="menu-cell">热力图分析</div>
+                </div>
+              </div>
+              <div class="menu-group menu-group-feature"><div class="menu-group-title">自助分析</div>
+                <div class="menu-grid-1">
+                  <div class="menu-cell solo">📋 自助报表</div>
+                  <div class="menu-cell solo active">📊 自助仪表盘</div>
+                  <div class="submenu">
+                    <div class="submenu-cell"><span class="dot"></span>营业概况</div>
+                    <div class="submenu-cell"><span class="dot"></span>果果泥呀 · 旗舰仪表盘</div>
+                    <div class="submenu-cell active"><span class="dot"></span>618 大促作战室</div>
+                    <div class="submenu-cell"><span class="dot"></span>私域增长分析</div>
+                  </div>
+                </div>
+              </div>
+              <div class="ai-launcher">🤖 智能体<span class="plus">+</span></div>
+            </div>
+
+            <!-- Content -->
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">自助仪表盘</div>
+                  <div class="page-subtitle">自定义你的分析报表，将常看图表组合成仪表盘</div>
+                </div>
+                <div class="page-actions">
+                  <div class="topbar-search">🔎 搜索仪表盘 / 模板…<span style="margin-left:auto;color:#bfbfbf;">⌘K</span></div>
+                  <button class="btn btn-primary">+ 新建仪表盘</button>
+                </div>
+              </div>
+
+              <div class="tabs">
+                <div class="tab active">我的仪表盘</div>
+                <div class="tab">仪表盘模板</div>
+              </div>
+              <div class="filter-chips">
+                <span class="chip active">全部</span>
+                <span class="chip">我创建的</span>
+                <span class="chip">协同的</span>
+                <span class="chip">置顶的</span>
+                <span style="margin-left:auto;font-size:12px;color:var(--muted);">排序：最近编辑 ▾</span>
+              </div>
+
+              <div class="grid-4">
+                <!-- 4 张仪表盘卡，第一张 hover 状态 -->
+                <div class="dashboard-card hover">
+                  <div class="preview">
+                    <div class="pchart">
+                      <div class="pchart-title">GMV 趋势</div>
+                      <div class="pchart-area">
+                        <svg viewBox="0 0 200 60" class="svg-chart" preserveAspectRatio="none">
+                          <defs><linearGradient id="g1a" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4F7CFF" stop-opacity="0.4"/><stop offset="100%" stop-color="#4F7CFF" stop-opacity="0"/></linearGradient></defs>
+                          <path d="M0,50 L25,40 L50,32 L75,18 L100,20 L125,12 L150,18 L175,8 L200,14 L200,60 L0,60 Z" fill="url(#g1a)"/>
+                          <path d="M0,50 L25,40 L50,32 L75,18 L100,20 L125,12 L150,18 L175,8 L200,14" stroke="#4F7CFF" stroke-width="1.6" fill="none"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info">
+                    <div class="name">618 大促作战室 <span class="tag-soft">我的</span></div>
+                    <div class="desc">618 战役实时数据</div>
+                    <div class="meta">
+                      <div class="avatar-stack">
+                        <div class="avatar" style="background:linear-gradient(135deg,#FF7D00,#FFB84F)">陈</div>
+                        <div class="avatar" style="background:#4F7CFF">王</div>
+                        <div class="avatar" style="background:#A259FF">李</div>
+                      </div>
+                      <span>今天 09:32</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="dashboard-card">
+                  <div class="preview">
+                    <div class="pchart">
+                      <div class="pchart-title">渠道分布</div>
+                      <div class="pchart-area">
+                        <svg viewBox="0 0 200 60" class="svg-chart" preserveAspectRatio="none">
+                          <circle cx="60" cy="30" r="22" fill="#fff" stroke="#4F7CFF" stroke-width="6"/>
+                          <circle cx="60" cy="30" r="22" fill="none" stroke="#A259FF" stroke-width="6" stroke-dasharray="40 100"/>
+                          <circle cx="60" cy="30" r="22" fill="none" stroke="#00B42A" stroke-width="6" stroke-dasharray="20 100" stroke-dashoffset="-40"/>
+                          <rect x="100" y="14" width="80" height="6" fill="#4F7CFF" rx="1"/>
+                          <rect x="100" y="26" width="60" height="6" fill="#A259FF" rx="1"/>
+                          <rect x="100" y="38" width="35" height="6" fill="#00B42A" rx="1"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info">
+                    <div class="name">私域增长分析</div>
+                    <div class="desc">微商城私域流量与转化</div>
+                    <div class="meta">
+                      <div class="avatar-stack"><div class="avatar" style="background:#FF7D00">张</div></div>
+                      <span>今天 11:14</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="dashboard-card">
+                  <div class="preview">
+                    <div class="pchart">
+                      <div class="pchart-title">门店业绩</div>
+                      <div class="pchart-area">
+                        <div class="mini-bars">
+                          <div class="b" style="height:60%"></div><div class="b" style="height:80%"></div>
+                          <div class="b" style="height:50%"></div><div class="b" style="height:90%"></div>
+                          <div class="b" style="height:70%"></div><div class="b" style="height:40%"></div>
+                          <div class="b" style="height:65%"></div><div class="b" style="height:85%"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info">
+                    <div class="name">果果泥呀 · 旗舰仪表盘 <span class="tag-soft purple">店铺</span></div>
+                    <div class="desc">店铺级模板，可被门店复用</div>
+                    <div class="meta">
+                      <div class="avatar-stack"><div class="avatar" style="background:#FF7D00">陈</div><div class="avatar" style="background:#A259FF">李</div></div>
+                      <span>昨天 18:24</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="dashboard-card">
+                  <div class="preview">
+                    <div class="pchart">
+                      <div class="pchart-title">核心指标</div>
+                      <div class="pchart-area" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:center;">
+                        <div style="font-size:14px;font-weight:600;color:#4F7CFF;">¥ 1.2M</div>
+                        <div style="font-size:14px;font-weight:600;color:#00B42A;">↑ 12.6%</div>
+                        <div style="font-size:11px;color:#86909C;">订单 4,210</div>
+                        <div style="font-size:11px;color:#86909C;">客单 ¥285</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info">
+                    <div class="name">营业概况 <span class="tag-soft green">系统</span></div>
+                    <div class="desc">系统提供的营业必看仪表盘</div>
+                    <div class="meta">
+                      <div class="avatar-stack"><div class="avatar" style="background:#86909C">系</div></div>
+                      <span>今天 09:14</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <span class="anno">点击 Tab 切换 →</span>
+
+      <!-- ---------- A2 仪表盘模板 ---------- -->
+      <section id="A2">
+        <div class="frame-label"><code>A2</code>自助仪表盘列表 · 仪表盘模板 <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body">
+            <div class="app-sider" style="background:#fff;">
+              <div class="menu-group"><div class="menu-group-title">概况</div>
+                <div class="menu-grid-2"><div class="menu-cell">营业概况</div><div class="menu-cell">商品概况</div></div>
+              </div>
+              <div class="menu-group"><div class="menu-group-title">商品交易</div>
+                <div class="menu-grid-2"><div class="menu-cell">商品洞察</div><div class="menu-cell">库存分析</div></div>
+              </div>
+              <div class="menu-group menu-group-feature"><div class="menu-group-title">自助分析</div>
+                <div class="menu-grid-1">
+                  <div class="menu-cell solo">📋 自助报表</div>
+                  <div class="menu-cell solo active">📊 自助仪表盘</div>
+                </div>
+              </div>
+              <div style="padding:0 8px;color:#bfbfbf;font-size:11px;text-align:center;margin-top:8px;">— 其余菜单见 A1 —</div>
+            </div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">自助仪表盘</div>
+                  <div class="page-subtitle">从模板快速创建你的仪表盘</div>
+                </div>
+                <div class="page-actions">
+                  <div class="topbar-search">🔎 搜索仪表盘 / 模板…<span style="margin-left:auto;color:#bfbfbf;">⌘K</span></div>
+                  <button class="btn btn-primary">+ 新建仪表盘</button>
+                </div>
+              </div>
+              <div class="tabs">
+                <div class="tab">我的仪表盘</div>
+                <div class="tab active">仪表盘模板</div>
+              </div>
+              <div class="filter-chips">
+                <span class="chip active">全部 8</span>
+                <span class="chip">系统模板 4</span>
+                <span class="chip">店铺模板 4</span>
+              </div>
+
+              <div class="grid-4" style="gap:12px;">
+                <div class="template-card hover">
+                  <div class="tname">营业概况 <span class="tag-soft green">系统</span></div>
+                  <div class="tdesc">系统提供的营业必看数据，整合销售、客户、库存等关键指标，覆盖业绩、订单、客单价、转化率等。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">日期、店铺、经营模式、销售渠道</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">GMV、订单数、客单价、折扣率、退款金额</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">果果泥呀 · 旗舰仪表盘 <span class="tag-soft purple">店铺</span></div>
+                  <div class="tdesc">店铺级模板，包含渠道业绩与小时趋势，覆盖核心运营指标。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">日期、一级渠道</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">GMV、支付金额、订单数</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">商品销售分析 <span class="tag-soft green">系统</span></div>
+                  <div class="tdesc">商品维度关键数据，包含销售件数、退货、优惠等，可帮助综合监控与判断商品表现。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">商品名称、SKU、一级分类</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">销售件数、支付金额、GMV、退款数</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">流量来源分析 <span class="tag-soft green">系统</span></div>
+                  <div class="tdesc">不同流量入口的访客与转化情况，定位优质渠道，指导投放分配。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">一级渠道、二级渠道、日期</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">访客数 UV、浏览量 PV、支付转化率</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">客户消费明细 <span class="tag-soft purple">店铺</span></div>
+                  <div class="tdesc">客户维度的消费、复购、积分情况，识别高价值客户。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">客户标签、会员等级、店铺</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">活跃客户、会员订单数、支付金额</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">营销活动效果 <span class="tag-soft green">系统</span></div>
+                  <div class="tdesc">不同营销活动的核销率、ROI 与拉新表现。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">店铺、一级渠道、月</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">优惠券使用数、支付金额、活动 ROI、新增客户</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">财务收支汇总 <span class="tag-soft purple">店铺</span></div>
+                  <div class="tdesc">账期内的收入、退款、净额与税务相关核对数据。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">店铺、月</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">支付金额、GMV、退款金额、退款笔数</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">商品库存周转 <span class="tag-soft green">系统</span></div>
+                  <div class="tdesc">商品入库、出库与周转情况，识别滞销与畅销商品。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">商品、SKU、店铺</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">库存量、销售件数</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 2: 卡片操作菜单 A3 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+      <section id="A3">
+        <div class="frame-label"><code>A3</code>卡片操作菜单（Dropdown） <span class="size">240 × auto</span></div>
+        <div class="frame" style="width:240px;background:#fff;">
+          <div style="padding:6px 0; border:1px solid var(--border); border-radius:8px; box-shadow: var(--shadow-popover);">
+            <div style="padding:8px 14px; font-size:13px; cursor:pointer;">编辑</div>
+            <div style="padding:8px 14px; font-size:13px; cursor:pointer; background:#f5f7fa;">复制</div>
+            <div style="padding:8px 14px; font-size:13px; cursor:pointer;">协同创建</div>
+            <div style="padding:8px 14px; font-size:13px; cursor:pointer;">分享</div>
+            <div style="padding:8px 14px; font-size:13px; cursor:pointer;">权限设置</div>
+            <div style="padding:8px 14px; font-size:13px; cursor:pointer;">同步到店铺模板</div>
+            <div style="height:1px; background: var(--line); margin: 4px 0;"></div>
+            <div style="padding:8px 14px; font-size:13px; color: var(--error); cursor:pointer;">删除</div>
+          </div>
+        </div>
+      </section>
+
+      <span class="anno" style="margin-top:64px;">↓ 点击「+ 新建仪表盘」进入构建器</span>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 3: 仪表盘构建 B1 / B2 / B3 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+
+      <!-- B1 -->
+      <section id="B1">
+        <div class="frame-label"><code>B1</code>新建仪表盘 · 步骤1 基本信息 <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body">
+            <div class="app-sider"><div style="padding:24px;color:#bfbfbf;font-size:11px;text-align:center;">完整菜单见 A1</div></div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">新建仪表盘</div>
+                  <div class="page-subtitle">一个仪表盘 = 数据源 + 多个看板</div>
+                </div>
+                <div class="page-actions">
+                  <button class="btn">取消</button>
+                  <button class="btn btn-primary">下一步：选择数据源</button>
+                </div>
+              </div>
+
+              <div class="steps">
+                <div class="step active"><span class="dot">1</span>基本信息</div>
+                <span class="line"></span>
+                <div class="step"><span class="dot">2</span>选择数据源</div>
+                <span class="line"></span>
+                <div class="step"><span class="dot">3</span>看板配置</div>
+              </div>
+
+              <div class="section-card" style="max-width: 720px;">
+                <div class="section-head"><h3>基本信息</h3></div>
+                <div class="section-body">
+                  <div style="margin-bottom:16px;">
+                    <div style="font-size:13px;color:var(--body);margin-bottom:6px;">仪表盘名称 <span style="color:var(--error);">*</span></div>
+                    <input class="input lg" placeholder="例如：618 大促作战室（限 30 字）" value="618 大促作战室">
+                  </div>
+                  <div style="margin-bottom:16px;">
+                    <div style="font-size:13px;color:var(--body);margin-bottom:6px;">描述</div>
+                    <textarea class="input lg" rows="3" style="height:auto;padding:8px 12px;resize:vertical;">618 战役实时数据，覆盖关键 KPI、渠道趋势与商品 TOP10。</textarea>
+                  </div>
+                  <div style="margin-bottom:16px;">
+                    <div style="font-size:13px;color:var(--body);margin-bottom:6px;">归属</div>
+                    <div style="display:flex;gap:16px;font-size:13px;">
+                      <label><input type="radio" checked> 我的仪表盘</label>
+                      <label><input type="radio"> 店铺模板</label>
+                      <label style="color:var(--muted);"><input type="radio" disabled> 系统模板（管理员）</label>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;color:var(--body);margin-bottom:6px;">封面色（用于卡片预览背景）</div>
+                    <div style="display:flex;gap:8px;">
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#f0f5ff,#f9f0ff);border:2px solid var(--brand);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#fff7e6,#ffe7ba);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#f6ffed,#d9f7be);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#fce4f4,#ffd6e7);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#e6f4ff,#bae0ff);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#f0eaff,#d3adf7);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#fff1f0,#ffccc7);"></div>
+                      <div style="width:36px;height:24px;border-radius:6px;background:linear-gradient(135deg,#f4f6fb,#e6eaf2);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- B2 -->
+      <section id="B2">
+        <div class="frame-label"><code>B2</code>新建仪表盘 · 步骤2 数据源 <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body">
+            <div class="app-sider"><div style="padding:24px;color:#bfbfbf;font-size:11px;text-align:center;">完整菜单见 A1</div></div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">新建仪表盘 · 618 大促作战室</div>
+                  <div class="page-subtitle">添加 1 ~ N 个数据源，看板会从这些数据源中选取字段</div>
+                </div>
+                <div class="page-actions">
+                  <button class="btn">上一步</button>
+                  <button class="btn btn-primary">下一步：配置看板</button>
+                </div>
+              </div>
+
+              <div class="steps">
+                <div class="step done"><span class="dot">✓</span>基本信息</div>
+                <span class="line"></span>
+                <div class="step active"><span class="dot">2</span>选择数据源</div>
+                <span class="line"></span>
+                <div class="step"><span class="dot">3</span>看板配置</div>
+              </div>
+
+              <div class="section-card">
+                <div class="section-head">
+                  <h3>已添加数据源 <span style="color:var(--muted);font-weight:400;font-size:13px;">2 个</span></h3>
+                  <button class="btn btn-primary">+ 添加数据源</button>
+                </div>
+                <div class="section-body">
+                  <table class="t">
+                    <thead><tr>
+                      <th style="width:200px;">名称</th>
+                      <th style="width:140px;">来源</th>
+                      <th>字段</th>
+                      <th style="width:110px;">数据量</th>
+                      <th style="width:140px;">操作</th>
+                    </tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><b>618 实时业绩</b></td>
+                        <td><span class="tag-soft purple">已有报表</span></td>
+                        <td>
+                          <span class="field-chip dimension">维 渠道</span>
+                          <span class="field-chip dimension">维 日期</span>
+                          <span class="field-chip metric">指 GMV</span>
+                          <span class="field-chip metric">指 订单数</span>
+                          <span class="field-chip metric">指 客单价</span>
+                        </td>
+                        <td>240 行</td>
+                        <td><a class="btn-text">编辑</a><a class="btn-text" style="color:var(--error);">删除</a></td>
+                      </tr>
+                      <tr>
+                        <td><b>商品销售明细</b></td>
+                        <td><span class="tag-soft">直接创建</span></td>
+                        <td>
+                          <span class="field-chip dimension">维 商品名称</span>
+                          <span class="field-chip dimension">维 一级分类</span>
+                          <span class="field-chip metric">指 销售件数</span>
+                          <span class="field-chip metric">指 支付金额</span>
+                        </td>
+                        <td>50 行</td>
+                        <td><a class="btn-text">编辑</a><a class="btn-text" style="color:var(--error);">删除</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 4: B2-a / B2-b / B2-c (Modal) -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+
+      <section id="B2a">
+        <div class="frame-label"><code>B2a</code>数据源 Modal · 模板创建 <span class="size">720 × 720</span></div>
+        <div class="frame modal" style="width:720px;">
+          <div class="modal-head"><h3>创建数据源</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div class="modal-body">
+            <div style="margin-bottom:16px;">
+              <div style="font-size:13px;color:var(--body);margin-bottom:6px;">数据源名称 <span style="color:var(--error);">*</span></div>
+              <input class="input lg" value="618 实时业绩">
+            </div>
+            <div style="font-size:13px;color:var(--body);margin-bottom:8px;">创建方式</div>
+            <div class="method-row">
+              <div class="method-card active">
+                <div class="m-icon">📁</div>
+                <div class="m-title">从模板</div>
+                <div class="m-desc">选择常用业务模板，秒级生成</div>
+                <div class="m-check">✓</div>
+              </div>
+              <div class="method-card">
+                <div class="m-icon">📋</div>
+                <div class="m-title">已有报表</div>
+                <div class="m-desc">复用已存在的查询报表</div>
+                <div class="m-check"></div>
+              </div>
+              <div class="method-card">
+                <div class="m-icon">⚒️</div>
+                <div class="m-title">直接创建</div>
+                <div class="m-desc">自定义指标维度组合</div>
+                <div class="m-check"></div>
+              </div>
+            </div>
+
+            <div style="font-size:13px;color:var(--body);margin-bottom:8px;">选择模板 <span style="color:var(--muted);">(已选 1 / 12)</span></div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <input class="input lg" placeholder="搜索模板..." style="flex:1;" />
+              <select class="input" style="width:140px;">
+                <option>分类：业绩</option>
+              </select>
+            </div>
+            <div style="max-height:240px; overflow:auto; padding-right:4px;">
+              <div class="selectable-row active">
+                <div class="sr-icon">📊</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:500;">店铺业绩报表(销售单元)</div>
+                  <div style="font-size:11.5px;color:var(--muted);">店铺业绩统计必看数据，提供整体销售...</div>
+                </div>
+                <span class="tag-soft">业绩</span>
+              </div>
+              <div class="selectable-row">
+                <div class="sr-icon">📊</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:500;">店铺业绩报表(销售渠道)</div>
+                  <div style="font-size:11.5px;color:var(--muted);">店铺业绩统计 - 包含一级 / 二级渠道</div>
+                </div>
+                <span class="tag-soft">业绩</span>
+              </div>
+              <div class="selectable-row">
+                <div class="sr-icon">📊</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:500;">店铺分时段业绩报表</div>
+                  <div style="font-size:11.5px;color:var(--muted);">按小时统计的业绩明细</div>
+                </div>
+                <span class="tag-soft">业绩</span>
+              </div>
+            </div>
+
+            <div style="margin-top:12px; padding:12px; background: var(--section); border-radius: 8px;">
+              <div style="font-size:12.5px; color:var(--body); margin-bottom:8px;"><b>模板字段 (只读)</b></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;">
+                <span class="field-chip dimension">维 店铺</span>
+                <span class="field-chip dimension">维 经营模式</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="field-chip metric">指 订单数</span>
+                <span class="field-chip metric">指 支付金额</span>
+                <span class="field-chip metric">指 GMV</span>
+                <span class="field-chip metric">指 折扣率</span>
+                <span class="field-chip metric">指 客单价</span>
+                <span class="field-chip metric">指 退款笔数</span>
+                <span class="field-chip metric">指 退款金额</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">保存数据源</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="B2b">
+        <div class="frame-label"><code>B2b</code>数据源 Modal · 已有报表 <span class="size">720 × 640</span></div>
+        <div class="frame modal" style="width:720px;">
+          <div class="modal-head"><h3>创建数据源</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div class="modal-body">
+            <input class="input lg" value="618 实时业绩" style="margin-bottom:12px;">
+            <div class="method-row">
+              <div class="method-card">
+                <div class="m-icon">📁</div><div class="m-title">从模板</div><div class="m-desc">选择常用业务模板</div><div class="m-check"></div>
+              </div>
+              <div class="method-card active">
+                <div class="m-icon">📋</div><div class="m-title">已有报表</div><div class="m-desc">复用已存在的查询报表</div><div class="m-check">✓</div>
+              </div>
+              <div class="method-card">
+                <div class="m-icon">⚒️</div><div class="m-title">直接创建</div><div class="m-desc">自定义指标维度</div><div class="m-check"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:8px;">
+              <input class="input lg" placeholder="搜索报表..." style="flex:1;" />
+              <select class="input" style="width:140px;"><option>类型：全部</option></select>
+            </div>
+            <div style="max-height:280px;overflow:auto;">
+              <div class="selectable-row">
+                <div class="sr-icon">📈</div>
+                <div style="flex:1;"><div style="font-size:13px;font-weight:500;">订单+商品测试</div>
+                  <div style="font-size:11.5px;color:var(--muted);">明细报表 · 我 · 2026-04-29 16:50</div></div>
+              </div>
+              <div class="selectable-row active">
+                <div class="sr-icon">📈</div>
+                <div style="flex:1;"><div style="font-size:13px;font-weight:500;">618 大促渠道分析</div>
+                  <div style="font-size:11.5px;color:var(--muted);">明细报表 · 陈娜 · 2026-04-28 19:49</div></div>
+                <span class="tag-soft green">推荐</span>
+              </div>
+              <div class="selectable-row">
+                <div class="sr-icon">📈</div>
+                <div style="flex:1;"><div style="font-size:13px;font-weight:500;">门店分时段业绩</div>
+                  <div style="font-size:11.5px;color:var(--muted);">汇总报表 · 李雪 · 2026-04-29 16:42</div></div>
+              </div>
+              <div class="selectable-row">
+                <div class="sr-icon">📈</div>
+                <div style="flex:1;"><div style="font-size:13px;font-weight:500;">华东大区销售明细</div>
+                  <div style="font-size:11.5px;color:var(--muted);">明细报表 · 王明 · 2026-04-29 16:40</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">保存数据源</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="B2c">
+        <div class="frame-label"><code>B2c</code>数据源 Modal · 直接创建 <span class="size">720 × 720</span></div>
+        <div class="frame modal" style="width:720px;">
+          <div class="modal-head"><h3>创建数据源</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div class="modal-body">
+            <input class="input lg" value="商品销售明细" style="margin-bottom:12px;">
+            <div class="method-row">
+              <div class="method-card"><div class="m-icon">📁</div><div class="m-title">从模板</div><div class="m-desc">选择常用业务模板</div><div class="m-check"></div></div>
+              <div class="method-card"><div class="m-icon">📋</div><div class="m-title">已有报表</div><div class="m-desc">复用已存在的报表</div><div class="m-check"></div></div>
+              <div class="method-card active"><div class="m-icon">⚒️</div><div class="m-title">直接创建</div><div class="m-desc">自定义指标维度</div><div class="m-check">✓</div></div>
+            </div>
+
+            <div style="display:flex; gap:0; border:1px solid var(--border); border-radius:8px; background: var(--section); height:360px; overflow:hidden;">
+              <!-- 字段池 -->
+              <div style="width:240px; background:#fff; border-right:1px solid var(--border); display:flex;flex-direction:column;">
+                <div style="padding:10px 12px; border-bottom:1px solid var(--border); display:flex;gap:6px;font-size:12px;">
+                  <span class="chip active">维度 13</span>
+                  <span class="chip">指标 19</span>
+                </div>
+                <div style="padding:8px;font-size:11px;color:var(--muted);">商品</div>
+                <div style="padding:0 8px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--body);">
+                  <div style="padding:6px 8px; border-radius:6px; background: var(--brand-50); color:var(--brand);">商品名称<span style="margin-left:auto;color:var(--brand);float:right;">✓</span></div>
+                  <div style="padding:6px 8px;">SKU 商品条码</div>
+                  <div style="padding:6px 8px; border-radius:6px; background: var(--brand-50); color:var(--brand);">一级分类<span style="margin-left:auto;color:var(--brand);float:right;">✓</span></div>
+                  <div style="padding:6px 8px;">二级分类</div>
+                  <div style="padding:6px 8px;">商品品牌</div>
+                </div>
+                <div style="padding:8px;font-size:11px;color:var(--muted);margin-top:4px;">门店</div>
+                <div style="padding:0 8px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--body);">
+                  <div style="padding:6px 8px;">分店店铺</div>
+                  <div style="padding:6px 8px;">区域</div>
+                </div>
+              </div>
+
+              <!-- 已选字段 -->
+              <div style="flex:1;background:#fff;display:flex;flex-direction:column;">
+                <div style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--body);font-weight:500;display:flex;justify-content:space-between;">
+                  <span>已选字段</span>
+                  <a class="btn-text">清空</a>
+                </div>
+                <div style="padding:14px;">
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">维度 (2)</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+                    <span class="field-chip dimension">商品名称 ×</span>
+                    <span class="field-chip dimension">一级分类 ×</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">指标 (2)</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+                    <span class="field-chip metric">销售件数 ×</span>
+                    <span class="field-chip metric">支付金额 ×</span>
+                  </div>
+                  <div style="padding:10px 12px; background: var(--section); border-radius: 6px; font-size: 12px; color: var(--muted);">
+                    💡 直接创建支持后续在数据源详情中追加 SQL 过滤 / 排序条件
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">保存数据源</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 5: B3 + B3a -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+
+      <!-- B3 -->
+      <section id="B3">
+        <div class="frame-label"><code>B3</code>新建仪表盘 · 步骤3 看板 <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body">
+            <div class="app-sider"><div style="padding:24px;color:#bfbfbf;font-size:11px;text-align:center;">完整菜单见 A1</div></div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">新建仪表盘 · 618 大促作战室</div>
+                  <div class="page-subtitle">为每个看板配置图表，支持拖拽排序与调整宽度</div>
+                </div>
+                <div class="page-actions">
+                  <button class="btn">上一步</button>
+                  <button class="btn btn-primary">完成</button>
+                </div>
+              </div>
+              <div class="steps">
+                <div class="step done"><span class="dot">✓</span>基本信息</div>
+                <span class="line"></span>
+                <div class="step done"><span class="dot">✓</span>选择数据源</div>
+                <span class="line"></span>
+                <div class="step active"><span class="dot">3</span>看板配置</div>
+              </div>
+
+              <div class="tabs" style="margin-bottom:16px;">
+                <div class="tab active">战役总览</div>
+                <div class="tab">品类深挖</div>
+                <div class="tab" style="color:var(--brand);">+ 新建看板</div>
+              </div>
+
+              <div class="boards-grid">
+                <div class="chart-tile editable" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">GMV</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body kpi">
+                    <div class="label">本期 GMV</div>
+                    <div class="num" style="font-size:26px;">¥ 1.28M</div>
+                    <div class="delta up">↑ 12.6%</div>
+                  </div>
+                </div>
+                <div class="chart-tile editable" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">订单数</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body kpi">
+                    <div class="label">本期订单数</div>
+                    <div class="num" style="font-size:26px;">4,210</div>
+                    <div class="delta up">↑ 8.2%</div>
+                  </div>
+                </div>
+                <div class="chart-tile editable" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">客单价</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body kpi">
+                    <div class="label">客单价</div>
+                    <div class="num" style="font-size:26px;">¥ 285</div>
+                    <div class="delta up">↑ 3.4%</div>
+                  </div>
+                </div>
+                <div class="chart-tile editable" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">渠道转化</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body" style="display:flex;align-items:center;justify-content:center;height:140px;">
+                    <svg viewBox="0 0 100 60" class="svg-chart" style="height:80px;">
+                      <circle cx="50" cy="30" r="24" fill="none" stroke="#EEF0F3" stroke-width="6"/>
+                      <circle cx="50" cy="30" r="24" fill="none" stroke="#4F7CFF" stroke-width="6" stroke-dasharray="100 200" transform="rotate(-90 50 30)"/>
+                    </svg>
+                    <div style="font-size:18px;font-weight:600;color:var(--brand);position:absolute;">66.7%</div>
+                  </div>
+                </div>
+
+                <!-- 全宽折线 -->
+                <div class="chart-tile editable" style="grid-column: span 4;">
+                  <div class="tile-head"><div class="tile-name">小时趋势</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body" style="height:240px;">
+                    <svg viewBox="0 0 800 220" class="svg-chart" preserveAspectRatio="none">
+                      <defs><linearGradient id="g3a" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4F7CFF" stop-opacity="0.3"/><stop offset="100%" stop-color="#4F7CFF" stop-opacity="0"/></linearGradient></defs>
+                      <g stroke="#F1F3F6"><line x1="40" x2="780" y1="50" y2="50"/><line x1="40" x2="780" y1="100" y2="100"/><line x1="40" x2="780" y1="150" y2="150"/><line x1="40" x2="780" y1="200" y2="200"/></g>
+                      <g fill="#86909C" font-size="10">
+                        <text x="40" y="215">00</text><text x="200" y="215">06</text><text x="380" y="215">12</text><text x="560" y="215">18</text><text x="740" y="215">23</text>
+                      </g>
+                      <path d="M40,180 L100,160 L160,140 L220,120 L280,90 L340,70 L400,55 L460,80 L520,60 L580,40 L640,50 L700,30 L760,40 L760,200 L40,200 Z" fill="url(#g3a)"/>
+                      <path d="M40,180 L100,160 L160,140 L220,120 L280,90 L340,70 L400,55 L460,80 L520,60 L580,40 L640,50 L700,30 L760,40" stroke="#4F7CFF" stroke-width="2" fill="none"/>
+                      <path d="M40,200 L100,180 L160,170 L220,160 L280,135 L340,115 L400,100 L460,120 L520,110 L580,90 L640,95 L700,80 L760,90" stroke="#A259FF" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="chart-tile editable" style="grid-column: span 2;">
+                  <div class="tile-head"><div class="tile-name">渠道排行</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body" style="height:200px;padding:12px;">
+                    <svg viewBox="0 0 400 180" class="svg-chart" preserveAspectRatio="none">
+                      <g fill="#86909C" font-size="11">
+                        <text x="6" y="20">抖音直播</text><text x="6" y="50">天猫旗舰</text><text x="6" y="80">小程序</text><text x="6" y="110">门店</text><text x="6" y="140">企微</text><text x="6" y="170">视频号</text>
+                      </g>
+                      <rect x="80" y="8" width="300" height="14" fill="#4F7CFF" rx="2"/>
+                      <rect x="80" y="38" width="240" height="14" fill="#6E5CFF" rx="2"/>
+                      <rect x="80" y="68" width="180" height="14" fill="#00B42A" rx="2"/>
+                      <rect x="80" y="98" width="140" height="14" fill="#FF7D00" rx="2"/>
+                      <rect x="80" y="128" width="90" height="14" fill="#13C2C2" rx="2"/>
+                      <rect x="80" y="158" width="60" height="14" fill="#F759AB" rx="2"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="chart-tile editable" style="grid-column: span 2;">
+                  <div class="tile-head"><div class="tile-name">商品 TOP 10</div>
+                    <div class="tile-actions"><span class="ic">⋮⋮</span><span class="ic">✎</span><span class="ic">⎘</span><span class="ic">×</span></div>
+                  </div>
+                  <div class="tile-body" style="padding: 4px 12px 12px;">
+                    <table class="t" style="border:0; font-size:12px;">
+                      <thead><tr><th>商品</th><th>销售件数</th><th>支付金额</th></tr></thead>
+                      <tbody>
+                        <tr><td>果果泥呀 草莓味</td><td>1,280</td><td>¥ 64,128</td></tr>
+                        <tr><td>果果泥呀 芒果味</td><td>1,012</td><td>¥ 50,612</td></tr>
+                        <tr><td>果果泥呀 蓝莓味</td><td>892</td><td>¥ 43,256</td></tr>
+                        <tr><td>果果泥呀 香蕉味</td><td>670</td><td>¥ 30,180</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- 添加图表占位 -->
+                <div style="grid-column: span 4; border:1px dashed var(--border-strong); border-radius:10px; padding:20px; text-align:center; color:var(--brand); background:#fafbff; cursor:pointer;">
+                  <div style="font-size: 22px; margin-bottom: 4px;">＋</div>
+                  <div style="font-size: 13px; font-weight: 500;">新建图表</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- B3a Modal -->
+      <section id="B3a">
+        <div class="frame-label"><code>B3a</code>图表编辑 Modal <span class="size">880 × 720</span></div>
+        <div class="frame modal" style="width:880px;">
+          <div class="modal-head"><h3>编辑图表 · 小时趋势</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div style="display:flex;height:560px;">
+            <!-- Left -->
+            <div style="width:240px;border-right:1px solid var(--border);padding:18px;overflow:auto;">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">图表类型</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div style="padding:10px;border:1.5px solid var(--brand);border-radius:6px;background:var(--brand-50);text-align:center;font-size:12px;color:var(--brand);">
+                  <div style="font-size:24px;line-height:1;">📈</div>面积图
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">📊</div>柱状图
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">🥧</div>饼图
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">📉</div>折线图
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">🔢</div>KPI
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">📋</div>表格
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">⏷</div>漏斗
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">⊙</div>仪表盘
+                </div>
+                <div style="padding:10px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:12px;">
+                  <div style="font-size:24px;line-height:1;">·</div>散点
+                </div>
+              </div>
+            </div>
+            <!-- Right -->
+            <div style="flex:1;padding:18px 24px;overflow:auto;">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <div style="font-size:12px;color:var(--body);margin-bottom:4px;">图表名称</div>
+                  <input class="input lg" value="小时趋势">
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--body);margin-bottom:4px;">数据源</div>
+                  <select class="input lg"><option>618 实时业绩</option></select>
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--body);margin-bottom:4px;">X 轴维度</div>
+                  <div><span class="field-chip dimension">日期 ×</span></div>
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--body);margin-bottom:4px;">分组维度（可选）</div>
+                  <div><span class="field-chip dimension">渠道 ×</span></div>
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--body);margin-bottom:4px;">指标（1 ~ 多）</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <span class="field-chip metric">GMV ×</span>
+                    <span class="field-chip metric">订单数 ×</span>
+                    <span class="field-chip" style="border-style:dashed;cursor:pointer;">+ 添加指标</span>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                  <div>
+                    <div style="font-size:12px;color:var(--body);margin-bottom:4px;">排序</div>
+                    <select class="input lg"><option>按 GMV ↓</option></select>
+                  </div>
+                  <div>
+                    <div style="font-size:12px;color:var(--body);margin-bottom:4px;">Limit</div>
+                    <select class="input lg"><option>10</option></select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                  <div>
+                    <div style="font-size:12px;color:var(--body);margin-bottom:4px;">宽度</div>
+                    <div style="display:flex;gap:4px;">
+                      <span class="quick-btn">1</span><span class="quick-btn">2</span>
+                      <span class="quick-btn">3</span><span class="quick-btn active">4</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:12px;color:var(--body);margin-bottom:4px;">高度</div>
+                    <div style="display:flex;gap:4px;">
+                      <span class="quick-btn">1</span><span class="quick-btn active">2</span><span class="quick-btn">3</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top:8px;background:var(--section);border-radius:8px;padding:12px;height:140px;">
+                  <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">预览</div>
+                  <svg viewBox="0 0 600 100" preserveAspectRatio="none" style="width:100%;height:100px;">
+                    <path d="M0,80 L60,72 L120,68 L180,55 L240,45 L300,38 L360,30 L420,40 L480,28 L540,35 L600,25 L600,100 L0,100 Z" fill="rgba(79,124,255,0.18)"/>
+                    <path d="M0,80 L60,72 L120,68 L180,55 L240,45 L300,38 L360,30 L420,40 L480,28 L540,35 L600,25" stroke="#4F7CFF" stroke-width="1.6" fill="none"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">保存</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 6: C1 仪表盘详情 + C2 数据源明细 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+      <section id="C1">
+        <div class="frame-label"><code>C1</code>仪表盘详情 · 默认看板 <span class="size">1440 × 1100</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body" style="min-height:1044px;">
+            <div class="app-sider">
+              <div class="menu-group menu-group-feature"><div class="menu-group-title">自助分析</div>
+                <div class="menu-grid-1">
+                  <div class="menu-cell solo">📋 自助报表</div>
+                  <div class="menu-cell solo active">📊 自助仪表盘</div>
+                  <div class="submenu">
+                    <div class="submenu-cell"><span class="dot"></span>营业概况</div>
+                    <div class="submenu-cell"><span class="dot"></span>果果泥呀 · 旗舰仪表盘</div>
+                    <div class="submenu-cell active"><span class="dot"></span>618 大促作战室</div>
+                    <div class="submenu-cell"><span class="dot"></span>私域增长分析</div>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:24px;color:#bfbfbf;font-size:11px;text-align:center;">… 完整菜单见 A1 …</div>
+            </div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">618 大促作战室 <span class="tag-soft">我的</span></div>
+                  <div class="page-subtitle">618 战役实时数据 · 陈 · CEO办 · 最后编辑 今天 09:32</div>
+                </div>
+                <div class="page-actions">
+                  <div class="avatar-stack" style="margin-right:8px;">
+                    <div class="avatar" style="background:linear-gradient(135deg,#FF7D00,#FFB84F)">陈</div>
+                    <div class="avatar" style="background:#4F7CFF">王</div>
+                    <div class="avatar" style="background:#A259FF">李</div>
+                  </div>
+                  <button class="btn">⬇ 导出 ▾</button>
+                  <button class="btn">协同</button>
+                  <button class="btn">分享</button>
+                  <button class="btn">⋯</button>
+                  <button class="btn btn-primary">编辑</button>
+                </div>
+              </div>
+
+              <!-- Dash filters -->
+              <div class="dash-filters">
+                <div class="dash-filter-row">
+                  <span class="dash-filter-label">统计时间 <span class="help">ⓘ</span></span>
+                  <div class="pill-tabs">
+                    <span class="pt">实时</span>
+                    <span class="pt active">日</span>
+                    <span class="pt">周</span>
+                    <span class="pt">月</span>
+                    <span class="pt">自定义</span>
+                  </div>
+                  <input class="input" value="2026-05-01 ~ 2026-05-08" style="width:200px;">
+                  <span class="quick-btns">
+                    <span class="quick-btn">今日</span>
+                    <span class="quick-btn">昨日</span>
+                    <span class="quick-btn active">近 7 天</span>
+                    <span class="quick-btn">近 30 天</span>
+                  </span>
+                </div>
+                <div class="dash-filter-row">
+                  <span class="dash-filter-label">选择店铺</span>
+                  <div class="shop-trigger">
+                    <div class="tags">
+                      <span class="shop-tag"><span class="mini">门店</span>苏州桐泾路店</span>
+                      <span class="shop-tag"><span class="mini">门店</span>园区店</span>
+                      <span class="shop-tag"><span class="mini mall">商城</span>旗舰店</span>
+                      <span class="shop-trigger-more">+5</span>
+                    </div>
+                    <span style="color:var(--muted);">×</span>
+                  </div>
+                </div>
+                <div class="dash-filter-row">
+                  <span class="dash-filter-label">选择渠道</span>
+                  <div class="shop-trigger" style="min-width:240px;max-width:320px;">
+                    <div class="tags"><span class="shop-tag">抖音直播</span><span class="shop-tag">天猫旗舰</span><span class="shop-trigger-more">+3</span></div>
+                  </div>
+                </div>
+                <div class="dash-filter-row" style="margin-left:auto;">
+                  <span style="font-size:12px;color:var(--muted);">当前筛选</span>
+                  <span class="chip active">日 · 近 7 天</span>
+                  <span class="chip active">8 家店铺</span>
+                  <span class="chip active">5 个渠道</span>
+                </div>
+              </div>
+
+              <!-- 数据源摘要 -->
+              <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                <span style="font-size:13px;color:var(--body);">数据源：</span>
+                <span class="tag-soft" style="cursor:pointer;">📊 618 实时业绩 · 240 行</span>
+                <span class="tag-soft purple" style="cursor:pointer;">📊 商品销售明细 · 50 行</span>
+                <button class="btn btn-sm" style="margin-left:auto;">查看明细数据 →</button>
+              </div>
+
+              <!-- Boards Tabs -->
+              <div class="tabs" style="margin-bottom:16px;">
+                <div class="tab active">战役总览</div>
+                <div class="tab">品类深挖</div>
+              </div>
+
+              <!-- Boards -->
+              <div class="boards-grid">
+                <div class="chart-tile" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">GMV</div></div>
+                  <div class="tile-body kpi"><div class="label">本期 GMV</div><div class="num">¥ 1.28M</div><div class="delta up">↑ 12.6% vs 上期</div></div>
+                </div>
+                <div class="chart-tile" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">订单数</div></div>
+                  <div class="tile-body kpi"><div class="label">本期订单数</div><div class="num">4,210</div><div class="delta up">↑ 8.2%</div></div>
+                </div>
+                <div class="chart-tile" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">客单价</div></div>
+                  <div class="tile-body kpi"><div class="label">客单价</div><div class="num">¥ 285</div><div class="delta up">↑ 3.4%</div></div>
+                </div>
+                <div class="chart-tile" style="grid-column: span 1;">
+                  <div class="tile-head"><div class="tile-name">渠道转化率</div></div>
+                  <div class="tile-body" style="display:flex;align-items:center;justify-content:center;height:140px;position:relative;">
+                    <svg viewBox="0 0 100 60" class="svg-chart" style="height:80px;">
+                      <circle cx="50" cy="30" r="24" fill="none" stroke="#EEF0F3" stroke-width="6"/>
+                      <circle cx="50" cy="30" r="24" fill="none" stroke="#00B42A" stroke-width="6" stroke-dasharray="100 200" transform="rotate(-90 50 30)"/>
+                    </svg>
+                    <div style="font-size:18px;font-weight:600;color:var(--success);position:absolute;">66.7%</div>
+                  </div>
+                </div>
+
+                <div class="chart-tile" style="grid-column: span 4;">
+                  <div class="tile-head"><div class="tile-name">小时趋势 · GMV / 订单数</div>
+                    <div class="tile-actions"><span class="ic">⤢</span><span class="ic">⋯</span></div>
+                  </div>
+                  <div class="tile-body" style="height:240px;">
+                    <svg viewBox="0 0 1200 220" class="svg-chart" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="gG" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4F7CFF" stop-opacity="0.3"/><stop offset="100%" stop-color="#4F7CFF" stop-opacity="0"/></linearGradient>
+                      </defs>
+                      <g stroke="#F1F3F6"><line x1="60" x2="1180" y1="50" y2="50"/><line x1="60" x2="1180" y1="100" y2="100"/><line x1="60" x2="1180" y1="150" y2="150"/><line x1="60" x2="1180" y1="200" y2="200"/></g>
+                      <path d="M60,180 L150,165 L240,160 L330,140 L420,110 L510,85 L600,70 L690,60 L780,50 L870,55 L960,45 L1050,40 L1140,30 L1140,200 L60,200 Z" fill="url(#gG)"/>
+                      <path d="M60,180 L150,165 L240,160 L330,140 L420,110 L510,85 L600,70 L690,60 L780,50 L870,55 L960,45 L1050,40 L1140,30" stroke="#4F7CFF" stroke-width="2" fill="none"/>
+                      <path d="M60,200 L150,180 L240,175 L330,160 L420,135 L510,120 L600,105 L690,95 L780,85 L870,90 L960,80 L1050,75 L1140,65" stroke="#A259FF" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+                      <g fill="#4F7CFF">
+                        <circle cx="780" cy="50" r="3"/><circle cx="1140" cy="30" r="3"/>
+                      </g>
+                      <g fill="#86909C" font-size="10">
+                        <text x="60" y="215">00:00</text><text x="240" y="215">04:00</text><text x="420" y="215">08:00</text><text x="600" y="215">12:00</text><text x="780" y="215">16:00</text><text x="960" y="215">20:00</text><text x="1140" y="215">23:59</text>
+                      </g>
+                      <!-- legend -->
+                      <g transform="translate(60, 8)">
+                        <rect width="10" height="3" y="6" fill="#4F7CFF"/>
+                        <text x="14" y="11" fill="#4E5969" font-size="11">GMV</text>
+                        <rect width="10" height="3" y="6" x="64" fill="#A259FF"/>
+                        <text x="78" y="11" fill="#4E5969" font-size="11">订单数</text>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="chart-tile" style="grid-column: span 2;">
+                  <div class="tile-head"><div class="tile-name">渠道排行 (TOP 6)</div></div>
+                  <div class="tile-body" style="padding:8px 14px;height:220px;">
+                    <svg viewBox="0 0 600 200" class="svg-chart" preserveAspectRatio="none">
+                      <g fill="#86909C" font-size="11">
+                        <text x="6" y="22">抖音直播</text><text x="6" y="50">天猫旗舰</text><text x="6" y="78">小程序</text><text x="6" y="106">门店</text><text x="6" y="134">企微社群</text><text x="6" y="162">视频号</text>
+                      </g>
+                      <g>
+                        <rect x="100" y="10" width="480" height="14" fill="#4F7CFF" rx="2"/>
+                        <rect x="100" y="38" width="380" height="14" fill="#6E5CFF" rx="2"/>
+                        <rect x="100" y="66" width="280" height="14" fill="#00B42A" rx="2"/>
+                        <rect x="100" y="94" width="220" height="14" fill="#FF7D00" rx="2"/>
+                        <rect x="100" y="122" width="150" height="14" fill="#13C2C2" rx="2"/>
+                        <rect x="100" y="150" width="90" height="14" fill="#F759AB" rx="2"/>
+                      </g>
+                      <g fill="#1F2329" font-size="11">
+                        <text x="585" y="22" text-anchor="end">¥ 482K</text>
+                        <text x="585" y="50" text-anchor="end">¥ 380K</text>
+                        <text x="585" y="78" text-anchor="end">¥ 280K</text>
+                        <text x="585" y="106" text-anchor="end">¥ 220K</text>
+                        <text x="585" y="134" text-anchor="end">¥ 150K</text>
+                        <text x="585" y="162" text-anchor="end">¥ 90K</text>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="chart-tile" style="grid-column: span 2;">
+                  <div class="tile-head"><div class="tile-name">商品 TOP 10</div></div>
+                  <div class="tile-body" style="padding: 4px 12px 12px;">
+                    <table class="t" style="border:0; font-size:12px;">
+                      <thead><tr><th>商品</th><th>件数</th><th>金额</th><th>占比</th></tr></thead>
+                      <tbody>
+                        <tr><td>果果泥呀 草莓味</td><td>1,280</td><td>¥ 64,128</td><td>21.0%</td></tr>
+                        <tr><td>果果泥呀 芒果味</td><td>1,012</td><td>¥ 50,612</td><td>16.6%</td></tr>
+                        <tr><td>果果泥呀 蓝莓味</td><td>892</td><td>¥ 43,256</td><td>14.2%</td></tr>
+                        <tr><td>果果泥呀 香蕉味</td><td>670</td><td>¥ 30,180</td><td>9.9%</td></tr>
+                        <tr><td>果果泥呀 牛油果</td><td>540</td><td>¥ 25,920</td><td>8.5%</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="C2">
+        <div class="frame-label"><code>C2</code>数据源明细 Modal <span class="size">1080 × 700</span></div>
+        <div class="frame modal" style="width:1080px;">
+          <div class="modal-head">
+            <h3>数据源明细 · 618 实时业绩</h3>
+            <span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span>
+          </div>
+          <div style="padding: 0 24px;">
+            <div class="tabs">
+              <div class="tab active">618 实时业绩 (240 行)</div>
+              <div class="tab">商品销售明细 (50 行)</div>
+            </div>
+          </div>
+          <div style="padding: 0 24px 18px;display:flex;align-items:center;gap:8px;">
+            <input class="input" placeholder="搜索字段名/值..." style="width:280px;">
+            <button class="btn btn-sm">⚙ 自定义列</button>
+            <span style="margin-left:auto;color:var(--muted);font-size:12px;">导出：</span>
+            <button class="btn btn-sm">Excel</button>
+            <button class="btn btn-sm">CSV</button>
+          </div>
+          <div style="padding: 0 24px;height:380px;overflow:auto;">
+            <table class="t">
+              <thead><tr>
+                <th>日期 ↕</th><th>渠道 ↕</th><th>店铺 ↕</th>
+                <th style="text-align:right;">GMV ↕</th>
+                <th style="text-align:right;">订单数 ↕</th>
+                <th style="text-align:right;">客单价</th>
+                <th style="text-align:right;">折扣率</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>2026-05-08</td><td>抖音直播</td><td>旗舰店</td><td style="text-align:right;">128,560</td><td style="text-align:right;">412</td><td style="text-align:right;">312</td><td style="text-align:right;">88%</td></tr>
+                <tr><td>2026-05-08</td><td>天猫旗舰</td><td>旗舰店</td><td style="text-align:right;">96,210</td><td style="text-align:right;">340</td><td style="text-align:right;">283</td><td style="text-align:right;">90%</td></tr>
+                <tr><td>2026-05-08</td><td>小程序</td><td>苏州桐泾路店</td><td style="text-align:right;">52,380</td><td style="text-align:right;">186</td><td style="text-align:right;">282</td><td style="text-align:right;">92%</td></tr>
+                <tr><td>2026-05-08</td><td>门店</td><td>园区店</td><td style="text-align:right;">38,440</td><td style="text-align:right;">120</td><td style="text-align:right;">320</td><td style="text-align:right;">95%</td></tr>
+                <tr><td>2026-05-07</td><td>抖音直播</td><td>旗舰店</td><td style="text-align:right;">114,220</td><td style="text-align:right;">388</td><td style="text-align:right;">294</td><td style="text-align:right;">87%</td></tr>
+                <tr><td>2026-05-07</td><td>天猫旗舰</td><td>旗舰店</td><td style="text-align:right;">88,100</td><td style="text-align:right;">312</td><td style="text-align:right;">282</td><td style="text-align:right;">89%</td></tr>
+                <tr><td>2026-05-07</td><td>小程序</td><td>园区店</td><td style="text-align:right;">42,580</td><td style="text-align:right;">160</td><td style="text-align:right;">266</td><td style="text-align:right;">93%</td></tr>
+                <tr><td>2026-05-07</td><td>视频号</td><td>苏州桐泾路店</td><td style="text-align:right;">22,900</td><td style="text-align:right;">82</td><td style="text-align:right;">279</td><td style="text-align:right;">90%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-foot" style="justify-content:space-between;">
+            <span style="font-size:12px;color:var(--muted);">共 240 条 · 已展示 8 条</span>
+            <div style="display:flex;gap:6px;align-items:center;font-size:12px;color:var(--body);">
+              <span>每页 20 条</span>
+              <button class="btn btn-sm">‹</button>
+              <span class="chip active">1</span>
+              <span class="chip">2</span>
+              <span class="chip">3</span>
+              <span style="color:var(--muted);">…</span>
+              <span class="chip">12</span>
+              <button class="btn btn-sm">›</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 7: C3 选择店铺 + C4 导出 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+
+      <section id="C3">
+        <div class="frame-label"><code>C3</code>选择店铺 弹层 <span class="size">480 × auto</span></div>
+        <div class="frame" style="width:480px;background:#fff;border-radius:8px;box-shadow: var(--shadow-popover);">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--line);">
+            <input class="input lg" placeholder="🔎 搜索店铺名 / 编码">
+          </div>
+          <div style="padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);">
+            <span style="font-size:12px;color:var(--muted);">类型：</span>
+            <span class="chip active">全部</span>
+            <span class="chip">门店</span>
+            <span class="chip">商城</span>
+            <span class="chip">直播</span>
+            <span style="margin-left:auto;font-size:12px;">
+              <a class="btn-text">全选</a>
+              <a class="btn-text">反选</a>
+            </span>
+          </div>
+          <div style="max-height:280px;overflow:auto;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--brand-50);">
+              <input type="checkbox" checked>
+              <span style="font-size:13px;flex:1;">苏州桐泾路店</span>
+              <span class="shop-tag" style="background:transparent;border:0;"><span class="mini">门店</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--brand-50);">
+              <input type="checkbox" checked>
+              <span style="font-size:13px;flex:1;">园区店</span>
+              <span class="shop-tag" style="background:transparent;border:0;"><span class="mini">门店</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;">
+              <input type="checkbox">
+              <span style="font-size:13px;flex:1;">上海徐汇店</span>
+              <span class="shop-tag" style="background:transparent;border:0;"><span class="mini">门店</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--brand-50);">
+              <input type="checkbox" checked>
+              <span style="font-size:13px;flex:1;">旗舰店（天猫）</span>
+              <span class="shop-tag" style="background:transparent;border:0;"><span class="mini mall">商城</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;">
+              <input type="checkbox">
+              <span style="font-size:13px;flex:1;">抖音直播间</span>
+              <span class="shop-tag" style="background:transparent;border:0;"><span class="mini live">直播</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;">
+              <input type="checkbox">
+              <span style="font-size:13px;flex:1;">视频号小店</span>
+              <span class="shop-tag" style="background:transparent;border:0;"><span class="mini live">直播</span></span>
+            </div>
+          </div>
+          <div style="padding:10px 14px;border-top:1px solid var(--line);background:var(--section);display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--body);">已选 3 / 12</span>
+            <a class="btn-text" style="margin-left:auto;">清空</a>
+            <button class="btn btn-primary btn-sm">确定</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="C4">
+        <div class="frame-label"><code>C4</code>导出菜单 <span class="size">200 × auto</span></div>
+        <div class="frame" style="width:200px;background:#fff;border-radius:8px;box-shadow: var(--shadow-popover);">
+          <div style="padding:6px 0;">
+            <div style="padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;background:#f5f7fa;">
+              <span style="font-size:16px;">🖼</span>
+              <div><div>导出 PNG</div><div style="font-size:11px;color:var(--muted);">截图当前看板</div></div>
+            </div>
+            <div style="padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <span style="font-size:16px;">📊</span>
+              <div><div>导出 Excel</div><div style="font-size:11px;color:var(--muted);">每个图表一个 Sheet</div></div>
+            </div>
+            <div style="padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <span style="font-size:16px;">📄</span>
+              <div><div>导出 PDF</div><div style="font-size:11px;color:var(--muted);">分页生成可分享文档</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <span class="anno" style="margin-top:120px;">↓ 协同 / 分享 / 权限</span>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 8: D1 / D2 / D3 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+
+      <section id="D1">
+        <div class="frame-label"><code>D1</code>分享 Modal · 链接 <span class="size">560 × 540</span></div>
+        <div class="frame modal" style="width:560px;">
+          <div class="modal-head"><h3>分享 · 618 大促作战室</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div style="padding:0 24px;">
+            <div class="tabs">
+              <div class="tab active">链接</div>
+              <div class="tab">二维码</div>
+              <div class="tab">邮件订阅</div>
+            </div>
+          </div>
+          <div class="modal-body" style="padding-top:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid var(--border);border-radius:8px;margin-bottom:16px;">
+              <div>
+                <div style="font-size:13px;font-weight:500;">公开访问</div>
+                <div style="font-size:12px;color:var(--muted);">开启后任何拥有链接的人都可以查看</div>
+              </div>
+              <div style="width:36px;height:20px;border-radius:10px;background:var(--brand);position:relative;">
+                <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;"></div>
+              </div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="font-size:13px;color:var(--body);margin-bottom:6px;">访问链接</div>
+              <div style="display:flex;gap:8px;">
+                <input class="input lg" value="https://shop.com/share/dash/abcd1234">
+                <button class="btn btn-primary">复制</button>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+              <div>
+                <div style="font-size:13px;color:var(--body);margin-bottom:6px;">权限</div>
+                <select class="input lg"><option>仅查看</option><option>可编辑</option></select>
+              </div>
+              <div>
+                <div style="font-size:13px;color:var(--body);margin-bottom:6px;">有效期</div>
+                <select class="input lg"><option>永久有效</option><option>7 天</option><option>30 天</option><option>自定义</option></select>
+              </div>
+            </div>
+            <div style="padding:10px 12px;background:var(--brand-50);border-radius:6px;font-size:12px;color:var(--body);">
+              💡 接收方仅能查看仪表盘当前数据，不能下钻到原始数据。
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">保存</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="D2">
+        <div class="frame-label"><code>D2</code>协同 Modal <span class="size">520 × 480</span></div>
+        <div class="frame modal" style="width:520px;">
+          <div class="modal-head"><h3>邀请协同</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div class="modal-body">
+            <div style="margin-bottom:14px;">
+              <div style="font-size:13px;color:var(--body);margin-bottom:6px;">邀请成员</div>
+              <input class="input lg" placeholder="搜索成员姓名 / 邮箱 / 手机号">
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">已选</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span class="field-chip"><span style="width:18px;height:18px;border-radius:50%;background:#FF7D00;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">陈</span>陈娜 ×</span>
+                <span class="field-chip"><span style="width:18px;height:18px;border-radius:50%;background:#A259FF;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">李</span>李雪 ×</span>
+                <span class="field-chip"><span style="width:18px;height:18px;border-radius:50%;background:#4F7CFF;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">王</span>王明 ×</span>
+              </div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="font-size:13px;color:var(--body);margin-bottom:6px;">权限</div>
+              <div style="display:flex;gap:16px;font-size:13px;">
+                <label><input type="radio" checked> 可编辑（添加/删除图表）</label>
+                <label><input type="radio"> 仅查看</label>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:13px;color:var(--body);margin-bottom:6px;">留言（选填）</div>
+              <textarea class="input lg" rows="3" style="height:auto;padding:8px 12px;resize:vertical;">大家好，618 战役作战室开始更新，请协同维护。</textarea>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">发送邀请</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="D3">
+        <div class="frame-label"><code>D3</code>权限设置 Drawer <span class="size">1440 × 900</span></div>
+        <div class="frame drawer-mask">
+          <div class="drawer">
+            <div class="modal-head"><h3>权限设置 · 618 大促作战室</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+            <div style="padding:24px;height:776px;overflow:auto;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid var(--border);border-radius:8px;margin-bottom:18px;">
+                <div>
+                  <div style="font-size:13px;font-weight:500;">公开访问</div>
+                  <div style="font-size:12px;color:var(--muted);">关闭后仅授权成员可见</div>
+                </div>
+                <div style="width:36px;height:20px;border-radius:10px;background:#d9d9d9;position:relative;">
+                  <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div style="font-size:14px;font-weight:600;">按角色开放</div>
+                  <button class="btn btn-sm">+ 添加角色</button>
+                </div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">2 个角色</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <span class="field-chip">CEO ×</span>
+                  <span class="field-chip">区域运营总监 ×</span>
+                </div>
+              </div>
+              <div style="margin-bottom:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div style="font-size:14px;font-weight:600;">按个人开放</div>
+                  <button class="btn btn-sm">+ 添加成员</button>
+                </div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">3 个成员</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;">
+                    <span style="width:24px;height:24px;border-radius:50%;background:#FF7D00;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">陈</span>
+                    <div style="flex:1;"><div style="font-size:13px;">陈娜</div><div style="font-size:11px;color:var(--muted);">CEO 办</div></div>
+                    <select class="input btn-sm" style="width:100px;height:28px;"><option>可编辑</option><option>仅查看</option></select>
+                    <a class="btn-text" style="color:var(--error);">×</a>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;">
+                    <span style="width:24px;height:24px;border-radius:50%;background:#A259FF;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">李</span>
+                    <div style="flex:1;"><div style="font-size:13px;">李雪</div><div style="font-size:11px;color:var(--muted);">数据团队</div></div>
+                    <select class="input btn-sm" style="width:100px;height:28px;"><option>可编辑</option><option>仅查看</option></select>
+                    <a class="btn-text" style="color:var(--error);">×</a>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;">
+                    <span style="width:24px;height:24px;border-radius:50%;background:#4F7CFF;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">王</span>
+                    <div style="flex:1;"><div style="font-size:13px;">王明</div><div style="font-size:11px;color:var(--muted);">运营中心</div></div>
+                    <select class="input btn-sm" style="width:100px;height:28px;"><option selected>仅查看</option><option>可编辑</option></select>
+                    <a class="btn-text" style="color:var(--error);">×</a>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:10px 12px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:6px;font-size:12px;color:var(--warning);">
+                ⚠ 未设置任何角色 / 个人时，仅创建者可见。
+              </div>
+            </div>
+            <div class="modal-foot"><button class="btn">取消</button><button class="btn btn-primary">保存</button></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 9: E1 自助报表 + E2 模板选择 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+
+      <section id="E1">
+        <div class="frame-label"><code>E1</code>自助报表列表 <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body">
+            <div class="app-sider">
+              <div class="menu-group menu-group-feature"><div class="menu-group-title">自助分析</div>
+                <div class="menu-grid-1">
+                  <div class="menu-cell solo active">📋 自助报表</div>
+                  <div class="menu-cell solo">📊 自助仪表盘</div>
+                </div>
+              </div>
+              <div style="padding:24px;color:#bfbfbf;font-size:11px;text-align:center;">完整菜单见 A1</div>
+            </div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">自助报表</div>
+                  <div class="page-subtitle">选择业务模板，生成符合需求的查询报表，可一键转为「自助仪表盘」的数据源</div>
+                </div>
+                <div class="page-actions">
+                  <button class="btn">+ 新建空白报表</button>
+                  <button class="btn btn-primary">+ 从模板创建</button>
+                </div>
+              </div>
+
+              <div class="filter-bar">
+                <div class="filter-row"><span class="filter-label">时间范围</span><input class="input lg" value="2026-04-01 ~ 2026-04-30"></div>
+                <div class="filter-row"><span class="filter-label">关键词</span><input class="input lg" placeholder="搜索报表名 / 创建人"></div>
+                <div class="filter-row"><span class="filter-label">报表类型</span><select class="input lg"><option>全部</option><option>明细报表</option><option>汇总报表</option></select></div>
+                <div class="filter-row"><span class="filter-label">状态</span><select class="input lg"><option>全部</option><option>执行成功</option><option>执行中</option><option>失败</option></select></div>
+                <div class="filter-actions-row">
+                  <button class="btn btn-sm">重置</button>
+                  <button class="btn btn-primary btn-sm">查询</button>
+                </div>
+              </div>
+
+              <div class="section-card">
+                <div class="section-head">
+                  <h3>报表列表 <span style="color:var(--muted);font-weight:400;font-size:13px;">8 条</span></h3>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-sm">⬇ 批量下载</button>
+                    <button class="btn btn-sm">⚙ 列设置</button>
+                  </div>
+                </div>
+                <div class="section-body" style="padding:0 0 12px;">
+                  <table class="t" style="border:0;border-radius:0;">
+                    <thead><tr>
+                      <th>名称 ↕</th><th>类型</th><th>模板</th><th>创建人</th><th>状态</th><th>更新时间 ↕</th><th>操作</th>
+                    </tr></thead>
+                    <tbody>
+                      <tr><td><b>订单+商品测试</b></td><td>明细报表</td><td>商品销售报表</td><td>15381035876</td><td><span class="tag-soft green">✓ 成功</span></td><td>2026-04-29 16:50</td><td><a class="btn-text">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                      <tr><td><b>订单+商品测试</b></td><td>明细报表</td><td>商品销售报表</td><td>15381035876</td><td><span class="tag-soft green">✓ 成功</span></td><td>2026-04-29 16:49</td><td><a class="btn-text">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                      <tr><td><b>华东大区销售明细</b></td><td>明细报表</td><td>店铺业绩报表</td><td>王明</td><td><span class="tag-soft green">✓ 成功</span></td><td>2026-04-29 16:40</td><td><a class="btn-text">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                      <tr><td><b>门店分时段业绩</b></td><td>汇总报表</td><td>店铺分时段...</td><td>李雪</td><td><span class="tag-soft green">✓ 成功</span></td><td>2026-04-29 16:42</td><td><a class="btn-text">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                      <tr><td><b>618 大促渠道分析</b></td><td>明细报表</td><td>店铺业绩(销售渠道)</td><td>陈娜</td><td><span class="tag-soft green">✓ 成功</span></td><td>2026-04-28 19:49</td><td><a class="btn-text">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                      <tr><td><b>会员储值月度</b></td><td>汇总报表</td><td>会员储值报表</td><td>张伟</td><td><span class="tag-soft green">✓ 成功</span></td><td>2026-04-27 10:32</td><td><a class="btn-text">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                      <tr><td><b>商品库存周转</b></td><td>明细报表</td><td>商品库存周转报表</td><td>王明</td><td><span class="tag-soft orange">⏳ 执行中</span></td><td>2026-04-27 09:22</td><td><a class="btn-text" style="color:var(--muted);">下载</a> <a class="btn-text">详情</a> <a class="btn-text">⋮</a></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="E2">
+        <div class="frame-label"><code>E2</code>模板选择 Modal <span class="size">1080 × 720</span></div>
+        <div class="frame modal" style="width:1080px;">
+          <div class="modal-head"><h3>选择查询模板</h3><span style="color:var(--muted);font-size:18px;cursor:pointer;">×</span></div>
+          <div style="padding: 0 24px;">
+            <input class="input lg" placeholder="🔎 输入模板名 / 关键词" style="margin-bottom:0;">
+          </div>
+          <div style="display:flex;height:540px;margin-top:14px;">
+            <div style="width:200px;border-right:1px solid var(--border);padding:8px 12px;">
+              <div style="padding:10px 12px;font-size:13px;color:var(--brand);background:var(--brand-50);border-radius:6px;">全部 12</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">业绩 4</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">商品 2</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">财务核算 1</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">进销存 1</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">营销 1</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">客户 1</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">储值 1</div>
+              <div style="padding:10px 12px;font-size:13px;color:var(--body);">流量 1</div>
+            </div>
+            <div style="flex:1;padding:18px;overflow:auto;">
+              <div class="grid-4" style="grid-template-columns:repeat(4,1fr);">
+                <div class="template-card hover">
+                  <div class="tname">店铺业绩报表(销售单元)</div>
+                  <div class="tdesc">店铺业绩统计必看数据，提供整体销售、商品销售、储值、退款等关键指标，帮助监控店铺运营状况。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">店铺、经营模式</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">订单数、支付金额、GMV、客单价</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">店铺业绩报表(销售渠道)</div>
+                  <div class="tdesc">店铺业绩统计必看数据，包含一级 / 二级渠道。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">店铺、经营模式、销售渠道</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">订单数、支付金额、GMV</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">店铺分时段业绩报表</div>
+                  <div class="tdesc">店铺业绩分时段数据，按小时统计的业绩明细。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">小时、店铺、销售渠道</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">订单数、支付金额、GMV</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+                <div class="template-card">
+                  <div class="tname">桌台统计报表</div>
+                  <div class="tdesc">统计门店桌台消费数据。</div>
+                  <div class="trow"><div class="tlabel">维度</div><div class="tvalue">店铺、区域</div></div>
+                  <div class="trow"><div class="tlabel">指标</div><div class="tvalue">订单数、支付金额</div></div>
+                  <div class="tbtn">使用模板 →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ROW 10: F1 占位页 -->
+    <!-- ============================================================ -->
+    <div class="canvas-row">
+      <section id="F1">
+        <div class="frame-label"><code>F1</code>通用模块占位（如「营业概况」「商品概况」） <span class="size">1440 × 900</span></div>
+        <div class="frame" style="width:1440px;">
+          <div class="app-header">
+            <div class="brand"><div class="brand-logo">B</div>经营分析中心</div>
+            <div class="top-actions"><span class="bell">🔔</span><div class="user-avatar">陈</div></div>
+          </div>
+          <div class="app-body">
+            <div class="app-sider">
+              <div class="menu-group"><div class="menu-group-title">概况</div>
+                <div class="menu-grid-2">
+                  <div class="menu-cell active">营业概况</div><div class="menu-cell">商品概况</div>
+                  <div class="menu-cell">客户概况</div><div class="menu-cell">经营报表</div>
+                  <div class="menu-cell">财务报表</div>
+                </div>
+              </div>
+              <div style="padding:24px;color:#bfbfbf;font-size:11px;text-align:center;">完整菜单见 A1</div>
+            </div>
+            <div class="app-content">
+              <div class="page-header">
+                <div>
+                  <div class="page-title">营业概况</div>
+                  <div class="page-subtitle">系统模块，进入后查看完整看板</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;background:#fff;border:1px dashed var(--border-strong);border-radius:10px;color:var(--muted);">
+                <div style="font-size:48px;margin-bottom:8px;">📊</div>
+                <div style="font-size:16px;font-weight:600;color:var(--title);margin-bottom:6px;">系统模块 · 自助分析能力可在「自助分析」分组中使用</div>
+                <div style="font-size:13px;margin-bottom:18px;">建议从「自助仪表盘」开始体验自定义分析能力</div>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn btn-primary">+ 新建仪表盘</button>
+                  <button class="btn">查看「自助报表」</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // Zoom control
+  const zoom = document.getElementById('zoom');
+  const inner = document.getElementById('canvasInner');
+  zoom.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    [...zoom.querySelectorAll('button')].forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const z = parseFloat(btn.dataset.z);
+    inner.style.transform = `scale(${z})`;
+    inner.style.width = `${100 / z}%`;
+  });
+
+  // Frame nav scroll
+  document.querySelectorAll('.frame-nav a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        const canvas = document.querySelector('.canvas');
+        const rect = target.getBoundingClientRect();
+        canvas.scrollBy({
+          left: rect.left + canvas.scrollLeft - 220 - 80,
+          top: rect.top + canvas.scrollTop - 48 - 40,
+          behavior: 'smooth',
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html>

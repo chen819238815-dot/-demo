@@ -1,0 +1,277 @@
+{
+  "$description": "经营分析中心 · 自助分析 - Figma Design Tokens (Tokens Studio for Figma 兼容)。导入步骤：Figma → Plugins → Tokens Studio → 设置 → JSON 导入 → 选择本文件。",
+  "$schema": "https://schemas.tokens.studio/latest/tokens-studio.json",
+  "global": {
+    "color": {
+      "brand": {
+        "primary": { "value": "#4F7CFF", "type": "color", "description": "品牌主色" },
+        "primaryHover": { "value": "#3F6CEF", "type": "color" },
+        "primaryActive": { "value": "#3057DD", "type": "color" },
+        "primary50": { "value": "#F0F5FF", "type": "color" },
+        "primary100": { "value": "#DBEAFE", "type": "color" },
+        "purple": { "value": "#6E5CFF", "type": "color", "description": "渐变副色" },
+        "purpleAlt": { "value": "#A259FF", "type": "color", "description": "AI / 强调" },
+        "gradient": { "value": "linear-gradient(135deg, #4F7CFF 0%, #6E5CFF 100%)", "type": "color" }
+      },
+      "neutral": {
+        "title": { "value": "#1F2329", "type": "color", "description": "标题/主要文本" },
+        "body": { "value": "#4E5969", "type": "color", "description": "正文/次要文本" },
+        "muted": { "value": "#86909C", "type": "color", "description": "辅助文本/占位" },
+        "disabled": { "value": "#BFBFBF", "type": "color" },
+        "border": { "value": "#EEF0F3", "type": "color", "description": "默认描边" },
+        "borderStrong": { "value": "#D4DCEC", "type": "color", "description": "悬停描边" },
+        "borderLine": { "value": "#F1F3F6", "type": "color", "description": "分隔线" },
+        "bgPage": { "value": "#F5F7FA", "type": "color", "description": "页面背景" },
+        "bgCard": { "value": "#FFFFFF", "type": "color", "description": "卡片背景" },
+        "bgSection": { "value": "#FAFBFC", "type": "color", "description": "次级容器" },
+        "bgSoft": { "value": "#F0F2F6", "type": "color", "description": "Tabs 容器" }
+      },
+      "semantic": {
+        "success": { "value": "#00B42A", "type": "color" },
+        "successBg": { "value": "#F6FFED", "type": "color" },
+        "successBorder": { "value": "#D9F7BE", "type": "color" },
+        "warning": { "value": "#FF7D00", "type": "color" },
+        "warningBg": { "value": "#FFF7E6", "type": "color" },
+        "warningBorder": { "value": "#FFE7BA", "type": "color" },
+        "error": { "value": "#F53F3F", "type": "color" },
+        "errorAlt": { "value": "#FF4D4F", "type": "color", "description": "Badge 红" },
+        "info": { "value": "#4F7CFF", "type": "color" },
+        "infoBg": { "value": "#F0F5FF", "type": "color" }
+      },
+      "tag": {
+        "metric": { "value": "#4F7CFF", "type": "color", "description": "指标 chip 文字" },
+        "metricBg": { "value": "#F0F5FF", "type": "color" },
+        "dimension": { "value": "#00B42A", "type": "color", "description": "维度 chip 文字" },
+        "dimensionBg": { "value": "#F6FFED", "type": "color" },
+        "shopMall": { "value": "#00B42A", "type": "color", "description": "商城店铺" },
+        "shopLive": { "value": "#FF7D00", "type": "color", "description": "直播店铺" },
+        "shopRetail": { "value": "#4F7CFF", "type": "color", "description": "门店" }
+      },
+      "accent": {
+        "amber": { "value": "#FF7D00", "type": "color", "description": "用户头像渐变起点" },
+        "amberLight": { "value": "#FFB84F", "type": "color", "description": "用户头像渐变终点" },
+        "purpleSoft": { "value": "#722ED1", "type": "color" }
+      },
+      "chart": {
+        "blue": { "value": "#4F7CFF", "type": "color" },
+        "purple": { "value": "#6E5CFF", "type": "color" },
+        "green": { "value": "#00B42A", "type": "color" },
+        "orange": { "value": "#FF7D00", "type": "color" },
+        "pink": { "value": "#F759AB", "type": "color" },
+        "cyan": { "value": "#13C2C2", "type": "color" },
+        "red": { "value": "#F53F3F", "type": "color" },
+        "yellow": { "value": "#FADB14", "type": "color" }
+      }
+    },
+    "typography": {
+      "fontFamily": {
+        "primary": {
+          "value": "PingFang SC, Microsoft YaHei, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif",
+          "type": "fontFamilies"
+        },
+        "mono": { "value": "SF Mono, Menlo, Consolas, monospace", "type": "fontFamilies" }
+      },
+      "fontWeight": {
+        "regular": { "value": "400", "type": "fontWeights" },
+        "medium": { "value": "500", "type": "fontWeights" },
+        "semibold": { "value": "600", "type": "fontWeights" },
+        "bold": { "value": "700", "type": "fontWeights" }
+      },
+      "fontSize": {
+        "10": { "value": "10px", "type": "fontSizes" },
+        "11": { "value": "11px", "type": "fontSizes" },
+        "12": { "value": "12px", "type": "fontSizes" },
+        "13": { "value": "13px", "type": "fontSizes" },
+        "14": { "value": "14px", "type": "fontSizes" },
+        "15": { "value": "15px", "type": "fontSizes" },
+        "16": { "value": "16px", "type": "fontSizes" },
+        "18": { "value": "18px", "type": "fontSizes" },
+        "20": { "value": "20px", "type": "fontSizes" },
+        "24": { "value": "24px", "type": "fontSizes" },
+        "32": { "value": "32px", "type": "fontSizes" }
+      },
+      "lineHeight": {
+        "tight": { "value": "1.2", "type": "lineHeights" },
+        "normal": { "value": "1.5", "type": "lineHeights" },
+        "relaxed": { "value": "1.6", "type": "lineHeights" }
+      },
+      "style": {
+        "h1": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.20}", "fontWeight": "{typography.fontWeight.semibold}", "lineHeight": "{typography.lineHeight.tight}" },
+          "type": "typography",
+          "description": "页面标题"
+        },
+        "h2": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.16}", "fontWeight": "{typography.fontWeight.semibold}", "lineHeight": "{typography.lineHeight.tight}" },
+          "type": "typography",
+          "description": "顶栏品牌 / 模块标题"
+        },
+        "h3": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.15}", "fontWeight": "{typography.fontWeight.semibold}", "lineHeight": "{typography.lineHeight.normal}" },
+          "type": "typography",
+          "description": "Section 标题"
+        },
+        "cardTitle": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.14}", "fontWeight": "{typography.fontWeight.semibold}", "lineHeight": "{typography.lineHeight.normal}" },
+          "type": "typography"
+        },
+        "tileTitle": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.13}", "fontWeight": "{typography.fontWeight.medium}", "lineHeight": "{typography.lineHeight.normal}" },
+          "type": "typography",
+          "description": "图表卡片标题"
+        },
+        "body": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.13}", "fontWeight": "{typography.fontWeight.regular}", "lineHeight": "{typography.lineHeight.relaxed}" },
+          "type": "typography"
+        },
+        "bodySmall": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.12}", "fontWeight": "{typography.fontWeight.regular}", "lineHeight": "{typography.lineHeight.normal}" },
+          "type": "typography"
+        },
+        "caption": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.11}", "fontWeight": "{typography.fontWeight.regular}", "lineHeight": "{typography.lineHeight.normal}" },
+          "type": "typography"
+        },
+        "menuTitle": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "11.5px", "fontWeight": "{typography.fontWeight.medium}", "lineHeight": "{typography.lineHeight.normal}", "letterSpacing": "0.4px" },
+          "type": "typography"
+        },
+        "menuItem": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "12.5px", "fontWeight": "{typography.fontWeight.regular}", "lineHeight": "{typography.lineHeight.normal}" },
+          "type": "typography"
+        },
+        "kpiNumber": {
+          "value": { "fontFamily": "{typography.fontFamily.primary}", "fontSize": "{typography.fontSize.32}", "fontWeight": "{typography.fontWeight.semibold}", "lineHeight": "{typography.lineHeight.tight}" },
+          "type": "typography",
+          "description": "KPI 卡数字"
+        }
+      }
+    },
+    "spacing": {
+      "0": { "value": "0px", "type": "spacing" },
+      "2": { "value": "2px", "type": "spacing" },
+      "4": { "value": "4px", "type": "spacing" },
+      "6": { "value": "6px", "type": "spacing" },
+      "8": { "value": "8px", "type": "spacing" },
+      "10": { "value": "10px", "type": "spacing" },
+      "12": { "value": "12px", "type": "spacing" },
+      "14": { "value": "14px", "type": "spacing" },
+      "16": { "value": "16px", "type": "spacing" },
+      "18": { "value": "18px", "type": "spacing" },
+      "20": { "value": "20px", "type": "spacing" },
+      "24": { "value": "24px", "type": "spacing" },
+      "32": { "value": "32px", "type": "spacing" },
+      "40": { "value": "40px", "type": "spacing" },
+      "48": { "value": "48px", "type": "spacing" },
+      "56": { "value": "56px", "type": "spacing" }
+    },
+    "sizing": {
+      "headerHeight": { "value": "56px", "type": "sizing" },
+      "siderWidth": { "value": "232px", "type": "sizing" },
+      "containerPadding": { "value": "20px 24px 32px", "type": "sizing" },
+      "control": {
+        "sm": { "value": "24px", "type": "sizing" },
+        "md": { "value": "32px", "type": "sizing", "description": "默认输入框/下拉" },
+        "lg": { "value": "40px", "type": "sizing" }
+      },
+      "avatar": {
+        "sm": { "value": "24px", "type": "sizing" },
+        "md": { "value": "32px", "type": "sizing" }
+      },
+      "icon": {
+        "sm": { "value": "12px", "type": "sizing" },
+        "md": { "value": "14px", "type": "sizing" },
+        "lg": { "value": "18px", "type": "sizing" }
+      }
+    },
+    "borderRadius": {
+      "xs": { "value": "4px", "type": "borderRadius" },
+      "sm": { "value": "6px", "type": "borderRadius", "description": "按钮/输入框" },
+      "md": { "value": "8px", "type": "borderRadius" },
+      "lg": { "value": "10px", "type": "borderRadius", "description": "卡片默认" },
+      "xl": { "value": "12px", "type": "borderRadius" },
+      "pill": { "value": "999px", "type": "borderRadius" },
+      "tag": { "value": "10px", "type": "borderRadius" }
+    },
+    "borderWidth": {
+      "0": { "value": "0px", "type": "borderWidth" },
+      "1": { "value": "1px", "type": "borderWidth" },
+      "2": { "value": "2px", "type": "borderWidth" },
+      "3": { "value": "3px", "type": "borderWidth", "description": "Active menu indicator" }
+    },
+    "boxShadow": {
+      "sm": {
+        "value": { "x": "0", "y": "1px", "blur": "0", "spread": "0", "color": "rgba(0,0,0,0.02)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "card": {
+        "value": { "x": "0", "y": "1px", "blur": "3px", "spread": "0", "color": "rgba(0,0,0,0.06)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "cardHover": {
+        "value": { "x": "0", "y": "10px", "blur": "24px", "spread": "0", "color": "rgba(15,23,42,0.08)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "tileHover": {
+        "value": { "x": "0", "y": "6px", "blur": "16px", "spread": "0", "color": "rgba(15,23,42,0.06)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "primary": {
+        "value": { "x": "0", "y": "2px", "blur": "6px", "spread": "0", "color": "rgba(79,124,255,0.30)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "primaryHover": {
+        "value": { "x": "0", "y": "4px", "blur": "12px", "spread": "0", "color": "rgba(79,124,255,0.40)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "popover": {
+        "value": { "x": "0", "y": "10px", "blur": "32px", "spread": "0", "color": "rgba(15,23,42,0.12)", "type": "dropShadow" },
+        "type": "boxShadow"
+      },
+      "focusRing": {
+        "value": { "x": "0", "y": "0", "blur": "0", "spread": "2px", "color": "rgba(79,124,255,0.15)", "type": "dropShadow" },
+        "type": "boxShadow"
+      }
+    },
+    "opacity": {
+      "0": { "value": "0", "type": "opacity" },
+      "8": { "value": "0.08", "type": "opacity" },
+      "12": { "value": "0.12", "type": "opacity" },
+      "30": { "value": "0.30", "type": "opacity" },
+      "60": { "value": "0.60", "type": "opacity" },
+      "100": { "value": "1", "type": "opacity" }
+    },
+    "motion": {
+      "duration": {
+        "fast": { "value": "0.15s", "type": "duration" },
+        "base": { "value": "0.2s", "type": "duration" },
+        "slow": { "value": "0.3s", "type": "duration" }
+      },
+      "easing": {
+        "standard": { "value": "ease", "type": "cubicBezier" },
+        "out": { "value": "ease-out", "type": "cubicBezier" },
+        "in-out": { "value": "ease-in-out", "type": "cubicBezier" }
+      }
+    },
+    "grid": {
+      "boards": {
+        "columns": { "value": "4", "type": "other", "description": "看板栅格列数" },
+        "gap": { "value": "12px", "type": "spacing" }
+      },
+      "menuTwoCol": {
+        "columns": { "value": "2", "type": "other" },
+        "gap": { "value": "2px", "type": "spacing" }
+      }
+    }
+  },
+  "$themes": [
+    {
+      "id": "light",
+      "name": "Light",
+      "selectedTokenSets": { "global": "enabled" }
+    }
+  ],
+  "$metadata": {
+    "tokenSetOrder": ["global"]
+  }
+}

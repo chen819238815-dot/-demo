@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>有赞智能报表 - 水果每日销售量</title>
+    <style>
+      :root {
+        --bg: #f5f6f8;
+        --card: #ffffff;
+        --text: #1f2329;
+        --subtext: #6b7280;
+        --line: #e5e7eb;
+        --primary: #1677ff;
+        --highlight: #eaf3ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+      }
+
+      .page {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0 auto;
+        background: var(--card);
+      }
+
+      .topbar {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .section {
+        padding: 12px;
+      }
+
+      .merchant {
+        font-size: 15px;
+        color: #2f7f2f;
+        margin-bottom: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      .meta {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .meta-time {
+        font-size: 14px;
+        color: #4b5563;
+      }
+
+      .meta-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn {
+        height: 34px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+        border-radius: 8px;
+        padding: 0 10px;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn-filter {
+        border-color: #9ca3af;
+        color: #1f2937;
+      }
+
+      .btn-filter svg {
+        width: 14px;
+        height: 14px;
+        display: block;
+      }
+
+      .table-wrap {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: auto;
+        background: #fff;
+        position: relative;
+      }
+
+      table {
+        width: 100%;
+        min-width: 720px;
+        border-collapse: collapse;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #f8fafc;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        padding: 10px 8px;
+        white-space: nowrap;
+      }
+
+      thead th:last-child,
+      tbody td:last-child {
+        border-right: 0;
+      }
+
+      tbody tr {
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      tbody tr.active {
+        background: var(--highlight);
+      }
+
+      tbody td {
+        vertical-align: top;
+        font-size: 14px;
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        padding: 10px 8px;
+      }
+
+      .col-index {
+        width: 56px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .col-name {
+        min-width: 260px;
+      }
+
+      thead th[data-col="idx"],
+      tbody td.col-index {
+        position: sticky;
+        left: 0;
+        z-index: 4;
+        background: #fff;
+      }
+
+      thead th[data-col="name"],
+      tbody td.col-name {
+        position: sticky;
+        left: 56px;
+        z-index: 3;
+        background: #fff;
+        box-shadow: 2px 0 0 var(--line);
+      }
+
+      thead th[data-col="idx"],
+      thead th[data-col="name"] {
+        background: #f8fafc;
+        z-index: 6;
+      }
+
+      tbody tr.active td.col-index,
+      tbody tr.active td.col-name {
+        background: var(--highlight);
+      }
+
+      .cell-two-line {
+        line-height: 1.3;
+      }
+
+      .cell-main {
+        display: block;
+        font-size: 15px;
+        color: #111827;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .cell-sub {
+        display: block;
+        margin-top: 5px;
+        color: #6b7280;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .field-panel {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+        z-index: 20;
+      }
+
+      .field-panel.show {
+        display: flex;
+      }
+
+      .field-dialog {
+        width: 100%;
+        max-width: 560px;
+        background: #f8f8f8;
+        border-radius: 16px 16px 0 0;
+        overflow: hidden;
+      }
+
+      .sheet-head {
+        background: #fff;
+        border-bottom: 1px solid #ececec;
+        padding: 14px;
+      }
+
+      .sheet-head-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .sheet-close,
+      .sheet-edit {
+        font-size: 16px;
+        color: #6b7280;
+        background: transparent;
+        border: 0;
+        padding: 4px 0;
+      }
+
+      .sheet-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1f2329;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .sheet-count {
+        min-width: 22px;
+        height: 22px;
+        border-radius: 11px;
+        background: #e8f0ff;
+        color: #3b82f6;
+        font-size: 14px;
+        line-height: 22px;
+        text-align: center;
+      }
+
+      .sheet-body {
+        padding: 14px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        height: 48px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: #e9eef8;
+        color: #3e7ae8;
+        font-size: 16px;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .chip input {
+        display: none;
+      }
+
+      .chip.unchecked {
+        background: #f0f2f5;
+        color: #9ca3af;
+      }
+
+      .sheet-actions {
+        border-top: 1px solid #ececec;
+        background: #fff;
+        display: flex;
+      }
+
+      .sheet-action {
+        height: 64px;
+        border: 0;
+        background: #fff;
+        font-size: 18px;
+        flex: 1;
+      }
+
+      .sheet-action.confirm {
+        background: #4b83eb;
+        color: #fff;
+      }
+
+      @media (orientation: portrait) {
+        .page {
+          max-width: 480px;
+        }
+
+        h1 {
+          font-size: 38px;
+        }
+      }
+
+      @media (orientation: landscape) {
+        .page {
+          max-width: 100%;
+        }
+
+        .section {
+          padding: 10px 16px;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        .table-wrap {
+          max-height: calc(100vh - 220px);
+        }
+      }
+
+      body.force-portrait .page {
+        max-width: 480px;
+      }
+
+      body.force-portrait h1 {
+        font-size: 38px;
+      }
+
+      body.force-landscape .page {
+        max-width: 100%;
+      }
+
+      body.force-landscape .section {
+        padding: 10px 16px;
+      }
+
+      body.force-landscape h1 {
+        font-size: 28px;
+      }
+
+      body.force-landscape .table-wrap {
+        max-height: calc(100vh - 220px);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div style="font-size: 22px">‹</div>
+        <div class="title">有赞智能报表</div>
+        <div style="font-size: 22px">⋯</div>
+      </div>
+
+      <section class="section">
+        <div class="merchant">🍃 杭州探宝网络科技有限公司</div>
+        <h1>水果每日销售量</h1>
+        <div class="meta">
+          <div class="meta-time">统计时间：2026-04-20 至 2026-04-20</div>
+          <div class="meta-actions">
+            <button class="btn btn-filter" id="fieldBtn" type="button" aria-label="字段选择">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" stroke="currentColor" stroke-width="2" />
+              </svg>
+              字段(6)
+            </button>
+            <button class="btn" type="button" aria-label="设置">⚙ 设置</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-index" data-col="idx">序号</th>
+                <th data-col="name">商品名称</th>
+                <th data-col="price">SKU零售价</th>
+                <th data-col="day">自然日</th>
+                <th data-col="sale">商品销量</th>
+                <th data-col="amount">商品销售额</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr>
+                <td class="col-index">
+                  <div class="cell-two-line">
+                    <span class="cell-main">1</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td class="col-name">
+                  <div class="cell-two-line">
+                    <span class="cell-main">四川黄柠檬水果 常规果 净重3斤</span>
+                    <span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td class="col-name">
+                  <div class="cell-two-line"><span class="cell-main">27</span><span class="cell-sub"></span></div>
+                </td>
+                <td class="col-name">
+                  <div class="cell-two-line">
+                    <span class="cell-main">20260420</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td class="col-name">
+                  <div class="cell-two-line"><span class="cell-main">4</span><span class="cell-sub"></span></div>
+                </td>
+                <td class="col-name">
+                  <div class="cell-two-line">
+                    <span class="cell-main">108</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-index">
+                  <div class="cell-two-line"><span class="cell-main">2</span><span class="cell-sub"></span></div>
+                </td>
+                <td class="col-name">
+                  <div class="cell-two-line">
+                    <span class="cell-main">越南青芒水果 单果450g+</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">105</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">20260420</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">0</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">0</span><span class="cell-sub"></span></div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-index">
+                  <div class="cell-two-line"><span class="cell-main">3</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">江西赣南脐橙水果 5斤/袋</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">9.900000</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">20260420</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">0</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">0</span><span class="cell-sub"></span></div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-index">
+                  <div class="cell-two-line"><span class="cell-main">4</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">红心芭乐水果 3斤/袋 红心果</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">24</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">20260421</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">2</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">48</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-index">
+                  <div class="cell-two-line"><span class="cell-main">5</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">黄金百香果水果 中小果 净重3斤</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">22.800000</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">20260420</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">1</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">22.8</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-index">
+                  <div class="cell-two-line"><span class="cell-main">6</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">湖北秭归伦晚橙水果 单果350g+</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">14</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line">
+                    <span class="cell-main">20260420</span><span class="cell-sub"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">0</span><span class="cell-sub"></span></div>
+                </td>
+                <td>
+                  <div class="cell-two-line"><span class="cell-main">0</span><span class="cell-sub"></span></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="field-panel" id="fieldPanel" aria-hidden="true">
+      <div class="field-dialog">
+        <div class="sheet-head">
+          <div class="sheet-head-top">
+            <button class="sheet-close" type="button" id="cancelBtn">✕</button>
+            <div class="sheet-title">选择字段 <span class="sheet-count" id="sheetCount">6</span></div>
+            <button class="sheet-edit" type="button">编辑</button>
+          </div>
+        </div>
+        <div class="sheet-body" id="fieldGrid">
+          <div class="chips">
+            <label class="chip"><input type="checkbox" value="idx" checked />序号</label>
+            <label class="chip"><input type="checkbox" value="name" checked />商品名称</label>
+            <label class="chip"><input type="checkbox" value="price" checked />SKU零售价</label>
+            <label class="chip"><input type="checkbox" value="day" checked />自然日</label>
+            <label class="chip"><input type="checkbox" value="sale" checked />商品销量</label>
+            <label class="chip"><input type="checkbox" value="amount" checked />商品销售额</label>
+          </div>
+        </div>
+        <div class="sheet-actions">
+          <button class="sheet-action" type="button" id="resetBtn">重置</button>
+          <button class="sheet-action confirm" type="button" id="confirmBtn">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const mode = new URLSearchParams(window.location.search).get("mode");
+      if (mode === "portrait") {
+        document.body.classList.add("force-portrait");
+      } else if (mode === "landscape") {
+        document.body.classList.add("force-landscape");
+      }
+
+      const fieldBtn = document.getElementById("fieldBtn");
+      const fieldPanel = document.getElementById("fieldPanel");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const confirmBtn = document.getElementById("confirmBtn");
+      const tableBody = document.getElementById("tableBody");
+      const sheetCount = document.getElementById("sheetCount");
+      const fieldChecks = [...document.querySelectorAll('#fieldGrid input[type="checkbox"]')];
+      const allCols = ["idx", "name", "price", "day", "sale", "amount"];
+
+      function syncChipState() {
+        fieldChecks.forEach((input) => {
+          const chip = input.closest(".chip");
+          if (!chip) return;
+          chip.classList.toggle("unchecked", !input.checked);
+        });
+      }
+
+      function getCheckedCols() {
+        return fieldChecks.filter((el) => el.checked).map((el) => el.value);
+      }
+
+      function updateFieldCount() {
+        const checked = getCheckedCols();
+        sheetCount.textContent = String(checked.length);
+        fieldBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" stroke="currentColor" stroke-width="2" /></svg>字段(' +
+          checked.length +
+          ")";
+      }
+
+      function applyColumns(checked) {
+        allCols.forEach((key) => {
+          const visible = checked.includes(key);
+          document.querySelectorAll(`[data-col="${key}"]`).forEach((th) => {
+            th.style.display = visible ? "" : "none";
+          });
+
+          const colIndex = allCols.indexOf(key) + 1;
+          document.querySelectorAll(`tbody tr td:nth-child(${colIndex})`).forEach((td) => {
+            td.style.display = visible ? "" : "none";
+          });
+        });
+      }
+
+      fieldBtn.addEventListener("click", () => {
+        fieldPanel.classList.add("show");
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        fieldPanel.classList.remove("show");
+      });
+
+      fieldPanel.addEventListener("click", (event) => {
+        if (event.target === fieldPanel) {
+          fieldPanel.classList.remove("show");
+        }
+      });
+
+      fieldChecks.forEach((input) => {
+        input.addEventListener("change", () => {
+          syncChipState();
+          updateFieldCount();
+        });
+      });
+
+      resetBtn.addEventListener("click", () => {
+        fieldChecks.forEach((input) => {
+          input.checked = true;
+        });
+        syncChipState();
+        updateFieldCount();
+      });
+
+      confirmBtn.addEventListener("click", () => {
+        applyColumns(getCheckedCols());
+        fieldPanel.classList.remove("show");
+      });
+
+      tableBody.querySelectorAll("tr").forEach((row) => {
+        row.addEventListener("click", () => {
+          tableBody.querySelectorAll("tr").forEach((item) => item.classList.remove("active"));
+          row.classList.add("active");
+        });
+      });
+
+      syncChipState();
+      updateFieldCount();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,340 @@
+.report-root {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #fdfcf8;
+  font-family: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #2c2c24;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.report-texture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: radial-gradient(circle at 1px 1px, #c18c5d 0, transparent 1px);
+  background-size: 6px 6px;
+  z-index: 0;
+}
+
+.report-page {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+.report-header {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 900px) {
+  .report-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+  }
+}
+
+.report-header-main {
+  max-width: 520px;
+}
+
+.report-date {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #78786c;
+  margin-bottom: 8px;
+}
+
+.report-title {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 900px) {
+  .report-title {
+    font-size: 40px;
+  }
+}
+
+.report-subtitle {
+  font-size: 14px;
+  color: #78786c;
+}
+
+.report-header-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric-card {
+  background-color: #fefefa;
+  border-radius: 2rem;
+  border: 1px solid rgba(222, 216, 207, 0.5);
+  padding: 16px 18px;
+  box-shadow: 0 4px 20px -2px rgba(93, 112, 82, 0.15);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(93, 112, 82, 0.15);
+}
+
+.metric-card-primary {
+  background: radial-gradient(circle at top left, rgba(193, 140, 93, 0.2), transparent 45%),
+    radial-gradient(circle at bottom right, rgba(93, 112, 82, 0.18), transparent 50%), #fefefa;
+}
+
+.metric-card-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metric-card-compact {
+  border-radius: 1.5rem;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #78786c;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.metric-caption {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #78786c;
+}
+
+.metric-change {
+  font-weight: 700;
+}
+
+.metric-up {
+  color: #5d7052;
+}
+
+.metric-down {
+  color: #a85448;
+}
+
+.report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.report-section h2 {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.subsection h3,
+.report-section h3,
+.report-section h4 {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+}
+
+.section-grid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .section-grid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 3fr);
+  }
+}
+
+.section-grid-2col {
+  align-items: stretch;
+}
+
+.card {
+  position: relative;
+  background-color: #fefefa;
+  border-radius: 2rem;
+  border: 1px solid rgba(222, 216, 207, 0.6);
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px -2px rgba(93, 112, 82, 0.15);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(93, 112, 82, 0.15);
+}
+
+.card-explain h3,
+.card-explain h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.card-explain p {
+  font-size: 14px;
+  color: #4a4a40;
+  line-height: 1.7;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.report-table th,
+.report-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(222, 216, 207, 0.7);
+}
+
+.report-table th {
+  font-size: 12px;
+  color: #78786c;
+  font-weight: 600;
+}
+
+.cell-change {
+  white-space: nowrap;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tag-up {
+  background-color: rgba(93, 112, 82, 0.08);
+  color: #5d7052;
+}
+
+.tag-down {
+  background-color: rgba(168, 84, 72, 0.08);
+  color: #a85448;
+}
+
+.cell-delta {
+  margin-left: 4px;
+  font-size: 11px;
+  color: #78786c;
+}
+
+.text-up {
+  color: #5d7052;
+  font-weight: 600;
+}
+
+.text-down {
+  color: #a85448;
+  font-weight: 600;
+}
+
+.card-chart {
+  overflow: hidden;
+}
+
+.card-chart h4 {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.card-blob {
+  position: absolute;
+  inset: -40% 40% 40% -40%;
+  opacity: 0.25;
+  background: radial-gradient(circle at 0 0, rgba(93, 112, 82, 0.6), transparent 60%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.card-blob-secondary {
+  background: radial-gradient(circle at 0 0, rgba(193, 140, 93, 0.6), transparent 60%);
+}
+
+.subsection {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subsection h3 {
+  font-size: 18px;
+}
+
+.suggestion-grid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .suggestion-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.suggestion-card h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.suggestion-card p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4a4a40;
+}
+
+.summary-card p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #4a4a40;
+}
+
+@media print {
+  .report-root {
+    background-color: #ffffff;
+  }
+
+  .report-texture {
+    display: none;
+  }
+
+  .report-page {
+    max-width: none;
+    padding: 16px 24px;
+  }
+
+  .card,
+  .metric-card {
+    box-shadow: none;
+  }
+}
+

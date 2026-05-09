@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>有赞智能报表-交互优化</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --head-bg: #f5f6f9;
+      --line: #eceef3;
+      --text: #2f3138;
+      --sub: #8d919c;
+      --primary: #4a70de;
+      --selected: #edf2ff;
+      --frame: #141518;
+      --frame-edge: #24262a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: "PingFang SC", "SF Pro Text", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .canvas {
+      width: 100%;
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .preview-title {
+      margin: 0 0 10px;
+      color: #6f7482;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .iphone-shell {
+      background: var(--frame);
+      border: 5px solid var(--frame-edge);
+      box-shadow: 0 26px 42px -20px rgba(10, 12, 18, 0.55);
+      padding: 8px;
+      position: relative;
+    }
+
+    .iphone-shell.portrait {
+      border-radius: 44px;
+      width: 400px;
+      max-width: 100%;
+    }
+
+    .iphone-shell.landscape {
+      border-radius: 30px;
+      width: 100%;
+      min-width: 760px;
+    }
+
+    .notch {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 24px;
+      border-radius: 0 0 14px 14px;
+      background: #111216;
+      z-index: 4;
+    }
+
+    .phone {
+      width: 100%;
+      background: var(--bg);
+      position: relative;
+      border-radius: 36px;
+      overflow: hidden;
+    }
+
+    .iphone-shell.landscape .phone {
+      border-radius: 22px;
+    }
+
+    .top-bar {
+      height: 88px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 14px 12px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .top-bar .title {
+      font-size: 31px;
+      transform: scale(0.5);
+      transform-origin: center;
+      white-space: nowrap;
+      font-weight: 700;
+      margin-left: -18px;
+    }
+
+    .env {
+      margin: 0;
+      background: #e8eefb;
+      color: #6d7487;
+      border-bottom: 1px solid #dde3f4;
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    .report-card {
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .report-head {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .report-title {
+      margin: 0 0 10px;
+      font-size: 36px;
+      transform: scale(0.5);
+      transform-origin: left center;
+      height: 18px;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    .report-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--sub);
+      margin-top: -4px;
+    }
+
+    .report-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .action-btn {
+      border: none;
+      background: transparent;
+      color: #6f7482;
+      font-size: 12px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .field-btn {
+      color: #505560;
+    }
+
+    .field-btn .count {
+      color: #8f949f;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: 620px;
+      background: var(--panel);
+    }
+
+    .iphone-shell.landscape .table-wrap {
+      max-height: 260px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--head-bg);
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      color: #8a8f9b;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px 8px;
+      white-space: nowrap;
+    }
+
+    thead th:last-child,
+    tbody td:last-child {
+      border-right: none;
+    }
+
+    tbody td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 12px 8px;
+      font-size: 16px;
+      transform: scale(0.9);
+      color: #434752;
+      text-align: center;
+      background: #fff;
+      transition: background-color 0.2s ease;
+      word-break: break-word;
+    }
+
+    tbody tr:nth-child(odd) td {
+      background: #fff;
+    }
+
+    tbody tr.selected td {
+      background: var(--selected);
+    }
+
+    .field-panel {
+      position: absolute;
+      top: 20px;
+      right: 0;
+      width: 210px;
+      background: #fff;
+      border: 1px solid #e7eaf2;
+      border-radius: 14px;
+      box-shadow: 0 12px 28px -16px rgba(28, 35, 56, 0.35);
+      padding: 10px;
+      display: none;
+      z-index: 10;
+    }
+
+    .field-panel.open {
+      display: block;
+    }
+
+    .field-panel-title {
+      margin: 2px 2px 8px;
+      color: #8a8f9b;
+      font-size: 12px;
+    }
+
+    .field-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 4px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #454a57;
+    }
+
+    .field-item:hover {
+      background: #f5f7fd;
+    }
+
+    input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--primary);
+    }
+
+    @media (max-width: 1200px) {
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .iphone-shell.portrait {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      .iphone-shell.landscape {
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section class="preview-grid">
+      <div>
+        <h2 class="preview-title">iPhone 竖屏</h2>
+        <div class="iphone-shell portrait">
+          <div class="notch"></div>
+          <div class="phone">
+            <header class="top-bar">
+              <span>‹</span>
+              <span class="title">有赞智能报表</span>
+              <span>•••</span>
+            </header>
+
+            <p class="env">🍷 YZ测试-连锁-标准版</p>
+
+            <section class="report-card">
+              <div class="report-head">
+                <h1 class="report-title">店铺业绩报表(销售单元)-周报</h1>
+                <div class="report-meta">
+                  <span>统计时间：2026-04-21 至 2026-04-21</span>
+                  <div class="report-actions">
+                    <button id="fieldBtnP" class="action-btn field-btn" type="button" aria-label="字段选择">
+                      <span>⎙ 字段</span><span class="count" id="fieldCountP">(0)</span>
+                    </button>
+                    <button class="action-btn" type="button">⚙ 设置</button>
+                    <div class="field-panel" id="fieldPanelP">
+                      <div class="field-panel-title">选择显示字段（可多选）</div>
+                      <div id="fieldListP"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead><tr id="headerRowP"></tr></thead>
+                  <tbody id="tableBodyP"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="preview-title">iPhone 横屏</h2>
+        <div class="iphone-shell landscape">
+          <div class="phone">
+            <header class="top-bar">
+              <span>‹</span>
+              <span class="title">有赞智能报表</span>
+              <span>•••</span>
+            </header>
+
+            <p class="env">🍷 YZ测试-连锁-标准版</p>
+
+            <section class="report-card">
+              <div class="report-head">
+                <h1 class="report-title">店铺业绩报表(销售单元)-周报</h1>
+                <div class="report-meta">
+                  <span>统计时间：2026-04-21 至 2026-04-21</span>
+                  <div class="report-actions">
+                    <button id="fieldBtnL" class="action-btn field-btn" type="button" aria-label="字段选择">
+                      <span>⎙ 字段</span><span class="count" id="fieldCountL">(0)</span>
+                    </button>
+                    <button class="action-btn" type="button">⚙ 设置</button>
+                    <div class="field-panel" id="fieldPanelL">
+                      <div class="field-panel-title">选择显示字段（可多选）</div>
+                      <div id="fieldListL"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead><tr id="headerRowL"></tr></thead>
+                  <tbody id="tableBodyL"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const columns = [
+      { key: "storeName", label: "店铺名称", visible: true },
+      { key: "income", label: "营业收入(不含赠送金)", visible: true },
+      { key: "avgPrice", label: "笔单价", visible: true },
+      { key: "storeId", label: "分店店铺ID", visible: true },
+      { key: "partner", label: "合伙人名称", visible: true },
+      { key: "mode", label: "经营模式", visible: true },
+      { key: "category", label: "品类目", visible: true },
+      { key: "payCount", label: "支付笔数", visible: true },
+      { key: "payAmount", label: "实付金额", visible: true },
+      { key: "revenue", label: "营业额", visible: true }
+    ];
+
+    const rows = [
+      {
+        id: 1,
+        storeName: "ysq-zy先款后货独立销售门店",
+        income: 0,
+        avgPrice: "NaN",
+        storeId: "152641538",
+        partner: "-",
+        mode: "直营",
+        category: "20260421",
+        payCount: 0,
+        payAmount: 0,
+        revenue: 0
+      },
+      {
+        id: 2,
+        storeName: "jm先货后款-运河店收银双渠道",
+        income: 742.07,
+        avgPrice: 57.22,
+        storeId: "141878927",
+        partner: "-",
+        mode: "加盟",
+        category: "20260421",
+        payCount: 13,
+        payAmount: 743.82,
+        revenue: 816.2
+      },
+      {
+        id: 3,
+        storeName: "qx门店",
+        income: 0,
+        avgPrice: 0,
+        storeId: "150609556",
+        partner: "-",
+        mode: "直营",
+        category: "20260421",
+        payCount: 5,
+        payAmount: 0,
+        revenue: 113
+      }
+    ];
+
+    let selectedRowId = null;
+
+    const views = [
+      {
+        headerRow: document.getElementById("headerRowP"),
+        tableBody: document.getElementById("tableBodyP"),
+        fieldBtn: document.getElementById("fieldBtnP"),
+        fieldCount: document.getElementById("fieldCountP"),
+        fieldPanel: document.getElementById("fieldPanelP"),
+        fieldList: document.getElementById("fieldListP")
+      },
+      {
+        headerRow: document.getElementById("headerRowL"),
+        tableBody: document.getElementById("tableBodyL"),
+        fieldBtn: document.getElementById("fieldBtnL"),
+        fieldCount: document.getElementById("fieldCountL"),
+        fieldPanel: document.getElementById("fieldPanelL"),
+        fieldList: document.getElementById("fieldListL")
+      }
+    ];
+
+    function getVisibleColumns() {
+      return columns.filter((column) => column.visible);
+    }
+
+    function formatValue(value) {
+      if (value === null || value === undefined || value === "") return "-";
+      if (typeof value === "number") return Number(value).toLocaleString("zh-CN", { maximumFractionDigits: 2 });
+      return value;
+    }
+
+    function renderHeader(headerRow) {
+      headerRow.innerHTML = "";
+      getVisibleColumns().forEach((column) => {
+        const th = document.createElement("th");
+        th.textContent = column.label;
+        headerRow.appendChild(th);
+      });
+    }
+
+    function renderBody(tableBody) {
+      tableBody.innerHTML = "";
+      const visibleColumns = getVisibleColumns();
+
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        if (selectedRowId === row.id) tr.classList.add("selected");
+
+        tr.addEventListener("click", () => {
+          selectedRowId = selectedRowId === row.id ? null : row.id;
+          renderTable();
+        });
+
+        visibleColumns.forEach((column) => {
+          const td = document.createElement("td");
+          td.textContent = formatValue(row[column.key]);
+          tr.appendChild(td);
+        });
+
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function renderFieldSelector(view) {
+      const { fieldList, fieldCount } = view;
+      fieldList.innerHTML = "";
+
+      columns.forEach((column) => {
+        const label = document.createElement("label");
+        label.className = "field-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = column.visible;
+        checkbox.addEventListener("change", (event) => {
+          column.visible = event.target.checked;
+          if (!columns.some((item) => item.visible)) {
+            column.visible = true;
+            checkbox.checked = true;
+            return;
+          }
+          renderTable();
+        });
+
+        const text = document.createElement("span");
+        text.textContent = column.label;
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        fieldList.appendChild(label);
+      });
+
+      fieldCount.textContent = `(${getVisibleColumns().length})`;
+    }
+
+    function renderTable() {
+      views.forEach((view) => {
+        renderHeader(view.headerRow);
+        renderBody(view.tableBody);
+        renderFieldSelector(view);
+      });
+    }
+
+    views.forEach((view) => {
+      view.fieldBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        view.fieldPanel.classList.toggle("open");
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      views.forEach((view) => {
+        if (!view.fieldPanel.contains(event.target) && !view.fieldBtn.contains(event.target)) {
+          view.fieldPanel.classList.remove("open");
+        }
+      });
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>

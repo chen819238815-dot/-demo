@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>经营分析组件库 - Zan Design 规范版</title>
+  <style>
+    /* ============================================
+       经营分析页面组件库样式
+       基于有赞 Zan Design 设计规范
+       ============================================ */
+
+    /* ----------------------------------------
+       基础变量 (Zan Design Token)
+       ---------------------------------------- */
+    :root {
+      /* 品牌色 */
+      --zan-primary: #155BD4;
+      --zan-primary-dark: #114BAD;
+      --zan-primary-light: #E9F3FE;
+      --zan-primary-alt: #3570D4;
+
+      /* 功能色 */
+      --zan-success: #11AD26;
+      --zan-success-bg: #E6FFE9;
+      --zan-warning: #ED6A18;
+      --zan-warning-bg: #FFF0E6;
+      --zan-error: #D41F15;
+      --zan-error-bg: #FFE7E6;
+
+      /* 文字色 */
+      --zan-text-primary: #333333;
+      --zan-text-secondary: #666666;
+      --zan-text-tertiary: #999999;
+      --zan-text-disabled: #CCCCCC;
+
+      /* 背景色 */
+      --zan-bg-white: #FFFFFF;
+      --zan-bg-page: #F7F7F7;
+      --zan-bg-hover: #F5F5F5;
+
+      /* 边框色 */
+      --zan-border: #E0E0E0;
+      --zan-border-light: #EBEBEB;
+
+      /* 间距 - 基于 8 点网格法 */
+      --zan-space-xs: 4px;
+      --zan-space-sm: 8px;
+      --zan-space-md: 16px;
+      --zan-space-lg: 24px;
+      --zan-space-xl: 32px;
+      --zan-space-2xl: 40px;
+
+      /* 字号 */
+      --zan-font-xs: 12px;
+      --zan-font-sm: 13px;
+      --zan-font-base: 14px;
+      --zan-font-md: 16px;
+      --zan-font-lg: 18px;
+      --zan-font-xl: 20px;
+      --zan-font-2xl: 24px;
+
+      /* 圆角 */
+      --zan-radius-sm: 2px;
+      --zan-radius-md: 4px;
+
+      /* 阴影层级 */
+      --zan-shadow-s1: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+      --zan-shadow-s2: 0 2px 16px 0 rgba(0, 0, 0, 0.1);
+      --zan-shadow-s3: 0 2px 24px 0 rgba(0, 0, 0, 0.1);
+
+      /* 过渡 */
+      --zan-transition-fast: 100ms;
+      --zan-transition-base: 160ms;
+      --zan-transition-slow: 220ms;
+
+      /* 向后兼容的别名 */
+      --primary-color: var(--zan-primary);
+      --primary-hover: var(--zan-primary-alt);
+      --primary-active: var(--zan-primary-dark);
+      --primary-light: var(--zan-primary-light);
+      --success-color: var(--zan-success);
+      --success-light: var(--zan-success-bg);
+      --warning-color: var(--zan-warning);
+      --warning-light: var(--zan-warning-bg);
+      --error-color: var(--zan-error);
+      --error-light: var(--zan-error-bg);
+      --text-primary: var(--zan-text-primary);
+      --text-secondary: var(--zan-text-secondary);
+      --text-tertiary: var(--zan-text-tertiary);
+      --text-disabled: var(--zan-text-disabled);
+      --border-color: var(--zan-border);
+      --border-light: var(--zan-border-light);
+      --bg-primary: var(--zan-bg-white);
+      --bg-secondary: var(--zan-bg-page);
+      --bg-tertiary: var(--zan-bg-hover);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-size-xs: var(--zan-font-xs);
+      --font-size-sm: var(--zan-font-sm);
+      --font-size-base: var(--zan-font-base);
+      --font-size-lg: var(--zan-font-md);
+      --font-size-xl: var(--zan-font-xl);
+      --font-size-2xl: var(--zan-font-2xl);
+      --font-size-3xl: 32px;
+      --spacing-xs: var(--zan-space-xs);
+      --spacing-sm: var(--zan-space-sm);
+      --spacing-md: 12px;
+      --spacing-lg: var(--zan-space-md);
+      --spacing-xl: 20px;
+      --spacing-2xl: var(--zan-space-lg);
+      --spacing-3xl: var(--zan-space-xl);
+      --radius-sm: var(--zan-radius-sm);
+      --radius-md: var(--zan-radius-md);
+      --radius-lg: 8px;
+      --shadow-sm: var(--zan-shadow-s1);
+      --shadow-md: var(--zan-shadow-s2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* Demo 页面布局 */
+    .demo-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--spacing-2xl);
+    }
+
+    .demo-header {
+      text-align: center;
+      margin-bottom: var(--spacing-3xl);
+      padding: var(--spacing-3xl);
+      background: linear-gradient(135deg, var(--primary-color) 0%, #2d6cdf 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+    }
+
+    .demo-header h1 {
+      font-size: var(--font-size-2xl);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .demo-header p {
+      opacity: 0.9;
+      font-size: var(--font-size-base);
+    }
+
+    .demo-section {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-2xl);
+      margin-bottom: var(--spacing-2xl);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .demo-section-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      margin-bottom: var(--spacing-xl);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 2px solid var(--primary-light);
+      color: var(--primary-color);
+    }
+
+    .demo-row {
+      display: flex;
+      gap: var(--spacing-xl);
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    /* ----------------------------------------
+       1. 店铺选择组件 (StoreSelector)
+       ---------------------------------------- */
+    .store-selector {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .store-selector-trigger {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+
+    .store-selector-trigger:hover {
+      border-color: var(--primary-color);
+    }
+
+    .store-selector-dropdown {
+      width: 480px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--spacing-lg);
+      margin-top: var(--spacing-sm);
+    }
+
+    .store-selector-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .store-selector-tab {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .store-selector-tab:hover {
+      color: var(--primary-color);
+    }
+
+    .store-selector-tab.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    .store-direct-select {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .store-direct-select .store-item {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .store-direct-select .store-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .store-direct-select .store-item.selected {
+      background: var(--primary-light);
+    }
+
+    .store-direct-select .store-item.closed {
+      opacity: 0.5;
+    }
+
+    .store-direct-select .store-checkbox {
+      margin-right: var(--spacing-md);
+    }
+
+    .store-direct-select .store-info {
+      flex: 1;
+    }
+
+    .store-direct-select .store-name {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+    }
+
+    .store-direct-select .store-code {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin-top: var(--spacing-xs);
+    }
+
+    .store-direct-select .store-status {
+      font-size: var(--font-size-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .store-direct-select .store-status.open {
+      color: var(--success-color);
+      background: var(--success-light);
+    }
+
+    .store-direct-select .store-status.closed {
+      color: var(--text-tertiary);
+      background: var(--bg-tertiary);
+    }
+
+    .store-batch-select {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .store-batch-filters {
+      display: flex;
+      gap: var(--spacing-md);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .store-batch-filters .filter-input {
+      flex: 1;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+    }
+
+    .store-batch-filters .filter-select {
+      min-width: 120px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+    }
+
+    .store-batch-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .store-batch-table th,
+    .store-batch-table td {
+      padding: var(--spacing-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+      font-size: var(--font-size-base);
+    }
+
+    .store-batch-table th {
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+    }
+
+    .store-batch-table td {
+      color: var(--text-primary);
+    }
+
+    .store-batch-table tr:hover td {
+      background: var(--bg-secondary);
+    }
+
+    .store-batch-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: var(--spacing-md);
+      border-top: 1px solid var(--border-light);
+    }
+
+    .store-batch-actions .selected-info {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .store-batch-actions .selected-info strong {
+      color: var(--primary-color);
+    }
+
+    /* 触发器区域 */
+    .store-selector-trigger-area {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    .store-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+    }
+
+    .store-tag .tag-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      font-size: 14px;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .store-tag .tag-close:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .store-clear-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      background: var(--bg-tertiary);
+      border: none;
+      border-radius: 50%;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .store-clear-btn:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .store-batch-btn {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: var(--font-size-base);
+      color: var(--primary-color);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .store-batch-btn:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* 下拉面板 */
+    .store-selector-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: var(--spacing-xs);
+      width: 320px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    /* 搜索框 */
+    .store-search-box {
+      position: relative;
+      padding: var(--spacing-md);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .store-search-input {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+    }
+
+    .store-search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .store-search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: var(--spacing-lg);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      font-size: 14px;
+    }
+
+    /* 全部店铺选项 */
+    .store-all-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-md) var(--spacing-lg);
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .store-all-option:hover {
+      background: var(--bg-secondary);
+    }
+
+    .store-all-option.selected {
+      background: var(--primary-light);
+      color: var(--primary-color);
+    }
+
+    .store-all-option .option-text {
+      font-size: var(--font-size-base);
+      font-weight: 500;
+    }
+
+    .store-all-option .check-icon {
+      font-size: 14px;
+      color: var(--primary-color);
+    }
+
+    /* 店铺列表 */
+    .store-list {
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .store-list-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .store-list-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .store-list-item.selected {
+      background: var(--primary-light);
+    }
+
+    .store-type-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 6px;
+      background: var(--bg-primary);
+      border: 1px solid var(--primary-color);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      color: var(--primary-color);
+    }
+
+    .store-list-item .store-name {
+      flex: 1;
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .store-list-item .check-icon {
+      font-size: 14px;
+      color: var(--primary-color);
+    }
+
+    /* 底部操作栏 */
+    .store-dropdown-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-secondary);
+    }
+
+    .show-closed-stores {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .show-closed-stores input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .show-closed-stores .help-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--text-tertiary);
+      border-radius: 50%;
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    /* 批量选择弹窗 */
+    .store-batch-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .store-batch-modal {
+      width: 720px;
+      max-height: 80vh;
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .store-batch-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .store-batch-modal-header .modal-title {
+      font-size: var(--font-size-lg);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .store-batch-modal-header .modal-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      font-size: 24px;
+      color: var(--text-tertiary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .store-batch-modal-header .modal-close:hover {
+      color: var(--text-primary);
+    }
+
+    .store-batch-modal-content {
+      flex: 1;
+      overflow: auto;
+      padding: var(--spacing-lg) var(--spacing-xl);
+    }
+
+    .store-batch-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-secondary);
+    }
+
+    .store-batch-modal-footer .selected-info {
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+    }
+
+    .store-batch-modal-footer .selected-info strong {
+      color: var(--primary-color);
+    }
+
+    /* 批量选择表格 */
+    .store-batch-table-wrapper {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .store-batch-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .store-batch-table input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .channel-tags {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    /* ----------------------------------------
+       2. 统计时间组件 (TimeSelector)
+       ---------------------------------------- */
+    .time-selector {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+
+    /* 下拉选择器触发器 */
+    .time-selector-dropdown-wrapper {
+      position: relative;
+    }
+
+    .time-selector-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      min-width: 100px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+
+    .time-selector-trigger:hover {
+      border-color: var(--primary-color);
+    }
+
+    .time-selector-trigger .dropdown-arrow {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      margin-left: var(--spacing-sm);
+    }
+
+    /* 下拉菜单 */
+    .time-selector-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: var(--spacing-xs);
+      min-width: 120px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .time-selector-dropdown-menu .dropdown-item {
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .time-selector-dropdown-menu .dropdown-item:hover {
+      background: var(--bg-secondary);
+      color: var(--primary-color);
+    }
+
+    .time-selector-dropdown-menu .dropdown-item.active {
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    /* 日期显示 */
+    .time-selector-display {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+    }
+
+    .time-selector-display .date-text {
+      min-width: 100px;
+    }
+
+    .time-selector-display .calendar-icon,
+    .time-selector-custom .calendar-icon {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      cursor: pointer;
+    }
+
+    /* 自定义日期选择 */
+    .time-selector-custom {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    .time-selector-custom .date-input {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      width: 110px;
+      background: transparent;
+    }
+
+    .time-selector-custom .date-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    /* 快捷选项 */
+    .time-selector-shortcuts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+
+    .time-selector-shortcuts .shortcut-btn {
+      padding: var(--spacing-xs) 0;
+      font-size: var(--font-size-base);
+      color: var(--primary-color);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .time-selector-shortcuts .shortcut-btn:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* ----------------------------------------
+       3. 单级指标卡 (MetricCard)
+       ---------------------------------------- */
+    .metric-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      transition: all 0.2s;
+      cursor: pointer;
+      min-width: 200px;
+    }
+
+    .metric-card:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-card.active {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--primary-light);
+    }
+
+    .metric-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .metric-card-title {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .metric-card-value {
+      font-size: var(--font-size-3xl);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .metric-card-trends {
+      display: flex;
+      gap: var(--spacing-lg);
+    }
+
+    .metric-card-trend {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: var(--font-size-sm);
+    }
+
+    .metric-card-trend .trend-label {
+      color: var(--text-tertiary);
+    }
+
+    .metric-card-trend .trend-value {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-weight: 500;
+    }
+
+    .metric-card-trend .trend-value.up {
+      color: var(--error-color);
+    }
+
+    .metric-card-trend .trend-value.down {
+      color: var(--success-color);
+    }
+
+    .metric-card-trend .trend-icon {
+      font-size: 10px;
+    }
+
+    /* 公式关系展示 */
+    .formula-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-xl);
+    }
+
+    .formula-operator {
+      font-size: var(--font-size-2xl);
+      color: var(--text-tertiary);
+      font-weight: 300;
+    }
+
+    /* ----------------------------------------
+       4. 二级指标卡 (SecondaryMetricCard)
+       ---------------------------------------- */
+    .secondary-metrics-container {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+    }
+
+    .secondary-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--spacing-lg);
+    }
+
+    .secondary-metric-card {
+      padding: var(--spacing-lg);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      transition: all 0.2s;
+    }
+
+    .secondary-metric-card:hover {
+      background: var(--primary-light);
+    }
+
+    .secondary-metric-card .metric-title {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .secondary-metric-card .metric-value {
+      font-size: var(--font-size-2xl);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .secondary-metric-card .metric-trends {
+      display: flex;
+      gap: var(--spacing-md);
+    }
+
+    .secondary-metric-card .metric-trend {
+      font-size: var(--font-size-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .secondary-metric-card .metric-trend {
+      color: var(--text-tertiary);
+    }
+
+    .secondary-metric-card .metric-trend-value.up {
+      color: var(--error-color);
+    }
+
+    .secondary-metric-card .metric-trend-value.down {
+      color: var(--success-color);
+    }
+
+    /* ----------------------------------------
+       5. 趋势图组件 (TrendChart)
+       ---------------------------------------- */
+    .trend-chart-container {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+    }
+
+    .trend-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .trend-chart-title {
+      font-size: var(--font-size-lg);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .trend-chart-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+
+    /* 粒度切换按钮组 */
+    .trend-chart-granularity {
+      display: flex;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 3px;
+    }
+
+    .trend-chart-granularity .granularity-btn {
+      padding: var(--spacing-xs) var(--spacing-md);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .trend-chart-granularity .granularity-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .trend-chart-granularity .granularity-btn.active {
+      background: var(--bg-primary);
+      color: var(--primary-color);
+      font-weight: 500;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 对比开关 */
+    .trend-chart-compare-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      user-select: none;
+    }
+
+    .trend-chart-compare-toggle input {
+      display: none;
+    }
+
+    .trend-chart-compare-toggle .toggle-slider {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      background: var(--border-color);
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+
+    .trend-chart-compare-toggle .toggle-slider::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .trend-chart-compare-toggle input:checked + .toggle-slider {
+      background: var(--primary-color);
+    }
+
+    .trend-chart-compare-toggle input:checked + .toggle-slider::after {
+      transform: translateX(16px);
+    }
+
+    .trend-chart-compare-toggle .toggle-label {
+      color: var(--text-secondary);
+    }
+
+    /* 图例 */
+    .trend-chart-legend {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      padding: var(--spacing-sm) 0;
+    }
+
+    .trend-chart-legend .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .trend-chart-legend .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .trend-chart-legend .legend-line {
+      width: 16px;
+      height: 0;
+      border-top: 2px dashed;
+    }
+
+    .trend-chart-area {
+      height: 340px;
+      position: relative;
+    }
+
+    .trend-chart-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ----------------------------------------
+       6. 数据表格组件 (DataTable)
+       ---------------------------------------- */
+    .data-table-container {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .data-table-title {
+      padding: var(--spacing-lg) var(--spacing-xl);
+      font-size: var(--font-size-lg);
+      font-weight: 500;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .data-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--font-size-base);
+    }
+
+    .data-table thead {
+      background: var(--bg-secondary);
+    }
+
+    .data-table th {
+      padding: var(--spacing-md) var(--spacing-lg);
+      text-align: left;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .data-table-row:hover {
+      background: var(--bg-secondary);
+    }
+
+    .data-table-row.has-children {
+      font-weight: 500;
+    }
+
+    .data-table-row.child-row {
+      font-weight: normal;
+    }
+
+    .data-table-row.child-row .dimension-name {
+      color: var(--text-secondary);
+    }
+
+    .dimension-header,
+    .dimension-cell {
+      min-width: 150px;
+    }
+
+    .dimension-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .expand-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 10px;
+      color: var(--text-tertiary);
+      transition: transform 0.2s;
+    }
+
+    .expand-icon.expanded {
+      transform: rotate(0deg);
+    }
+
+    .expand-placeholder {
+      width: 16px;
+      height: 16px;
+    }
+
+    .dimension-name {
+      color: var(--text-primary);
+    }
+
+    .value-header,
+    .value-cell {
+      min-width: 200px;
+    }
+
+    .value-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .value-number {
+      font-weight: 500;
+      color: var(--text-primary);
+      min-width: 80px;
+    }
+
+    .percentage-bar-container {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      flex: 1;
+      max-width: 150px;
+    }
+
+    .percentage-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .percentage-fill {
+      height: 100%;
+      background: var(--primary-color);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .percentage-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .percentage-header,
+    .percentage-cell {
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .percentage-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+    }
+
+    .trend-header,
+    .trend-cell {
+      min-width: 100px;
+      text-align: right;
+    }
+
+    .table-trend {
+      font-weight: 500;
+    }
+
+    .table-trend.up {
+      color: var(--error-color);
+    }
+
+    .table-trend.down {
+      color: var(--success-color);
+    }
+
+    .total-row {
+      background: var(--bg-secondary);
+      font-weight: 500;
+    }
+
+    .total-row .dimension-name {
+      font-weight: 600;
+    }
+
+    .total-row .value-number {
+      font-weight: 600;
+    }
+
+    /* ----------------------------------------
+       7. AI 智能解读面板
+       ---------------------------------------- */
+    .ai-insight-panel {
+      background: linear-gradient(135deg, #FFF8E6 0%, #FFF5D9 100%);
+      border: 1px solid #FFE4B3;
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+    }
+
+    .ai-insight-header {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .ai-insight-header .ai-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--warning-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .ai-insight-header .ai-title {
+      font-size: var(--font-size-base);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .ai-insight-header .ai-detail-btn {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--primary-color);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .ai-insight-content {
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .ai-insight-content .insight-item {
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .ai-insight-content .insight-label {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* ----------------------------------------
+       7. 页面工具栏
+       ---------------------------------------- */
+    .page-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-lg);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+    }
+
+    .page-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+
+    .page-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .toolbar-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: var(--font-size-base);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+    }
+
+    .toolbar-btn:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .toolbar-btn.primary {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+    }
+
+    .toolbar-btn.primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* ----------------------------------------
+       8. 标签页切换
+       ---------------------------------------- */
+    .tab-nav {
+      display: flex;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    .tab-nav-item {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: transparent;
+    }
+
+    .tab-nav-item:hover {
+      color: var(--primary-color);
+    }
+
+    .tab-nav-item.active {
+      background: var(--bg-primary);
+      color: var(--primary-color);
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ----------------------------------------
+       9. 对比日期展示
+       ---------------------------------------- */
+    .compare-date-display {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .compare-date-display .compare-label {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .compare-date-display .date-separator {
+      color: var(--text-tertiary);
+    }
+
+    /* ----------------------------------------
+       10. 侧边栏
+       ---------------------------------------- */
+    .biz-analysis-sidebar {
+      width: 180px;
+      background: #1a1a2e;
+      color: #fff;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .sidebar-subtitle {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .sidebar-nav {
+      padding: 16px;
+    }
+
+    .sidebar-nav-item {
+      padding: 12px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .sidebar-nav-item.active {
+      background: var(--primary-color);
+    }
+
+    /* ----------------------------------------
+       辅助样式
+       ---------------------------------------- */
+    .label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-right: var(--spacing-sm);
+    }
+
+    .demo-note {
+      font-size: var(--font-size-sm);
+      color: var(--text-tertiary);
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-md);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .demo-row {
+        flex-direction: column;
+      }
+
+      .store-selector-dropdown {
+        width: 100%;
+        max-width: 360px;
+      }
+
+      .formula-display {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- 页面头部 -->
+    <div class="demo-header">
+      <h1>经营分析组件库</h1>
+      <p>基于有赞 Zan Design 设计规范的前端组件库演示</p>
+    </div>
+
+    <!-- 1. 店铺选择组件 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">1. 店铺选择组件 (StoreSelector)</h2>
+
+      <h3 style="font-size: 14px; color: #666; margin-bottom: 12px;">触发器 - 全部店铺</h3>
+      <div class="store-selector-trigger-area">
+        <div class="store-selector-trigger">
+          <span class="store-tag">
+            全部店铺
+            <span class="tag-close">×</span>
+          </span>
+        </div>
+        <button class="store-batch-btn">批量选择</button>
+      </div>
+
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">触发器 - 已选部分店铺</h3>
+      <div class="store-selector-trigger-area">
+        <div class="store-selector-trigger">
+          <span class="store-tag">
+            已选3个店铺
+            <span class="tag-close">×</span>
+          </span>
+        </div>
+        <button class="store-clear-btn">×</button>
+        <button class="store-batch-btn">批量选择</button>
+      </div>
+
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">直接选择下拉</h3>
+      <div class="store-selector" style="position: relative;">
+        <div class="store-selector-trigger-area">
+          <div class="store-selector-trigger">
+            <span class="store-tag">
+              全部店铺
+              <span class="tag-close">×</span>
+            </span>
+          </div>
+          <button class="store-batch-btn">批量选择</button>
+        </div>
+        <!-- 下拉面板 -->
+        <div class="store-selector-dropdown" style="display: block; position: absolute; top: 100%; left: 0; margin-top: 4px;">
+          <!-- 搜索框 -->
+          <div class="store-search-box">
+            <input type="text" class="store-search-input" placeholder="请输入店铺名称">
+            <span class="search-icon">🔍</span>
+          </div>
+          <!-- 全部店铺选项 -->
+          <div class="store-all-option selected">
+            <span class="option-text">全部店铺</span>
+            <span class="check-icon">✓</span>
+          </div>
+          <!-- 店铺列表 -->
+          <div class="store-list">
+            <div class="store-list-item">
+              <span class="store-type-tag">门店</span>
+              <span class="store-name">商城迁移成一体化商品未迁移</span>
+            </div>
+            <div class="store-list-item selected">
+              <span class="store-type-tag">门店</span>
+              <span class="store-name">我的门店77</span>
+              <span class="check-icon">✓</span>
+            </div>
+            <div class="store-list-item">
+              <span class="store-type-tag">门店</span>
+              <span class="store-name">ysq-zy先款后货独立销售门店-15264...</span>
+            </div>
+            <div class="store-list-item">
+              <span class="store-type-tag">门店</span>
+              <span class="store-name">果盘的一体化1017</span>
+            </div>
+            <div class="store-list-item">
+              <span class="store-type-tag">门店</span>
+              <span class="store-name">123456</span>
+            </div>
+          </div>
+          <!-- 底部操作栏 -->
+          <div class="store-dropdown-footer">
+            <label class="show-closed-stores">
+              <input type="checkbox">
+              <span>显示打烊店铺</span>
+              <span class="help-icon">?</span>
+            </label>
+            <button class="toolbar-btn primary">确认</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">批量选择弹窗</h3>
+      <div class="store-batch-modal-overlay" style="position: relative; height: 400px; background: rgba(0,0,0,0.1);">
+        <div class="store-batch-modal" style="max-height: 380px;">
+          <!-- 弹窗头部 -->
+          <div class="store-batch-modal-header">
+            <h3 class="modal-title">批量选择店铺</h3>
+            <button class="modal-close">×</button>
+          </div>
+          <!-- 弹窗内容 -->
+          <div class="store-batch-modal-content">
+            <!-- 筛选器 -->
+            <div class="store-batch-filters">
+              <label class="show-closed-stores">
+                <input type="checkbox">
+                <span>显示打烊店铺</span>
+              </label>
+              <select class="filter-select">
+                <option>全部店铺类型</option>
+                <option>门店</option>
+                <option>网店</option>
+              </select>
+              <select class="filter-select">
+                <option>全部销售渠道</option>
+                <option>门店渠道</option>
+                <option>网店渠道</option>
+              </select>
+              <div class="store-search-box" style="flex: 1; margin-left: auto; padding: 0;">
+                <input type="text" class="store-search-input" placeholder="请输入店铺名称" style="border-radius: 4px;">
+                <span class="search-icon">🔍</span>
+              </div>
+            </div>
+            <!-- 表格 -->
+            <div class="store-batch-table-wrapper">
+              <table class="store-batch-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px;"><input type="checkbox"></th>
+                    <th>店铺名称</th>
+                    <th style="width: 150px;">销售渠道</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td><span class="store-type-tag">门店</span> 商城迁移成一体化商品未迁移</td>
+                    <td>
+                      <div class="channel-tags">
+                        <span>门店渠道</span>
+                        <span>网店渠道</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td><span class="store-type-tag">门店</span> 我的门店77</td>
+                    <td>
+                      <div class="channel-tags">
+                        <span>门店渠道</span>
+                        <span>网店渠道</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td><span class="store-type-tag">门店</span> ysq-zy先款后货独立销售门店-152641538</td>
+                    <td>
+                      <div class="channel-tags">
+                        <span>门店渠道</span>
+                        <span>网店渠道</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td><span class="store-type-tag">门店</span> 果盘的一体化1017</td>
+                    <td>
+                      <div class="channel-tags">
+                        <span>门店渠道</span>
+                        <span>网店渠道</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td><span class="store-type-tag">门店</span> 123456</td>
+                    <td>
+                      <div class="channel-tags">
+                        <span>门店渠道</span>
+                        <span>网店渠道</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- 弹窗底部 -->
+          <div class="store-batch-modal-footer">
+            <span class="selected-info">已选 <strong>0</strong> 个店铺</span>
+            <div class="action-buttons">
+              <button class="toolbar-btn">取消</button>
+              <button class="toolbar-btn primary">确认</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 统计时间组件 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">2. 统计时间组件 (TimeSelector)</h2>
+
+      <!-- 实时模式 -->
+      <h3 style="font-size: 14px; color: #666; margin-bottom: 12px;">实时模式</h3>
+      <div class="time-selector">
+        <span class="time-selector-label">统计时间：</span>
+        <div class="time-selector-dropdown-wrapper">
+          <div class="time-selector-trigger">
+            <span>实时</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+        </div>
+        <div class="time-selector-realtime">
+          <span class="realtime-time">2026-04-07 10:30:25</span>
+          <button class="refresh-link">刷新</button>
+        </div>
+      </div>
+
+      <!-- 日模式 -->
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">日模式</h3>
+      <div class="time-selector">
+        <span class="time-selector-label">统计时间：</span>
+        <div class="time-selector-dropdown-wrapper">
+          <div class="time-selector-trigger">
+            <span>日</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+        </div>
+        <div class="time-selector-display">
+          <span class="date-text">2026-04-07</span>
+          <span class="calendar-icon">📅</span>
+        </div>
+        <div class="time-selector-shortcuts">
+          <button class="shortcut-btn">今天</button>
+          <button class="shortcut-btn">昨天</button>
+          <button class="shortcut-btn">前天</button>
+        </div>
+      </div>
+
+      <!-- 周模式 -->
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">周模式</h3>
+      <div class="time-selector">
+        <span class="time-selector-label">统计时间：</span>
+        <div class="time-selector-dropdown-wrapper">
+          <div class="time-selector-trigger">
+            <span>周</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+        </div>
+        <div class="time-selector-display">
+          <span class="date-text">2026-04-06 至 2026-04-12</span>
+          <span class="calendar-icon">📅</span>
+        </div>
+        <div class="time-selector-shortcuts">
+          <button class="shortcut-btn">本周</button>
+          <button class="shortcut-btn">上周</button>
+        </div>
+      </div>
+
+      <!-- 月模式 -->
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">月模式</h3>
+      <div class="time-selector">
+        <span class="time-selector-label">统计时间：</span>
+        <div class="time-selector-dropdown-wrapper">
+          <div class="time-selector-trigger">
+            <span>月</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+        </div>
+        <div class="time-selector-display">
+          <span class="date-text">2026-04</span>
+          <span class="calendar-icon">📅</span>
+        </div>
+        <div class="time-selector-shortcuts">
+          <button class="shortcut-btn">本月</button>
+          <button class="shortcut-btn">上个月</button>
+        </div>
+      </div>
+
+      <!-- 自定义模式 -->
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">自定义模式</h3>
+      <div class="time-selector">
+        <span class="time-selector-label">统计时间：</span>
+        <div class="time-selector-dropdown-wrapper">
+          <div class="time-selector-trigger">
+            <span>自定义</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+        </div>
+        <div class="time-selector-custom">
+          <input type="date" class="date-input" value="2026-04-01">
+          <span class="date-separator">至</span>
+          <input type="date" class="date-input" value="2026-04-07">
+          <span class="calendar-icon">📅</span>
+        </div>
+        <div class="time-selector-shortcuts">
+          <button class="shortcut-btn">今天</button>
+          <button class="shortcut-btn">昨天</button>
+          <button class="shortcut-btn">本周</button>
+          <button class="shortcut-btn">上周</button>
+          <button class="shortcut-btn">近7天</button>
+          <button class="shortcut-btn">本月</button>
+          <button class="shortcut-btn">上个月</button>
+          <button class="shortcut-btn">近30天</button>
+          <button class="shortcut-btn">本季度</button>
+          <button class="shortcut-btn">今年</button>
+        </div>
+      </div>
+
+      <!-- 下拉展开示例 -->
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">下拉展开示例</h3>
+      <div class="time-selector">
+        <span class="time-selector-label">统计时间：</span>
+        <div class="time-selector-dropdown-wrapper" style="position: relative;">
+          <div class="time-selector-trigger">
+            <span>日</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+          <div class="time-selector-dropdown-menu" style="display: block; position: absolute;">
+            <div class="dropdown-item">实时</div>
+            <div class="dropdown-item active">日</div>
+            <div class="dropdown-item">周</div>
+            <div class="dropdown-item">月</div>
+            <div class="dropdown-item">自定义</div>
+          </div>
+        </div>
+        <div class="time-selector-display">
+          <span class="date-text">2026-04-07</span>
+          <span class="calendar-icon">📅</span>
+        </div>
+        <div class="time-selector-shortcuts">
+          <button class="shortcut-btn">今天</button>
+          <button class="shortcut-btn">昨天</button>
+          <button class="shortcut-btn">前天</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 全局筛选控制栏 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">3. 全局筛选控制栏 (GlobalFilterBar)</h2>
+      <p style="font-size: 14px; color: #666; margin-bottom: 16px;">店铺选择器和时间选择器作为全局控制组件，可以联动控制页面中所有组件的数据展示</p>
+
+      <div class="global-filter-bar">
+        <div class="global-filter-bar-content">
+          <!-- 店铺选择器 -->
+          <div class="filter-item">
+            <span class="filter-label">店铺：</span>
+            <div class="store-selector">
+              <div class="store-selector-trigger-area">
+                <div class="store-selector-trigger">
+                  <span class="store-tag">全部店铺</span>
+                </div>
+                <button class="store-batch-btn">批量选择</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 时间选择器 -->
+          <div class="filter-item">
+            <span class="filter-label">时间：</span>
+            <div class="time-selector">
+              <div class="time-selector-dropdown-wrapper">
+                <div class="time-selector-trigger">
+                  <span>自然日</span>
+                  <span class="dropdown-arrow">▼</span>
+                </div>
+              </div>
+              <div class="time-selector-display">
+                <span class="date-text">2026-04-06</span>
+                <span class="calendar-icon">📅</span>
+              </div>
+              <div class="time-selector-shortcuts">
+                <button class="shortcut-btn">昨日</button>
+                <button class="shortcut-btn">前天</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 刷新按钮 -->
+          <div class="filter-actions">
+            <button class="refresh-btn">
+              <span class="refresh-icon">🔄</span>
+              刷新数据
+            </button>
+          </div>
+        </div>
+
+        <!-- 当前筛选状态 -->
+        <div class="filter-summary">
+          <span class="filter-summary-text">全部店铺 · 2026-04-06</span>
+        </div>
+      </div>
+
+      <div class="demo-note">
+        当切换店铺或时间时，下方所有指标卡、趋势图、数据表格都会自动刷新对应的数据
+      </div>
+    </div>
+
+    <!-- 4. 单级指标卡 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">4. 单级指标卡 (MetricCard)</h2>
+      <div class="demo-row">
+        <div class="metric-card active">
+          <div class="metric-card-header">
+            <span class="metric-card-title">营业收入(元)</span>
+          </div>
+          <div class="metric-card-value">15,426.63</div>
+          <div class="metric-card-trends">
+            <div class="metric-card-trend">
+              <span class="trend-label">同比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                10%
+              </span>
+            </div>
+            <div class="metric-card-trend">
+              <span class="trend-label">环比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                20%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">支付订单数</span>
+          </div>
+          <div class="metric-card-value">15,000</div>
+          <div class="metric-card-trends">
+            <div class="metric-card-trend">
+              <span class="trend-label">同比</span>
+              <span class="trend-value down">
+                <span class="trend-icon">▼</span>
+                5%
+              </span>
+            </div>
+            <div class="metric-card-trend">
+              <span class="trend-label">环比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                12%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">客单价(元)</span>
+          </div>
+          <div class="metric-card-value">111.00</div>
+          <div class="metric-card-trends">
+            <div class="metric-card-trend">
+              <span class="trend-label">同比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                8%
+              </span>
+            </div>
+            <div class="metric-card-trend">
+              <span class="trend-label">环比</span>
+              <span class="trend-value down">
+                <span class="trend-icon">▼</span>
+                3%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 14px; color: #666; margin: 24px 0 12px;">带公式关系的指标卡组合</h3>
+      <div class="formula-display">
+        <!-- 结果 -->
+        <div class="metric-card active">
+          <div class="metric-card-header">
+            <span class="metric-card-title">营业收入(元)</span>
+          </div>
+          <div class="metric-card-value">15,426.63</div>
+          <div class="metric-card-trends">
+            <div class="metric-card-trend">
+              <span class="trend-label">同比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                10%
+              </span>
+            </div>
+            <div class="metric-card-trend">
+              <span class="trend-label">环比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                20%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-operator">=</div>
+
+        <!-- 左操作数 -->
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">营业额(元)</span>
+          </div>
+          <div class="metric-card-value">30,853.26</div>
+          <div class="metric-card-trends">
+            <div class="metric-card-trend">
+              <span class="trend-label">同比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                10%
+              </span>
+            </div>
+            <div class="metric-card-trend">
+              <span class="trend-label">环比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                20%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-operator">-</div>
+
+        <!-- 右操作数 -->
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">优惠金额(元)</span>
+          </div>
+          <div class="metric-card-value">15,426.63</div>
+          <div class="metric-card-trends">
+            <div class="metric-card-trend">
+              <span class="trend-label">同比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                10%
+              </span>
+            </div>
+            <div class="metric-card-trend">
+              <span class="trend-label">环比</span>
+              <span class="trend-value up">
+                <span class="trend-icon">▲</span>
+                20%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-note">
+        公式说明：营业收入 = 营业额 - 优惠金额
+      </div>
+    </div>
+
+    <!-- 4. 二级指标卡 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">5. 二级指标卡 (SecondaryMetricCard)</h2>
+      <div class="secondary-metrics-container">
+        <div style="font-size: 14px; color: #666; margin-bottom: 16px;">营业收入的构成指标</div>
+        <div class="secondary-metrics-grid">
+          <div class="secondary-metric-card">
+            <div class="metric-title">支付订单数</div>
+            <div class="metric-value">15,000</div>
+            <div class="metric-trends">
+              <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+              <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+            </div>
+          </div>
+          <div class="secondary-metric-card">
+            <div class="metric-title">均单价</div>
+            <div class="metric-value">111</div>
+            <div class="metric-trends">
+              <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+              <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value down">▼ 5%</span></div>
+            </div>
+          </div>
+          <div class="secondary-metric-card">
+            <div class="metric-title">支付人数</div>
+            <div class="metric-value">12,500</div>
+            <div class="metric-trends">
+              <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 8%</span></div>
+              <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 15%</span></div>
+            </div>
+          </div>
+          <div class="secondary-metric-card">
+            <div class="metric-title">客单价</div>
+            <div class="metric-value">185</div>
+            <div class="metric-trends">
+              <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value down">▼ 2%</span></div>
+              <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 12%</span></div>
+            </div>
+          </div>
+          <div class="secondary-metric-card">
+            <div class="metric-title">退款金额</div>
+            <div class="metric-value">1,250</div>
+            <div class="metric-trends">
+              <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value down">▼ 5%</span></div>
+              <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value down">▼ 8%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 趋势图组件 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">6. 趋势图组件 (TrendChart)</h2>
+
+      <!-- 单指标模式（无对比） -->
+      <div style="margin-bottom: 32px;">
+        <div style="font-size: 14px; color: #666; margin-bottom: 12px;">单指标模式（无时间对比）</div>
+        <div class="trend-chart-container">
+          <div class="trend-chart-header">
+            <div class="trend-chart-title">营业收入(元)</div>
+            <div class="trend-chart-controls">
+              <div class="trend-chart-granularity">
+                <button class="granularity-btn active">日趋势</button>
+                <button class="granularity-btn">小时趋势</button>
+              </div>
+              <label class="trend-chart-compare-toggle">
+                <input type="checkbox">
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">时间对比</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 单指标模式：只显示指标名称作为图例 -->
+          <div class="trend-chart-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #155BD4;"></span>
+              <span class="legend-text">营业收入(元)</span>
+            </div>
+          </div>
+
+          <div class="trend-chart-area" style="height: 280px;">
+            <svg class="trend-chart-svg" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="singleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#155BD4" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#155BD4" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- 网格线 -->
+              <line x1="70" y1="40" x2="740" y2="40" stroke="#F0F0F0"/>
+              <line x1="70" y1="90" x2="740" y2="90" stroke="#F0F0F0"/>
+              <line x1="70" y1="140" x2="740" y2="140" stroke="#F0F0F0"/>
+              <line x1="70" y1="190" x2="740" y2="190" stroke="#F0F0F0"/>
+              <!-- Y轴标签 -->
+              <text x="60" y="44" font-size="11" fill="#999" text-anchor="end">100</text>
+              <text x="60" y="94" font-size="11" fill="#999" text-anchor="end">75</text>
+              <text x="60" y="144" font-size="11" fill="#999" text-anchor="end">50</text>
+              <text x="60" y="194" font-size="11" fill="#999" text-anchor="end">25</text>
+              <!-- X轴标签 -->
+              <text x="70" y="230" font-size="11" fill="#999" text-anchor="middle">07-12</text>
+              <text x="182" y="230" font-size="11" fill="#999" text-anchor="middle">07-15</text>
+              <text x="294" y="230" font-size="11" fill="#999" text-anchor="middle">07-18</text>
+              <text x="406" y="230" font-size="11" fill="#999" text-anchor="middle">07-21</text>
+              <text x="518" y="230" font-size="11" fill="#999" text-anchor="middle">07-24</text>
+              <text x="630" y="230" font-size="11" fill="#999" text-anchor="middle">07-27</text>
+              <text x="740" y="230" font-size="11" fill="#999" text-anchor="middle">07-30</text>
+              <!-- 面积 -->
+              <path d="M 70,180 C 98,175 126,170 154,165 C 182,160 210,140 238,130 C 266,120 294,110 322,105 C 350,100 378,95 406,90 C 434,85 462,80 490,75 C 518,70 546,65 574,60 C 602,55 630,50 658,45 C 686,40 714,35 740,30 L 740,200 L 70,200 Z" fill="url(#singleGradient)"/>
+              <!-- 曲线 -->
+              <path d="M 70,180 C 98,175 126,170 154,165 C 182,160 210,140 238,130 C 266,120 294,110 322,105 C 350,100 378,95 406,90 C 434,85 462,80 490,75 C 518,70 546,65 574,60 C 602,55 630,50 658,45 C 686,40 714,35 740,30" fill="none" stroke="#155BD4" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 对比模式 -->
+      <div>
+        <div style="font-size: 14px; color: #666; margin-bottom: 12px;">时间对比模式</div>
+        <div class="trend-chart-container">
+          <div class="trend-chart-header">
+            <div class="trend-chart-title">营业收入趋势</div>
+            <div class="trend-chart-controls">
+              <div class="trend-chart-granularity">
+                <button class="granularity-btn active">日趋势</button>
+                <button class="granularity-btn">小时趋势</button>
+              </div>
+              <label class="trend-chart-compare-toggle">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">时间对比</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 图例 -->
+          <div class="trend-chart-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #155BD4;"></span>
+              <span class="legend-text">本期数据</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #ED6A18;"></span>
+            <span class="legend-text">对比数据</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="border-color: #999;"></span>
+            <span class="legend-text">平均值</span>
+          </div>
+        </div>
+
+        <div class="trend-chart-area">
+          <svg class="trend-chart-svg" viewBox="0 0 800 340" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <!-- 主数据渐变 -->
+              <linearGradient id="mainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#155BD4" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#155BD4" stop-opacity="0"/>
+              </linearGradient>
+              <!-- 对比数据渐变 -->
+              <linearGradient id="compareGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ED6A18" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#ED6A18" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            <!-- 网格线 - 水平 -->
+            <line x1="70" y1="40" x2="740" y2="40" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="70" y1="90" x2="740" y2="90" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="70" y1="140" x2="740" y2="140" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="70" y1="190" x2="740" y2="190" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="70" y1="240" x2="740" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+
+            <!-- 网格线 - 垂直 -->
+            <line x1="70" y1="40" x2="70" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="182" y1="40" x2="182" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="294" y1="40" x2="294" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="406" y1="40" x2="406" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="518" y1="40" x2="518" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="630" y1="40" x2="630" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="740" y1="40" x2="740" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+
+            <!-- Y轴标签 -->
+            <text x="60" y="44" font-size="11" fill="#999" text-anchor="end">1,200</text>
+            <text x="60" y="94" font-size="11" fill="#999" text-anchor="end">900</text>
+            <text x="60" y="144" font-size="11" fill="#999" text-anchor="end">600</text>
+            <text x="60" y="194" font-size="11" fill="#999" text-anchor="end">300</text>
+            <text x="60" y="244" font-size="11" fill="#999" text-anchor="end">0</text>
+
+            <!-- X轴标签 -->
+            <text x="70" y="270" font-size="11" fill="#999" text-anchor="middle">02-01</text>
+            <text x="182" y="270" font-size="11" fill="#999" text-anchor="middle">02-05</text>
+            <text x="294" y="270" font-size="11" fill="#999" text-anchor="middle">02-10</text>
+            <text x="406" y="270" font-size="11" fill="#999" text-anchor="middle">02-15</text>
+            <text x="518" y="270" font-size="11" fill="#999" text-anchor="middle">02-20</text>
+            <text x="630" y="270" font-size="11" fill="#999" text-anchor="middle">02-24</text>
+            <text x="740" y="270" font-size="11" fill="#999" text-anchor="middle">02-28</text>
+
+            <!-- 主数据面积 -->
+            <path d="M 70,180 C 98,190 126,170 154,160 C 182,150 210,140 238,120 C 266,100 294,90 322,80 C 350,70 378,60 406,50 C 434,55 462,70 490,85 C 518,100 546,110 574,105 C 602,100 630,90 658,80 C 686,70 714,60 740,55 L 740,240 L 70,240 Z" fill="url(#mainGradient)"/>
+
+            <!-- 对比数据面积 -->
+            <path d="M 70,200 C 98,210 126,195 154,185 C 182,175 210,165 238,155 C 266,145 294,135 322,125 C 350,115 378,110 406,105 C 434,100 462,105 490,115 C 518,125 546,130 574,125 C 602,120 630,110 658,100 C 686,90 714,85 740,80 L 740,240 L 70,240 Z" fill="url(#compareGradient)"/>
+
+            <!-- 平均值线 - 主数据 -->
+            <line x1="70" y1="115" x2="740" y2="115" stroke="#155BD4" stroke-dasharray="4,4" stroke-width="1" opacity="0.6"/>
+            <g transform="translate(748, 115)">
+              <rect x="-4" y="-10" width="50" height="20" fill="#155BD4" rx="2"/>
+              <text x="21" y="4" font-size="10" fill="#fff" text-anchor="middle">平均</text>
+            </g>
+
+            <!-- 平均值线 - 对比数据 -->
+            <line x1="70" y1="145" x2="740" y2="145" stroke="#ED6A18" stroke-dasharray="4,4" stroke-width="1" opacity="0.6"/>
+            <g transform="translate(748, 145)">
+              <rect x="-4" y="-10" width="50" height="20" fill="#ED6A18" rx="2"/>
+              <text x="21" y="4" font-size="10" fill="#fff" text-anchor="middle">平均</text>
+            </g>
+
+            <!-- 对比数据线 -->
+            <path d="M 70,200 C 98,210 126,195 154,185 C 182,175 210,165 238,155 C 266,145 294,135 322,125 C 350,115 378,110 406,105 C 434,100 462,105 490,115 C 518,125 546,130 574,125 C 602,120 630,110 658,100 C 686,90 714,85 740,80" fill="none" stroke="#ED6A18" stroke-width="2"/>
+
+            <!-- 主数据线 -->
+            <path d="M 70,180 C 98,190 126,170 154,160 C 182,150 210,140 238,120 C 266,100 294,90 322,80 C 350,70 378,60 406,50 C 434,55 462,70 490,85 C 518,100 546,110 574,105 C 602,100 630,90 658,80 C 686,70 714,60 740,55" fill="none" stroke="#155BD4" stroke-width="2"/>
+
+            <!-- 对比数据点 -->
+            <circle cx="70" cy="200" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="154" cy="185" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="238" cy="155" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="322" cy="125" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="406" cy="105" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="490" cy="115" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="574" cy="125" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="658" cy="100" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+            <circle cx="740" cy="80" r="3" fill="#fff" stroke="#ED6A18" stroke-width="2"/>
+
+            <!-- 主数据点 -->
+            <circle cx="70" cy="180" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="154" cy="160" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="238" cy="120" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="322" cy="80" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="406" cy="50" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="490" cy="85" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="574" cy="105" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="658" cy="80" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+            <circle cx="740" cy="55" r="3" fill="#fff" stroke="#155BD4" stroke-width="2"/>
+
+            <!-- 悬浮提示示例 -->
+            <line x1="406" y1="40" x2="406" y2="240" stroke="#999" stroke-dasharray="3,3" stroke-width="1" opacity="0.5"/>
+            <g transform="translate(416, 50)">
+              <rect x="0" y="0" width="140" height="70" fill="rgba(0, 0, 0, 0.8)" rx="4"/>
+              <text x="10" y="18" font-size="11" fill="#fff">02-15</text>
+              <text x="10" y="38" font-size="11" fill="#fff"><tspan fill="#4A9AFF">●</tspan> 本期: 1,050元</text>
+              <text x="10" y="58" font-size="11" fill="#fff"><tspan fill="#FFA94D">●</tspan> 对比: 875元</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 数据表格组件 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">7. 数据表格组件 (DataTable)</h2>
+      <div class="data-table-container">
+        <div class="data-table-title">营业收入渠道分析</div>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="dimension-header">销售渠道</th>
+                <th class="value-header">营业收入(元)</th>
+                <th class="trend-header">环比</th>
+                <th class="trend-header">同比</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="data-table-row has-children">
+                <td class="dimension-cell">
+                  <div class="dimension-content">
+                    <span class="expand-icon">▼</span>
+                    <span class="dimension-name">门店渠道</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">12,345</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 40%;"></div>
+                      </div>
+                      <span class="percentage-text">40%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="data-table-row has-children">
+                <td class="dimension-cell">
+                  <div class="dimension-content">
+                    <span class="expand-icon expanded">▼</span>
+                    <span class="dimension-name">网店渠道</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">12,300</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 35%;"></div>
+                      </div>
+                      <span class="percentage-text">35%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="data-table-row child-row">
+                <td class="dimension-cell" style="padding-left: 40px;">
+                  <div class="dimension-content">
+                    <span class="expand-placeholder"></span>
+                    <span class="dimension-name">支付宝</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">123</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 10%;"></div>
+                      </div>
+                      <span class="percentage-text">10%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="data-table-row child-row">
+                <td class="dimension-cell" style="padding-left: 40px;">
+                  <div class="dimension-content">
+                    <span class="expand-placeholder"></span>
+                    <span class="dimension-name">直接购买</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">123</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 10%;"></div>
+                      </div>
+                      <span class="percentage-text">10%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="data-table-row child-row">
+                <td class="dimension-cell" style="padding-left: 40px;">
+                  <div class="dimension-content">
+                    <span class="expand-placeholder"></span>
+                    <span class="dimension-name">浏览器</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">123</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 10%;"></div>
+                      </div>
+                      <span class="percentage-text">10%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="data-table-row has-children">
+                <td class="dimension-cell">
+                  <div class="dimension-content">
+                    <span class="expand-icon expanded">▼</span>
+                    <span class="dimension-name">美团外卖渠道</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">123</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 10%;"></div>
+                      </div>
+                      <span class="percentage-text">10%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="data-table-row child-row">
+                <td class="dimension-cell" style="padding-left: 40px;">
+                  <div class="dimension-content">
+                    <span class="expand-placeholder"></span>
+                    <span class="dimension-name">未知</span>
+                  </div>
+                </td>
+                <td class="value-cell">
+                  <div class="value-content">
+                    <span class="value-number">123</span>
+                    <div class="percentage-bar-container">
+                      <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 10%;"></div>
+                      </div>
+                      <span class="percentage-text">10%</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+              <tr class="total-row">
+                <td class="dimension-cell">
+                  <span class="dimension-name">合计</span>
+                </td>
+                <td class="value-cell">
+                  <span class="value-number">123,456,700</span>
+                </td>
+                
+                <td class="trend-cell"><span class="table-trend down">-12.2%</span></td>
+                <td class="trend-cell"><span class="table-trend up">+80.8%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. AI 智能解读面板 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">8. AI 智能解读面板 (AIInsightPanel)</h2>
+      <div class="ai-insight-panel">
+        <div class="ai-insight-header">
+          <span class="ai-icon">AI</span>
+          <span class="ai-title">智能解读</span>
+          <button class="ai-detail-btn">查看详情 →</button>
+        </div>
+        <div class="ai-insight-content">
+          <div class="insight-item">
+            <span class="insight-label">数据概览：</span>
+            2026年3月8日营业收入是322,043元，比2026年3月7日增长4%，增幅为12,616元；比2026年3月2日下降7%，同比减少23,539元。
+          </div>
+          <div class="insight-item">
+            <span class="insight-label">波动类型：</span>
+            周期性波动、平稳波动
+          </div>
+          <div class="insight-item">
+            <span class="insight-label">波动说明：</span>
+            2026年3月8日为三八妇女节+周末，营业收入环比略涨，同比略降，金额表现处于近期高位，并未出现异常波动，属于节日和周末共同驱动的周期性上涨，同时在节日连续两年之间保持一定稳定性，体现了平稳波动特征。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. 页面工具栏 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">9. 页面工具栏 (PageToolbar)</h2>
+      <div class="page-toolbar">
+        <div class="page-toolbar-left">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="label">统计时间：</span>
+            <div class="time-selector-dropdown-wrapper">
+              <div class="time-selector-trigger">
+                <span>自然月</span>
+                <span class="dropdown-arrow">▼</span>
+              </div>
+            </div>
+            <div class="time-selector-display">
+              <span class="date-text">2026-03-01</span>
+              <span class="calendar-icon">📅</span>
+            </div>
+            <div class="time-selector-shortcuts">
+              <button class="shortcut-btn">本月</button>
+              <button class="shortcut-btn">上个月</button>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="label">选择店铺：</span>
+            <div class="store-selector-trigger-area">
+              <div class="store-selector-trigger">
+                <span class="store-tag">
+                  已选3个店铺
+                  <span class="tag-close">×</span>
+                </span>
+              </div>
+              <button class="store-clear-btn">×</button>
+              <button class="store-batch-btn">批量选择</button>
+            </div>
+          </div>
+        </div>
+        <div class="page-toolbar-right">
+          <button class="toolbar-btn">重置</button>
+          <button class="toolbar-btn primary">高级导出</button>
+          <button class="toolbar-btn primary">布局设置</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. 标签页切换 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">10. 标签页切换 (TabNav)</h2>
+      <div class="tab-nav">
+        <button class="tab-nav-item active">营业</button>
+        <button class="tab-nav-item">收款</button>
+        <button class="tab-nav-item">商品</button>
+        <button class="tab-nav-item">客户</button>
+        <button class="tab-nav-item">店铺排行</button>
+      </div>
+    </div>
+
+    <!-- 9. 对比日期展示 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">11. 对比日期展示 (CompareDateDisplay)</h2>
+      <div class="compare-date-display">
+        <span class="compare-label">对比日期：</span>
+        <span>2026-01-03 至 2026-01-31</span>
+        <span class="date-separator">|</span>
+        <span class="compare-label">环比日期：</span>
+        <span>2025-02-01 至 2025-03-01</span>
+      </div>
+    </div>
+
+    <!-- 10. 联动效果演示 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">12. 联动效果演示 (BI Dashboard)</h2>
+      <div style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden;">
+        <!-- 页面头部工具栏 -->
+        <div style="background: var(--bg-primary); padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <span style="font-weight: 600;">营业总览</span>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <!-- 店铺选择器 -->
+            <div class="store-selector-trigger-area">
+              <div class="store-selector-trigger">
+                <span class="store-tag">全部店铺</span>
+              </div>
+              <button class="store-batch-btn">批量选择</button>
+            </div>
+            <!-- 时间选择器 -->
+            <div class="time-selector">
+              <div class="time-selector-dropdown-wrapper">
+                <div class="time-selector-trigger">
+                  <span>自然日</span>
+                  <span class="dropdown-arrow">▼</span>
+                </div>
+              </div>
+              <div class="time-selector-display">
+                <span class="date-text">2024-02-01</span>
+              </div>
+              <div class="time-selector-shortcuts">
+                <button class="shortcut-btn">昨日</button>
+                <button class="shortcut-btn">前天</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 页面内容 -->
+        <div style="padding: 24px; background: var(--bg-secondary);">
+          <!-- 联动说明 -->
+          <div style="background: var(--primary-light); border: 1px solid var(--primary-color); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; font-size: 14px; color: var(--primary-color);">
+            <strong>💡 联动说明：</strong>点击一级指标卡可切换查看不同指标的趋势图；点击二级指标卡可查看该指标的趋势详情；店铺和时间选择器为全局筛选。
+          </div>
+
+          <!-- 一级指标卡区域（带联动） -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 12px;">一级指标（点击切换趋势图）</div>
+            <div style="display: flex; gap: 16px;">
+              <div class="metric-card active" style="flex: 1; cursor: pointer;">
+                <div class="metric-card-title">营业收入(元)</div>
+                <div class="metric-card-value">322,043</div>
+                <div class="metric-card-trends">
+                  <span class="metric-card-trend"><span class="trend-label">同比</span> <span class="trend-value up">▲ 10%</span></span>
+                  <span class="metric-card-trend"><span class="trend-label">环比</span> <span class="trend-value down">▼ 5%</span></span>
+                </div>
+              </div>
+              <div class="metric-card" style="flex: 1; cursor: pointer;">
+                <div class="metric-card-title">支付订单数</div>
+                <div class="metric-card-value">15,000</div>
+                <div class="metric-card-trends">
+                  <span class="metric-card-trend"><span class="trend-label">同比</span> <span class="trend-value up">▲ 10%</span></span>
+                  <span class="metric-card-trend"><span class="trend-label">环比</span> <span class="trend-value up">▲ 20%</span></span>
+                </div>
+              </div>
+              <div class="metric-card" style="flex: 1; cursor: pointer;">
+                <div class="metric-card-title">客单价(元)</div>
+                <div class="metric-card-value">111.00</div>
+                <div class="metric-card-trends">
+                  <span class="metric-card-trend"><span class="trend-label">同比</span> <span class="trend-value up">▲ 12%</span></span>
+                  <span class="metric-card-trend"><span class="trend-label">环比</span> <span class="trend-value up">▲ 20%</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 二级指标卡区域（带联动） -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 12px;">二级指标（点击二级指标查看对应趋势）</div>
+            <div class="secondary-metrics-container">
+              <div class="secondary-metrics-grid" style="grid-template-columns: repeat(5, 1fr);">
+                <div class="secondary-metric-card active">
+                  <div class="metric-title">支付订单数</div>
+                  <div class="metric-value">15,000</div>
+                  <div class="metric-trends">
+                    <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+                    <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                  </div>
+                </div>
+                <div class="secondary-metric-card" style="cursor: pointer;">
+                  <div class="metric-title">均单价</div>
+                  <div class="metric-value">111</div>
+                  <div class="metric-trends">
+                    <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+                    <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                  </div>
+                </div>
+                <div class="secondary-metric-card" style="cursor: pointer;">
+                  <div class="metric-title">支付人数</div>
+                  <div class="metric-value">15,000</div>
+                  <div class="metric-trends">
+                    <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+                    <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                  </div>
+                </div>
+                <div class="secondary-metric-card" style="cursor: pointer;">
+                  <div class="metric-title">客单价</div>
+                  <div class="metric-value">111</div>
+                  <div class="metric-trends">
+                    <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 12%</span></div>
+                    <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                  </div>
+                </div>
+                <div class="secondary-metric-card" style="cursor: pointer;">
+                  <div class="metric-title">退款金额</div>
+                  <div class="metric-value">1,250</div>
+                  <div class="metric-trends">
+                    <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value down">▼ 5%</span></div>
+                    <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value down">▼ 8%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 趋势图（根据选中指标联动） -->
+          <div class="trend-chart-container">
+            <div class="trend-chart-header">
+              <div class="trend-chart-title">支付订单数趋势</div>
+              <div class="trend-chart-controls">
+                <div class="trend-chart-granularity">
+                  <button class="granularity-btn active">日趋势</button>
+                  <button class="granularity-btn">小时趋势</button>
+                </div>
+                <label class="trend-chart-compare-toggle">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  <span class="toggle-label">时间对比</span>
+                </label>
+              </div>
+            </div>
+            <div class="trend-chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #155BD4;"></span>
+                <span class="legend-text">本期数据</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #ED6A18;"></span>
+                <span class="legend-text">对比数据</span>
+              </div>
+            </div>
+            <div class="trend-chart-area" style="height: 280px;">
+              <svg class="trend-chart-svg" viewBox="0 0 700 200">
+                <defs>
+                  <linearGradient id="mainGradientDemo" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#155BD4" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#155BD4" stop-opacity="0"/>
+                  </linearGradient>
+                  <linearGradient id="compareGradientDemo" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ED6A18" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#ED6A18" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <line x1="50" y1="150" x2="650" y2="150" stroke="#F0F0F0"/>
+                <line x1="50" y1="100" x2="650" y2="100" stroke="#F0F0F0"/>
+                <line x1="50" y1="50" x2="650" y2="50" stroke="#F0F0F0"/>
+                <path d="M 50,120 C 100,110 150,100 200,90 C 250,80 300,70 350,60 C 400,65 450,75 500,50 C 550,45 600,40 650,40 L 650,150 L 50,150 Z" fill="url(#mainGradientDemo)"/>
+                <path d="M 50,140 C 100,135 150,130 200,125 C 250,120 300,115 350,110 C 400,115 450,120 500,110 C 550,105 600,100 650,100 L 650,150 L 50,150 Z" fill="url(#compareGradientDemo)"/>
+                <path d="M 50,120 C 100,110 150,100 200,90 C 250,80 300,70 350,60 C 400,65 450,75 500,50 C 550,45 600,40 650,40" fill="none" stroke="#155BD4" stroke-width="2"/>
+                <path d="M 50,140 C 100,135 150,130 200,125 C 250,120 300,115 350,110 C 400,115 450,120 500,110 C 550,105 600,100 650,100" fill="none" stroke="#ED6A18" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. 完整页面布局演示 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">13. 完整页面布局预览</h2>
+      <div style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden;">
+        <!-- 模拟页面头部 -->
+        <div style="background: #1a1a2e; color: white; padding: 16px 24px; display: flex; align-items: center; gap: 24px;">
+          <div>
+            <div style="font-size: 16px; font-weight: 600;">经营分析平台</div>
+            <div style="font-size: 12px; opacity: 0.7;">有赞数据中心</div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-left: 32px;">
+            <div style="padding: 8px 16px; background: var(--primary-color); border-radius: 4px;">营业总览</div>
+            <div style="padding: 8px 16px; opacity: 0.7;">商品分析</div>
+            <div style="padding: 8px 16px; opacity: 0.7;">客户分析</div>
+          </div>
+        </div>
+
+        <!-- 模拟页面内容 -->
+        <div style="padding: 24px; background: var(--bg-secondary);">
+          <h1 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">营业总览</h1>
+          <p style="color: #666; margin-bottom: 20px;">查看全渠道营业数据及趋势分析</p>
+
+          <!-- AI 解读 -->
+          <div class="ai-insight-panel" style="margin-bottom: 20px;">
+            <div class="ai-insight-header">
+              <span class="ai-icon">AI</span>
+              <span class="ai-title">智能解读</span>
+            </div>
+            <div class="ai-insight-content">
+              <div class="insight-item">
+                <span class="insight-label">数据概览：</span>
+                今日营业收入较昨日增长4%，整体表现良好。
+              </div>
+            </div>
+          </div>
+
+          <!-- 指标卡 -->
+          <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card active" style="flex: 1;">
+              <div class="metric-card-title">营业收入(元)</div>
+              <div class="metric-card-value">15,426.63</div>
+              <div class="metric-card-trends">
+                <span class="metric-card-trend"><span class="trend-label">同比</span> <span class="trend-value up">▲ 10%</span></span>
+                <span class="metric-card-trend"><span class="trend-label">环比</span> <span class="trend-value up">▲ 20%</span></span>
+              </div>
+            </div>
+            <div class="metric-card" style="flex: 1;">
+              <div class="metric-card-title">支付订单数</div>
+              <div class="metric-card-value">15,000</div>
+              <div class="metric-card-trends">
+                <span class="metric-card-trend"><span class="trend-label">同比</span> <span class="trend-value up">▲ 10%</span></span>
+                <span class="metric-card-trend"><span class="trend-label">环比</span> <span class="trend-value up">▲ 20%</span></span>
+              </div>
+            </div>
+            <div class="metric-card" style="flex: 1;">
+              <div class="metric-card-title">客单价(元)</div>
+              <div class="metric-card-value">111.00</div>
+              <div class="metric-card-trends">
+                <span class="metric-card-trend"><span class="trend-label">同比</span> <span class="trend-value up">▲ 12%</span></span>
+                <span class="metric-card-trend"><span class="trend-label">环比</span> <span class="trend-value up">▲ 20%</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 二级指标 -->
+          <div class="secondary-metrics-container" style="margin-bottom: 20px;">
+            <div class="secondary-metrics-grid" style="grid-template-columns: repeat(5, 1fr);">
+              <div class="secondary-metric-card">
+                <div class="metric-title">支付订单数</div>
+                <div class="metric-value">15,000</div>
+                <div class="metric-trends">
+                  <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+                  <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                </div>
+              </div>
+              <div class="secondary-metric-card">
+                <div class="metric-title">均单价</div>
+                <div class="metric-value">111</div>
+                <div class="metric-trends">
+                  <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+                  <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                </div>
+              </div>
+              <div class="secondary-metric-card">
+                <div class="metric-title">支付人数</div>
+                <div class="metric-value">15,000</div>
+                <div class="metric-trends">
+                  <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 10%</span></div>
+                  <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                </div>
+              </div>
+              <div class="secondary-metric-card">
+                <div class="metric-title">客单价</div>
+                <div class="metric-value">111</div>
+                <div class="metric-trends">
+                  <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value up">▲ 12%</span></div>
+                  <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value up">▲ 20%</span></div>
+                </div>
+              </div>
+              <div class="secondary-metric-card">
+                <div class="metric-title">退款金额</div>
+                <div class="metric-value">1,250</div>
+                <div class="metric-trends">
+                  <div class="metric-trend"><span class="metric-trend-label">同比</span> <span class="metric-trend-value down">▼ 5%</span></div>
+                  <div class="metric-trend"><span class="metric-trend-label">环比</span> <span class="metric-trend-value down">▼ 8%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 趋势图 -->
+          <div class="trend-chart-container">
+            <div class="trend-chart-header">
+              <div class="trend-chart-title">营业收入趋势</div>
+              <div class="trend-chart-controls">
+                <div class="trend-chart-granularity">
+                  <button class="granularity-btn active">日趋势</button>
+                  <button class="granularity-btn">小时趋势</button>
+                </div>
+                <label class="trend-chart-compare-toggle">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  <span class="toggle-label">时间对比</span>
+                </label>
+              </div>
+            </div>
+            <div class="trend-chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #155BD4;"></span>
+                <span class="legend-text">本期数据</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #ED6A18;"></span>
+                <span class="legend-text">对比数据</span>
+              </div>
+            </div>
+            <div class="trend-chart-area" style="height: 200px;">
+              <svg class="trend-chart-svg" viewBox="0 0 700 200">
+                <defs>
+                  <linearGradient id="mainGradientMini" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#155BD4" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#155BD4" stop-opacity="0"/>
+                  </linearGradient>
+                  <linearGradient id="compareGradientMini" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ED6A18" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#ED6A18" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <line x1="50" y1="150" x2="650" y2="150" stroke="#F0F0F0"/>
+                <line x1="50" y1="100" x2="650" y2="100" stroke="#F0F0F0"/>
+                <line x1="50" y1="50" x2="650" y2="50" stroke="#F0F0F0"/>
+                <path d="M 50,120 C 100,110 150,100 200,90 C 250,80 300,70 350,60 C 400,65 450,75 500,50 C 550,45 600,40 650,40 L 650,150 L 50,150 Z" fill="url(#mainGradientMini)"/>
+                <path d="M 50,140 C 100,135 150,130 200,125 C 250,120 300,115 350,110 C 400,115 450,120 500,110 C 550,105 600,100 650,100 L 650,150 L 50,150 Z" fill="url(#compareGradientMini)"/>
+                <path d="M 50,120 C 100,110 150,100 200,90 C 250,80 300,70 350,60 C 400,65 450,75 500,50 C 550,45 600,40 650,40" fill="none" stroke="#155BD4" stroke-width="2"/>
+                <path d="M 50,140 C 100,135 150,130 200,125 C 250,120 300,115 350,110 C 400,115 450,120 500,110 C 550,105 600,100 650,100" fill="none" stroke="#ED6A18" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设计规范说明 -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">设计规范</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
+        <div>
+          <h3 style="font-size: 14px; color: #666; margin-bottom: 12px;">颜色系统</h3>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; background: #155BD4; border-radius: 4px;"></div>
+              <div>
+                <div style="font-size: 14px; font-weight: 500;">主色调</div>
+                <div style="font-size: 12px; color: #999;">#155BD4</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; background: #11AD26; border-radius: 4px;"></div>
+              <div>
+                <div style="font-size: 14px; font-weight: 500;">成功/上涨</div>
+                <div style="font-size: 12px; color: #999;">#11AD26</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; background: #D41F15; border-radius: 4px;"></div>
+              <div>
+                <div style="font-size: 14px; font-weight: 500;">错误/下跌</div>
+                <div style="font-size: 12px; color: #999;">#D41F15</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; background: #ED6A18; border-radius: 4px;"></div>
+              <div>
+                <div style="font-size: 14px; font-weight: 500;">警告/AI面板</div>
+                <div style="font-size: 12px; color: #999;">#ED6A18</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-size: 14px; color: #666; margin-bottom: 12px;">字体规范</h3>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px;">
+            <div style="display: flex; justify-content: space-between; padding: 8px; background: #F7F8FA; border-radius: 4px;">
+              <span>核心指标数值</span>
+              <span style="font-size: 32px; font-weight: 600;">32px</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px; background: #F7F8FA; border-radius: 4px;">
+              <span>指标数值</span>
+              <span style="font-size: 24px; font-weight: 600;">24px</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px; background: #F7F8FA; border-radius: 4px;">
+              <span>区块标题</span>
+              <span style="font-size: 20px; font-weight: 600;">20px</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px; background: #F7F8FA; border-radius: 4px;">
+              <span>正文</span>
+              <span style="font-size: 14px;">14px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

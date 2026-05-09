@@ -1,0 +1,1036 @@
+/**
+ * 经营分析组件库 - Zan Design 规范版
+ * 严格遵循有赞 Zan Design 设计规范
+ */
+
+/* ========================================
+   1. 设计 Token (Zan Design 标准)
+   ======================================== */
+
+:root {
+  /* 品牌色 */
+  --zan-primary: #155BD4;
+  --zan-primary-dark: #114BAD;
+  --zan-primary-light: #E9F3FE;
+  --zan-primary-alt: #3570D4;
+
+  /* 功能色 */
+  --zan-success: #11AD26;
+  --zan-success-bg: #E6FFE9;
+  --zan-warning: #ED6A18;
+  --zan-warning-bg: #FFF0E6;
+  --zan-error: #D41F15;
+  --zan-error-bg: #FFE7E6;
+
+  /* 文字色 */
+  --zan-text-primary: #333333;
+  --zan-text-secondary: #666666;
+  --zan-text-tertiary: #999999;
+  --zan-text-disabled: #CCCCCC;
+
+  /* 背景色 */
+  --zan-bg-white: #FFFFFF;
+  --zan-bg-page: #F7F7F7;
+  --zan-bg-hover: #F5F5F5;
+
+  /* 边框色 */
+  --zan-border: #E0E0E0;
+  --zan-border-light: #EBEBEB;
+
+  /* 链接色 */
+  --zan-link: #155BD4;
+  --zan-link-hover: #3570D4;
+  --zan-link-active: #114BAD;
+
+  /* 间距 - 基于 8 点网格法 */
+  --zan-space-xs: 4px;
+  --zan-space-sm: 8px;
+  --zan-space-md: 16px;
+  --zan-space-lg: 24px;
+  --zan-space-xl: 32px;
+  --zan-space-2xl: 40px;
+
+  /* 字号 */
+  --zan-font-xs: 12px;
+  --zan-font-sm: 13px;
+  --zan-font-base: 14px;
+  --zan-font-md: 16px;
+  --zan-font-lg: 18px;
+  --zan-font-xl: 20px;
+  --zan-font-2xl: 24px;
+
+  /* 字重 */
+  --zan-weight-normal: 400;
+  --zan-weight-medium: 500;
+  --zan-weight-bold: 600;
+
+  /* 行高 */
+  --zan-leading-xs: 18px;
+  --zan-leading-sm: 20px;
+  --zan-leading-base: 22px;
+  --zan-leading-md: 24px;
+  --zan-leading-lg: 26px;
+  --zan-leading-xl: 36px;
+  --zan-leading-2xl: 44px;
+
+  /* 圆角 */
+  --zan-radius-sm: 2px;
+  --zan-radius-md: 4px;
+
+  /* 阴影层级 */
+  --zan-shadow-s1: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  --zan-shadow-s2: 0 2px 16px 0 rgba(0, 0, 0, 0.1);
+  --zan-shadow-s3: 0 2px 24px 0 rgba(0, 0, 0, 0.1);
+
+  /* 过渡 */
+  --zan-transition-fast: 100ms;
+  --zan-transition-base: 160ms;
+  --zan-transition-slow: 220ms;
+}
+
+/* ========================================
+   2. 页面框架
+   ======================================== */
+
+.zan-biz-analysis-container {
+  background: var(--zan-bg-page);
+  min-height: 100vh;
+  padding: var(--zan-space-md);
+}
+
+.zan-page-header {
+  margin-bottom: var(--zan-space-lg);
+}
+
+.zan-page-title {
+  font-size: var(--zan-font-2xl);
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-2xl);
+  margin-bottom: var(--zan-space-xs);
+}
+
+.zan-page-subtitle {
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-secondary);
+  line-height: var(--zan-leading-base);
+}
+
+/* ========================================
+   3. 白底卡片（功能模块容器）
+   ======================================== */
+
+.zan-card {
+  background: var(--zan-bg-white);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-lg);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-card-title {
+  font-size: var(--zan-font-md);
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-md);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-card-hint {
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-tertiary);
+  font-weight: var(--zan-weight-normal);
+  margin-left: var(--zan-space-sm);
+}
+
+/* ========================================
+   4. 全局筛选控制栏
+   ======================================== */
+
+.zan-filter-bar {
+  background: var(--zan-bg-white);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-lg);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-filter-bar-content {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-xl);
+  flex-wrap: wrap;
+}
+
+.zan-filter-item {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+}
+
+.zan-filter-label {
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-filter-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-md);
+}
+
+/* ========================================
+   5. 店铺选择组件
+   ======================================== */
+
+.zan-store-selector {
+  position: relative;
+}
+
+.zan-store-selector-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  padding: var(--zan-space-sm) var(--zan-space-md);
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+  transition: all var(--zan-transition-base);
+}
+
+.zan-store-selector-trigger:hover {
+  border-color: var(--zan-primary);
+}
+
+.zan-store-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--zan-space-xs) var(--zan-space-sm);
+  background: var(--zan-primary-light);
+  color: var(--zan-primary);
+  border-radius: var(--zan-radius-sm);
+  font-size: var(--zan-font-sm);
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-store-batch-btn {
+  padding: var(--zan-space-xs) var(--zan-space-md);
+  font-size: var(--zan-font-sm);
+  color: var(--zan-primary);
+  background: transparent;
+  border: 1px solid var(--zan-primary);
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-store-batch-btn:hover {
+  background: var(--zan-primary-light);
+}
+
+/* ========================================
+   6. 时间选择组件
+   ======================================== */
+
+.zan-time-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zan-space-md);
+}
+
+.zan-time-selector-label {
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-time-selector-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zan-space-sm);
+  padding: var(--zan-space-sm) var(--zan-space-md);
+  min-width: 80px;
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+  transition: all var(--zan-transition-base);
+}
+
+.zan-time-selector-trigger:hover {
+  border-color: var(--zan-primary);
+}
+
+.zan-time-selector-display {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  padding: var(--zan-space-sm) var(--zan-space-md);
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-sm);
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+}
+
+.zan-time-selector-realtime {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-md);
+  padding: var(--zan-space-sm) var(--zan-space-md);
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-sm);
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+}
+
+.zan-time-selector-realtime .realtime-time {
+  font-family: 'SF Mono', Monaco, monospace;
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-time-selector-realtime .refresh-link {
+  padding: var(--zan-space-xs) var(--zan-space-sm);
+  font-size: var(--zan-font-sm);
+  color: var(--zan-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-time-selector-realtime .refresh-link:hover {
+  color: var(--zan-primary-hover);
+  text-decoration: underline;
+}
+
+.zan-time-selector-shortcuts {
+  display: flex;
+  gap: var(--zan-space-md);
+}
+
+.zan-shortcut-btn {
+  padding: var(--zan-space-xs) 0;
+  font-size: var(--zan-font-base);
+  color: var(--zan-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-shortcut-btn:hover {
+  color: var(--zan-primary-hover);
+  text-decoration: underline;
+}
+
+/* ========================================
+   7. 指标卡组件
+   ======================================== */
+
+.zan-metric-card {
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-lg);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-metric-card:hover {
+  box-shadow: var(--zan-shadow-s1);
+}
+
+.zan-metric-card.active {
+  border-color: var(--zan-primary);
+  box-shadow: 0 0 0 2px var(--zan-primary-light);
+}
+
+.zan-metric-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-metric-card-title {
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+  line-height: var(--zan-leading-sm);
+}
+
+.zan-metric-card-value {
+  font-size: var(--zan-font-2xl);
+  font-weight: var(--zan-weight-bold);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-2xl);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-metric-card-trends {
+  display: flex;
+  gap: var(--zan-space-lg);
+}
+
+.zan-metric-card-trend {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-xs);
+  font-size: var(--zan-font-sm);
+  line-height: var(--zan-leading-sm);
+}
+
+.zan-trend-label {
+  color: var(--zan-text-tertiary);
+}
+
+.zan-trend-value {
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-trend-value.up {
+  color: var(--zan-error);
+}
+
+.zan-trend-value.down {
+  color: var(--zan-success);
+}
+
+/* ========================================
+   8. 二级指标卡组件
+   ======================================== */
+
+.zan-secondary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--zan-space-md);
+}
+
+.zan-secondary-metric-card {
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-md);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-secondary-metric-card:hover {
+  box-shadow: var(--zan-shadow-s1);
+}
+
+.zan-secondary-metric-card.active {
+  border-color: var(--zan-primary);
+  background: var(--zan-primary-light);
+}
+
+.zan-secondary-metric-title {
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+  line-height: var(--zan-leading-sm);
+  margin-bottom: var(--zan-space-sm);
+}
+
+.zan-secondary-metric-value {
+  font-size: var(--zan-font-xl);
+  font-weight: var(--zan-weight-bold);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-xl);
+  margin-bottom: var(--zan-space-sm);
+}
+
+.zan-secondary-metric-trends {
+  display: flex;
+  gap: var(--zan-space-md);
+  font-size: var(--zan-font-xs);
+  line-height: var(--zan-leading-xs);
+}
+
+/* ========================================
+   9. 趋势图组件
+   ======================================== */
+
+.zan-trend-chart-container {
+  background: var(--zan-bg-white);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-lg);
+}
+
+.zan-trend-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-trend-chart-title {
+  font-size: var(--zan-font-md);
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-md);
+}
+
+.zan-trend-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-lg);
+}
+
+.zan-trend-chart-mode-tabs {
+  display: flex;
+  gap: var(--zan-space-xs);
+  background: var(--zan-bg-page);
+  padding: var(--zan-space-xs);
+  border-radius: var(--zan-radius-sm);
+}
+
+.zan-mode-tab {
+  padding: var(--zan-space-xs) var(--zan-space-md);
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-mode-tab:hover {
+  color: var(--zan-text-primary);
+}
+
+.zan-mode-tab.active {
+  background: var(--zan-bg-white);
+  color: var(--zan-primary);
+  font-weight: var(--zan-weight-medium);
+  box-shadow: var(--zan-shadow-s1);
+}
+
+.zan-trend-chart-compare-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  cursor: pointer;
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+}
+
+.zan-trend-chart-compare-toggle input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.zan-compare-time-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-md);
+  padding: var(--zan-space-md);
+  background: var(--zan-bg-page);
+  border-radius: var(--zan-radius-sm);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-compare-time-selector .compare-label {
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-compare-time-selector .compare-time-display {
+  flex: 1;
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-primary);
+}
+
+.zan-compare-time-selector .select-time-btn {
+  padding: var(--zan-space-xs) var(--zan-space-md);
+  font-size: var(--zan-font-sm);
+  color: var(--zan-primary);
+  background: transparent;
+  border: 1px solid var(--zan-primary);
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+}
+
+.zan-compare-time-selector .select-time-btn:hover {
+  background: var(--zan-primary-light);
+}
+
+.zan-trend-chart-legend {
+  display: flex;
+  gap: var(--zan-space-lg);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+}
+
+.zan-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.zan-legend-line {
+  width: 16px;
+  height: 0;
+  border-top: 2px dashed;
+}
+
+.zan-trend-chart-area {
+  height: 320px;
+}
+
+/* ========================================
+   10. 数据表格组件
+   ======================================== */
+
+.zan-data-table-container {
+  background: var(--zan-bg-white);
+  border-radius: var(--zan-radius-md);
+  overflow: hidden;
+}
+
+.zan-data-table-title {
+  padding: var(--zan-space-lg);
+  font-size: var(--zan-font-md);
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-md);
+  border-bottom: 1px solid var(--zan-border-light);
+}
+
+.zan-data-table-wrapper {
+  overflow-x: auto;
+}
+
+.zan-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--zan-font-base);
+  line-height: var(--zan-leading-base);
+}
+
+.zan-data-table th {
+  padding: var(--zan-space-md);
+  text-align: left;
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-secondary);
+  background: var(--zan-bg-page);
+  border-bottom: 1px solid var(--zan-border);
+}
+
+.zan-data-table td {
+  padding: var(--zan-space-md);
+  border-bottom: 1px solid var(--zan-border-light);
+  color: var(--zan-text-primary);
+}
+
+.zan-data-table tbody tr:hover td {
+  background: var(--zan-bg-hover);
+}
+
+.zan-data-table .dimension-cell {
+  min-width: 150px;
+}
+
+.zan-data-table .dimension-content {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+}
+
+.zan-data-table .expand-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  color: var(--zan-text-tertiary);
+  transition: transform var(--zan-transition-base);
+}
+
+.zan-data-table .expand-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.zan-data-table .child-row .dimension-cell {
+  padding-left: var(--zan-space-xl);
+}
+
+.zan-data-table .value-cell {
+  min-width: 200px;
+}
+
+.zan-data-table .value-content {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-md);
+}
+
+.zan-data-table .value-number {
+  font-weight: var(--zan-weight-medium);
+  min-width: 80px;
+}
+
+.zan-data-table .percentage-bar-container {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  flex: 1;
+}
+
+.zan-data-table .percentage-bar {
+  width: 80px;
+  height: 8px;
+  background: var(--zan-bg-page);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.zan-data-table .percentage-fill {
+  height: 100%;
+  background: var(--zan-primary);
+  border-radius: 4px;
+  transition: width var(--zan-transition-slow);
+}
+
+.zan-data-table .percentage-text {
+  font-size: var(--zan-font-xs);
+  color: var(--zan-text-tertiary);
+  min-width: 36px;
+}
+
+.zan-data-table .trend-cell {
+  min-width: 100px;
+  text-align: right;
+}
+
+.zan-data-table .table-trend {
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-data-table .table-trend.up {
+  color: var(--zan-error);
+}
+
+.zan-data-table .table-trend.down {
+  color: var(--zan-success);
+}
+
+.zan-data-table .total-row {
+  background: var(--zan-bg-page);
+  font-weight: var(--zan-weight-medium);
+}
+
+.zan-data-table .total-row td {
+  border-top: 2px solid var(--zan-border);
+}
+
+/* ========================================
+   11. AI 智能解读面板
+   ======================================== */
+
+.zan-ai-insight-panel {
+  background: var(--zan-warning-bg);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-lg);
+}
+
+.zan-ai-insight-header {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-ai-insight-icon {
+  font-size: var(--zan-font-lg);
+}
+
+.zan-ai-insight-title {
+  font-size: var(--zan-font-md);
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-md);
+}
+
+.zan-ai-insight-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zan-space-md);
+}
+
+.zan-ai-insight-item {
+  background: var(--zan-bg-white);
+  border-radius: var(--zan-radius-sm);
+  padding: var(--zan-space-md);
+}
+
+.zan-ai-insight-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--zan-space-sm);
+  margin-bottom: var(--zan-space-sm);
+}
+
+.zan-ai-insight-type-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: var(--zan-font-xs);
+}
+
+.zan-ai-insight-type-icon.info {
+  background: var(--zan-primary-light);
+  color: var(--zan-primary);
+}
+
+.zan-ai-insight-type-icon.warning {
+  background: var(--zan-warning-bg);
+  color: var(--zan-warning);
+}
+
+.zan-ai-insight-type-icon.success {
+  background: var(--zan-success-bg);
+  color: var(--zan-success);
+}
+
+.zan-ai-insight-item-title {
+  font-size: var(--zan-font-base);
+  font-weight: var(--zan-weight-medium);
+  color: var(--zan-text-primary);
+  line-height: var(--zan-leading-base);
+}
+
+.zan-ai-insight-item-content {
+  font-size: var(--zan-font-sm);
+  color: var(--zan-text-secondary);
+  line-height: var(--zan-leading-sm);
+  padding-left: var(--zan-space-lg);
+}
+
+/* ========================================
+   12. 标签页切换
+   ======================================== */
+
+.zan-tab-nav {
+  display: flex;
+  gap: var(--zan-space-xs);
+  background: var(--zan-bg-white);
+  border-radius: var(--zan-radius-md);
+  padding: var(--zan-space-xs);
+  margin-bottom: var(--zan-space-md);
+}
+
+.zan-tab-item {
+  padding: var(--zan-space-sm) var(--zan-space-lg);
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+  line-height: var(--zan-leading-base);
+}
+
+.zan-tab-item:hover {
+  color: var(--zan-text-primary);
+  background: var(--zan-bg-hover);
+}
+
+.zan-tab-item.active {
+  color: var(--zan-primary);
+  background: var(--zan-primary-light);
+  font-weight: var(--zan-weight-medium);
+}
+
+/* ========================================
+   13. 按钮组件
+   ======================================== */
+
+.zan-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--zan-space-xs);
+  padding: var(--zan-space-sm) var(--zan-space-md);
+  font-size: var(--zan-font-base);
+  font-weight: var(--zan-weight-medium);
+  line-height: var(--zan-leading-base);
+  border-radius: var(--zan-radius-sm);
+  cursor: pointer;
+  transition: all var(--zan-transition-base);
+  border: none;
+  outline: none;
+}
+
+.zan-btn-primary {
+  background: var(--zan-primary);
+  color: var(--zan-bg-white);
+}
+
+.zan-btn-primary:hover {
+  background: var(--zan-primary-dark);
+}
+
+.zan-btn-default {
+  background: var(--zan-bg-white);
+  color: var(--zan-text-primary);
+  border: 1px solid var(--zan-border);
+}
+
+.zan-btn-default:hover {
+  border-color: var(--zan-primary);
+  color: var(--zan-primary);
+}
+
+.zan-btn-link {
+  background: transparent;
+  color: var(--zan-primary);
+  padding: var(--zan-space-xs) var(--zan-space-sm);
+}
+
+.zan-btn-link:hover {
+  color: var(--zan-primary-hover);
+  text-decoration: underline;
+}
+
+/* ========================================
+   14. 下拉菜单
+   ======================================== */
+
+.zan-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--zan-space-xs);
+  min-width: 120px;
+  background: var(--zan-bg-white);
+  border: 1px solid var(--zan-border);
+  border-radius: var(--zan-radius-md);
+  box-shadow: var(--zan-shadow-s2);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.zan-dropdown-item {
+  padding: var(--zan-space-sm) var(--zan-space-md);
+  font-size: var(--zan-font-base);
+  color: var(--zan-text-primary);
+  cursor: pointer;
+  transition: all var(--zan-transition-fast);
+}
+
+.zan-dropdown-item:hover {
+  background: var(--zan-bg-hover);
+  color: var(--zan-primary);
+}
+
+.zan-dropdown-item.active {
+  background: var(--zan-primary-light);
+  color: var(--zan-primary);
+  font-weight: var(--zan-weight-medium);
+}
+
+/* ========================================
+   15. 响应式适配
+   ======================================== */
+
+@media (max-width: 1200px) {
+  .zan-secondary-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .zan-secondary-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .zan-filter-bar-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .zan-filter-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .zan-secondary-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .zan-metric-card-trends {
+    flex-direction: column;
+    gap: var(--zan-space-sm);
+  }
+
+  .zan-trend-chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--zan-space-md);
+  }
+
+  .zan-trend-chart-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+/* ========================================
+   16. 动画效果
+   ======================================== */
+
+@keyframes zan-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.zan-animate-fade-in {
+  animation: zan-fade-in 160ms ease-out;
+}
+
+@keyframes zan-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.zan-animate-slide-down {
+  animation: zan-slide-down 160ms ease-out;
+}

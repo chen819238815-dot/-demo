@@ -1,0 +1,34 @@
+# 在 GitHub 仓库 Settings → Secrets and variables → Actions 中新增：
+#   VERCEL_TOKEN        （Vercel → Account Settings → Tokens）
+#   VERCEL_ORG_ID       （项目关联后见于 .vercel/project.json）
+#   VERCEL_PROJECT_ID   （同上）
+# 首次可先在本机运行：npx vercel link   生成 .vercel/project.json（勿提交 TOKEN）
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'

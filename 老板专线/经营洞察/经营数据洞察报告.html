@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>经营数据洞察报告</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-darker: #020617;
+      --accent-gold: #d4af37;
+      --accent-gold-light: #f5e6c8;
+      --accent-gold-dim: rgba(212, 175, 55, 0.15);
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --positive: #059669;
+      --negative: #dc2626;
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #1e293b 30%, #f1f5f9 100%);
+      color: #1e293b;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    /* 大气页头 */
+    .header {
+      text-align: center;
+      padding: 48px 24px 56px;
+      background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 50%, #1e3a5f 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 20%, var(--accent-gold-dim) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: 4px;
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .header .subtitle {
+      font-size: 13px;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+
+    .header .date {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* 内容区 */
+    .content {
+      margin-top: -32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      padding: 28px 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--card-border);
+    }
+
+    .section h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--bg-dark);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 1px;
+    }
+
+    .section h2 .num {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent-gold), #b8960f);
+      color: white;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .section h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #334155;
+      margin: 20px 0 14px;
+      padding-left: 12px;
+      border-left: 3px solid #cbd5e1;
+    }
+
+    /* 核心指标高亮卡 */
+    .metric-hero {
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #1e3a5f 100%);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .metric-hero .label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-hero .value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+    }
+
+    .metric-hero .trends {
+      margin-top: 16px;
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+    }
+
+    .metric-hero .trends span {
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #64748b;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr td:first-child {
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .positive {
+      color: var(--positive) !important;
+      font-weight: 600;
+    }
+
+    .negative {
+      color: var(--negative) !important;
+      font-weight: 600;
+    }
+
+    .highlight {
+      font-weight: 700;
+      color: var(--bg-dark);
+    }
+
+    /* 解读块 */
+    .insight {
+      background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
+      border-left: 4px solid var(--accent-gold);
+      padding: 16px 18px;
+      margin-top: 16px;
+      border-radius: 0 10px 10px 0;
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .insight::before {
+      content: '核心解读';
+      display: block;
+      font-weight: 700;
+      color: var(--bg-dark);
+      font-size: 12px;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    /* 建议列表 */
+    .suggestions {
+      list-style: none;
+    }
+
+    .suggestions li {
+      position: relative;
+      padding: 16px 0 16px 44px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #475569;
+    }
+
+    .suggestions li:last-child {
+      border-bottom: none;
+    }
+
+    .suggestions li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 22px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+    }
+
+    .suggestions li strong {
+      color: var(--bg-dark);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+      margin: 24px 0;
+    }
+
+    /* 页脚 */
+    .footer {
+      text-align: center;
+      padding: 32px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* H5 响应式 */
+    @media (max-width: 640px) {
+      html {
+        font-size: 15px;
+      }
+
+      .header {
+        padding: 36px 20px 44px;
+      }
+
+      .header h1 {
+        font-size: 22px;
+        letter-spacing: 2px;
+      }
+
+      .section {
+        padding: 22px 18px;
+      }
+
+      th, td {
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+
+      .metric-hero .value {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>经营数据洞察报告</h1>
+    <p class="subtitle">BUSINESS INSIGHTS</p>
+    <p class="date">报告日期 · 2025年2月</p>
+  </header>
+
+  <div class="container content">
+    <!-- 1. 经营核心指标 -->
+    <section class="section">
+      <h2><span class="num">1</span>经营核心指标速览</h2>
+      <h3>指标卡</h3>
+
+      <div class="metric-hero">
+        <div class="label">营业收入 · 昨日（2/2）</div>
+        <div class="value">¥ 3,675</div>
+        <div class="trends">
+          <span>环比 -569（-15%）</span>
+          <span>同比 -192（-5%）</span>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>指标名称</th>
+            <th class="text-right">昨日（2/2）</th>
+            <th class="text-right">环比前日（2/1）</th>
+            <th class="text-right">同比上周一（1/26）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>营业收入</td>
+            <td class="text-right highlight">3,675</td>
+            <td class="text-right negative">-569（-15%）</td>
+            <td class="text-right negative">-192（-5%）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight">
+        昨日营业收入 3,675 元，环比前日<strong class="negative">下降 15%（-569 元）</strong>，同比下降<strong class="negative">5%（-192 元）</strong>。波动属于周期性规律，在过去 3 个月，每逢周一均出现类似趋势。
+      </div>
+    </section>
+
+    <!-- 2. 波动原因分析 -->
+    <section class="section">
+      <h2><span class="num">2</span>波动原因分析</h2>
+
+      <h3>2.1 公式拆解</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>项目</th>
+            <th class="text-right">昨日（2/2）</th>
+            <th class="text-right">环比昨日（2/1）</th>
+            <th class="text-right">环比变化</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>营业额</td>
+            <td class="text-right">11,000</td>
+            <td class="text-right positive">↑20%（+1,833）</td>
+            <td class="text-right">上升</td>
+          </tr>
+          <tr>
+            <td>优惠金额</td>
+            <td class="text-right">3,000</td>
+            <td class="text-right positive">↑20%（+500）</td>
+            <td class="text-right">上升</td>
+          </tr>
+          <tr>
+            <td>营业收入</td>
+            <td class="text-right">3,675</td>
+            <td class="text-right negative">↓15%（-569）</td>
+            <td class="text-right">下降</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight">
+        营业额和优惠金额均较前日<strong class="positive">上升 20%</strong>，但优惠力度加大，导致实际营业收入<strong class="negative">下降 15%</strong>。优惠政策调整是主要影响因素。
+      </div>
+
+      <div class="divider"></div>
+
+      <h3>2.2 商品维度分析</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>商品</th>
+            <th class="text-right">贡献度</th>
+            <th class="text-right">销售金额</th>
+            <th class="text-right">环比变化</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>草莓蛋糕</td>
+            <td class="text-right">30%</td>
+            <td class="text-right">8,000</td>
+            <td class="text-right negative">↓40%（-5,333）</td>
+          </tr>
+          <tr>
+            <td>慕斯</td>
+            <td class="text-right">20%</td>
+            <td class="text-right">4,000</td>
+            <td class="text-right negative">↓10%（-444）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight">
+        主力商品草莓蛋糕销售金额环比<strong class="negative">下降 40%</strong>，为整体营业收入下降的核心驱动。慕斯商品下降幅度较小，但仍有 -10%。
+      </div>
+
+      <div class="divider"></div>
+
+      <h3>2.3 渠道维度分析</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>渠道</th>
+            <th class="text-right">贡献度</th>
+            <th class="text-right">营业收入</th>
+            <th class="text-right">环比变化</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>美团外卖</td>
+            <td class="text-right">15%</td>
+            <td class="text-right">300</td>
+            <td class="text-right negative">↓30%（-130）</td>
+          </tr>
+          <tr>
+            <td>小红书</td>
+            <td class="text-right">5%</td>
+            <td class="text-right">1,000</td>
+            <td class="text-right negative">↓20%（-250）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight">
+        美团外卖渠道环比<strong class="negative">下降 30%</strong>，小红书渠道环比<strong class="negative">下降 20%</strong>，多渠道表现均有下降行情。
+      </div>
+    </section>
+
+    <!-- 3. 优化建议 -->
+    <section class="section">
+      <h2><span class="num">3</span>优化建议</h2>
+      <ul class="suggestions">
+        <li><strong>核心商品</strong>草莓蛋糕销售需重点关注：建议分析库存、价格、促销等因素，针对性提升销量。</li>
+        <li><strong>优惠政策</strong>优惠金额较大，建议科学调整优惠政策，确保利润率。</li>
+        <li><strong>渠道运营</strong>多渠道运营需关注流量及转化，建议针对下降渠道开展专项促销或流量补充计划。</li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      — 经营数据洞察报告 · 仅供内部参阅 —
+    </footer>
+  </div>
+</body>
+</html>

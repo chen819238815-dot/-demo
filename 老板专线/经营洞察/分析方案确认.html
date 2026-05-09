@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>分析方案确认</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent:      #1a56db;
+      --accent-light:#eff4ff;
+      --accent-mid:  #3b82f6;
+      --text-dark:   #111827;
+      --text-body:   #374151;
+      --text-muted:  #6b7280;
+      --text-light:  #9ca3af;
+      --border:      #e5e7eb;
+      --border-light:#f3f4f6;
+      --bg:          #ffffff;
+      --bg-subtle:   #f9fafb;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md:   0 4px 16px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-lg:   0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-subtle);
+      color: var(--text-body);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── 页头 ── */
+    .header {
+      text-align: center;
+      padding: 52px 24px 64px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 64px; height: 3px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+    }
+
+    .header .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 2;
+    }
+
+    .header .subtitle strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── 确认操作栏 ── */
+    .confirm-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .confirm-bar p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 24px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-confirm {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(26,86,219,0.25);
+    }
+
+    .btn-confirm:hover {
+      background: #1648c0;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(26,86,219,0.3);
+    }
+
+    .btn-modify {
+      background: #ffffff;
+      color: var(--text-body);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-modify:hover {
+      border-color: #9ca3af;
+      background: var(--bg-subtle);
+    }
+
+    /* ── 内容区 ── */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    .content {
+      margin-top: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── 整体思路模块 ── */
+    .overview-block {
+      background: var(--bg);
+      border-radius: 14px;
+      box-shadow: var(--shadow-md);
+      padding: 28px 26px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .block-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .block-title .icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    .block-title__icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    /* 大纲区独立标题 */
+    .outline-section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: 0.5px;
+      padding: 0 2px 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .overview-text {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+
+    .overview-text strong {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .goal-highlight {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      padding: 13px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.85;
+      margin-top: 8px;
+    }
+
+    .goal-highlight strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .steps-list {
+      margin-top: 16px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .steps-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.75;
+    }
+
+    .steps-list li strong {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── 大纲卡片 ── */
+    .outline-card {
+      background: var(--bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .outline-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #d1d5db;
+    }
+
+    .outline-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-subtle);
+    }
+
+    .card-num {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .card-title-wrap { display: flex; flex-direction: column; }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: 0.3px;
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-light);
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .outline-card-body {
+      padding: 18px 22px 20px;
+    }
+
+    .thought-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .thought-text {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.9;
+    }
+
+    .thought-text strong {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    /* ── 标签 ── */
+    .focus-tags {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .focus-tag {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-weight: 500;
+    }
+
+    .focus-tag.orange {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #c2410c;
+    }
+
+    .focus-tag.purple {
+      background: #faf5ff;
+      border-color: #e9d5ff;
+      color: #7c3aed;
+    }
+
+    .focus-tag.green {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #15803d;
+    }
+
+    /* ── 小结 ── */
+    .summary-block {
+      background: var(--accent);
+      border-radius: 14px;
+      padding: 28px 26px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .summary-block .summary-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    .summary-block .summary-text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.9;
+    }
+
+    .summary-block .summary-text strong {
+      color: #ffffff;
+    }
+
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .flow-step {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .flow-arrow {
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+
+    /* ── 页脚 ── */
+    .footer {
+      text-align: center;
+      padding: 32px 20px;
+      font-size: 12px;
+      color: var(--text-light);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── 响应式 ── */
+    @media (max-width: 640px) {
+      html { font-size: 15px; }
+      .header { padding: 38px 20px 50px; }
+      .header h1 { font-size: 22px; letter-spacing: 2px; }
+      .overview-block { padding: 22px 18px; }
+      .outline-card-body { padding: 16px 18px 18px; }
+      .outline-card-header { padding: 14px 18px 12px; }
+      .confirm-bar { padding: 14px 18px; }
+      .btn { padding: 8px 18px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-tag">ANALYSIS PLAN</div>
+    <h1>分析方案确认</h1>
+    <p class="subtitle">
+      分析主题：<strong>上个月交易情况</strong> · 核心指标：<strong>支付金额</strong><br>
+      请确认以下分析思路与大纲，确认后将正式展开数据分析
+    </p>
+  </header>
+
+  <!-- 确认操作栏 -->
+  <div class="confirm-bar">
+    <p>请阅读下方方案后，确认是否按此思路执行分析？</p>
+    <div class="btn-group">
+      <button class="btn btn-confirm" onclick="handleConfirm()">✓ 确认，按此方案执行</button>
+      <button class="btn btn-modify" onclick="handleModify()">✎ 有调整意见</button>
+    </div>
+  </div>
+
+  <div class="container content">
+
+    <!-- 整体思路 -->
+    <div class="overview-block">
+      <div class="block-title">
+        <span class="icon">◎</span>
+        分析整体思路
+      </div>
+
+      <p class="overview-text">
+        本次分析目标是<strong>全面透视上个月支付表现</strong>，找出波动原因、结构特征、短板与潜在增长机会，为经营决策提供抓手。
+      </p>
+
+      <ul class="steps-list">
+        <li>
+          <span class="step-num">1</span>
+          <span>先看<strong>整体支付金额及其变化</strong>，明晰全局表现趋势</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>再从<strong>商品 / 用户 / 活动</strong>三个主要维度结构拆解，逐步细化，找到关键驱动或弊端</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>全程贯穿<strong>"问题—原因—解决方案"</strong>主线，先定性再定量，既要数据表象，也要深挖根因</span>
+        </li>
+      </ul>
+
+      <div class="goal-highlight">
+        最终围绕核心命题：<strong>上月支付金额是什么水平、结构构成、主因波动、提升建议</strong>
+      </div>
+    </div>
+
+    <!-- 大纲标题 -->
+    <div class="outline-section-title">
+      <span class="block-title__icon">≡</span>
+      数据分析报告大纲
+    </div>
+
+    <!-- 板块 1 -->
+    <div class="outline-card">
+      <div class="outline-card-header">
+        <div class="card-num">1</div>
+        <div class="card-title-wrap">
+          <div class="card-title">上月支付金额概览</div>
+          <div class="card-tag">大盘全局 · 趋势定位</div>
+        </div>
+      </div>
+      <div class="outline-card-body">
+        <div class="thought-label">分析思路</div>
+        <p class="thought-text">
+          首先总览上个月整体支付金额水平，并与<strong>上上月（环比）</strong>及<strong>去年同期（同比）</strong>做对比，定位大盘表现是增长还是下滑、变化幅度，以及是否存在异常波动。同时结合<strong>访客数、转化率、客单价</strong>等关键因子，辨析增减究竟来自哪一环节，为后续结构拆分做铺垫。
+        </p>
+        <div class="focus-tags">
+          <span class="focus-tag">同环比对比</span>
+          <span class="focus-tag">异常波动识别</span>
+          <span class="focus-tag orange">访客数</span>
+          <span class="focus-tag orange">转化率</span>
+          <span class="focus-tag orange">客单价</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 板块 2 -->
+    <div class="outline-card">
+      <div class="outline-card-header">
+        <div class="card-num">2</div>
+        <div class="card-title-wrap">
+          <div class="card-title">商品维度分析</div>
+          <div class="card-tag">分组 · 商品 · SKU 三级钻取</div>
+        </div>
+      </div>
+      <div class="outline-card-body">
+        <div class="thought-label">分析思路</div>
+        <p class="thought-text">
+          深入到商品层，进行<strong>分组—商品—商品 SKU 三级钻取</strong>。核心关注哪些品类、单品、SKU 驱动了支付金额，是否存在<strong>结构失衡</strong>（高依赖品或潜力商品受限）。分析影响主因——<strong>流量、转化、价格</strong>哪一块在拉动或下滑。重点追踪 <strong>TOP 商品</strong>表现与<strong>尾部拖累项</strong>，并对历史变动敏感品进行追踪。
+        </p>
+        <div class="focus-tags">
+          <span class="focus-tag">TOP商品追踪</span>
+          <span class="focus-tag">结构失衡识别</span>
+          <span class="focus-tag orange">流量驱动</span>
+          <span class="focus-tag orange">转化驱动</span>
+          <span class="focus-tag orange">价格驱动</span>
+          <span class="focus-tag purple">三级钻取</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 板块 3 -->
+    <div class="outline-card">
+      <div class="outline-card-header">
+        <div class="card-num">3</div>
+        <div class="card-title-wrap">
+          <div class="card-title">用户结构分析</div>
+          <div class="card-tag">新客 vs 老客 · 复购与拓新</div>
+        </div>
+      </div>
+      <div class="outline-card-body">
+        <div class="thought-label">分析思路</div>
+        <p class="thought-text">
+          切入<strong>新老客视角</strong>，明确上月支付金额的增长或下滑究竟是新客还是老客贡献。分别分析两类用户的<strong>支付金额、支付人数、复购率、客单价</strong>，揭示用户结构变迁与客群运营现状，明确<strong>拓新和复购哪个更需发力</strong>，提出针对性改善建议。
+        </p>
+        <div class="focus-tags">
+          <span class="focus-tag">新老客贡献拆解</span>
+          <span class="focus-tag green">复购率</span>
+          <span class="focus-tag green">支付人数</span>
+          <span class="focus-tag orange">客单价对比</span>
+          <span class="focus-tag purple">拓新 vs 复购优先级</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 板块 4 -->
+    <div class="outline-card">
+      <div class="outline-card-header">
+        <div class="card-num">4</div>
+        <div class="card-title-wrap">
+          <div class="card-title">活动驱动分析</div>
+          <div class="card-tag">营销活动 · ROI · 依赖风险</div>
+        </div>
+      </div>
+      <div class="outline-card-body">
+        <div class="thought-label">分析思路</div>
+        <p class="thought-text">
+          剖析<strong>营销活动</strong>对整体支付表现的带动作用。将支付金额拆分为"活动 / 非活动"两类，分析各自支付水平和拉动效果，评估<strong>投入产出（ROI）</strong>。重点识别营销时段激增规律，判断是否存在<strong>过度依赖促销</strong>的隐性风险，以及可持续的增长空间。
+        </p>
+        <div class="focus-tags">
+          <span class="focus-tag">活动 vs 非活动拆分</span>
+          <span class="focus-tag orange">ROI 评估</span>
+          <span class="focus-tag purple">促销依赖风险</span>
+          <span class="focus-tag green">可持续增长</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 小结 -->
+    <div class="summary-block">
+      <div class="summary-title">◈ 方案总结</div>
+      <p class="summary-text">
+        整份月度交易情况分析报告将从以下四步出发，抓住<strong>波动、结构、主因、建议</strong>，所有分析紧贴核心业务主题，既能发现问题，也能明确下一步的经营方向。
+      </p>
+      <div class="flow-steps">
+        <span class="flow-step">总览大盘</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">商品拆解</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">用户结构</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">活动驱动</span>
+      </div>
+    </div>
+
+    <footer class="footer">— 分析方案确认页 · 请确认后正式开始数据分析 —</footer>
+  </div>
+
+  <script>
+    function handleConfirm() {
+      const bar = document.querySelector('.confirm-bar');
+      bar.style.background = '#f0fdf4';
+      bar.style.borderBottomColor = '#bbf7d0';
+      bar.querySelector('p').textContent = '✓ 已确认！将按此方案正式展开数据分析。';
+      bar.querySelector('p').style.color = '#15803d';
+      document.querySelector('.btn-confirm').disabled = true;
+      document.querySelector('.btn-confirm').style.opacity = '0.5';
+      document.querySelector('.btn-modify').disabled = true;
+      document.querySelector('.btn-modify').style.opacity = '0.5';
+    }
+
+    function handleModify() {
+      const bar = document.querySelector('.confirm-bar');
+      bar.style.background = '#eff6ff';
+      bar.style.borderBottomColor = '#bfdbfe';
+      bar.querySelector('p').textContent = '请将您的调整意见告知，我会及时更新方案。';
+      bar.querySelector('p').style.color = '#1d4ed8';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Dependencies & build
+node_modules/
+dist/
+
+# Local / secrets
+.env
+.env.*
+.vercel
+
+# OS & editor
+.DS_Store
+*.log
+
+# Large local archives (可选：若需入库请删除此行)
+*.zip

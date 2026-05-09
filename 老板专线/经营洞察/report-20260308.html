@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>2026年3月8日营业收入波动分析报告 - 经营分析</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --background: #f5f7fa;
+      --foreground: #1f2f3d;
+      --primary: #3370ff;
+      --primary-subtle: #e6efff;
+      --danger: #ff4f3e;
+      --success: #00c853;
+      --muted: #909399;
+      --border: #e4e7ed;
+      --card-bg: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+    .page {
+      max-width: 1120px;
+      margin: 24px auto 40px;
+      padding: 0 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      padding: 24px 24px 28px;
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    h1, h2, h3 {
+      margin: 0 0 16px;
+    }
+    h1 {
+      font-size: 22px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    h2 {
+      font-size: 16px;
+      margin-top: 32px;
+      font-weight: 500;
+    }
+    h3 {
+      font-size: 14px;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .report-header-main {
+      max-width: 70%;
+    }
+    .sub-title {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 2px;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 8px;
+    }
+    .tag-secondary {
+      background: #f4f5f9;
+      color: var(--muted);
+    }
+    .header-meta {
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .section {
+      margin-top: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 4px;
+      font-size: 12px;
+    }
+    th, td {
+      border: 1px solid #ebeef5;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    th {
+      background: #f5f7fa;
+      font-weight: 500;
+    }
+    td:first-child, th:first-child {
+      text-align: left;
+    }
+    .note {
+      background: #f5f7fa;
+      border-left: 3px solid var(--primary);
+      padding: 10px 12px;
+      border-radius: 2px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .note strong {
+      font-weight: 700;
+    }
+    .green {
+      color: var(--success);
+      font-weight: 500;
+    }
+    .red {
+      color: var(--danger);
+      font-weight: 500;
+    }
+    .chart-row {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    @media (min-width: 768px) {
+      .chart-row {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+    .chart {
+      flex: 0 0 380px;
+      max-width: 100%;
+      text-align: center;
+    }
+    .chart img {
+      max-width: 100%;
+      border-radius: 4px;
+      border: 1px solid #ebeef5;
+    }
+    .chart-caption {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    ol, ul {
+      padding-left: 1.2em;
+      margin: 8px 0;
+    }
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="card">
+    <header class="report-header">
+      <div class="report-header-main">
+        <div style="margin-bottom: 6px;">
+          <span class="tag">经营分析报告</span>
+          <span class="tag tag-secondary">单日 · 营收波动</span>
+        </div>
+        <h1>2026年3月8日营业收入波动分析报告</h1>
+        <p class="sub-title">围绕 2026/3/8 单日营业收入的波动情况，从核心指标、商品结构与渠道结构三个维度进行拆解。</p>
+      </div>
+      <div class="header-meta">
+        <div>数据日期：2026-03-08</div>
+        <div>口径：营业收入（含优惠影响）</div>
+      </div>
+    </header>
+
+    <!-- 一、核心结论 -->
+    <section class="section">
+      <h2>一、核心结论</h2>
+      <p style="font-size: 13px; margin: 0;">
+        2026年3月8日营业收入呈现<span class="green">平稳周期性上涨</span>，为 322,043 元，环比增长
+        <span class="green">+4%</span>（+12,616 元），同比下降 <span class="red">-7%</span>（-23,539 元）。
+        主要受三八妇女节及周末双重因素影响，表现在商品及渠道结构上有明显分化，相关波动在可控范围内。
+      </p>
+    </section>
+
+    <!-- 二、问题描述及主要数据 -->
+    <section class="section">
+      <h2>二、问题描述及主要数据</h2>
+
+      <h3>1. 核心指标卡</h3>
+
+      <table>
+        <thead>
+        <tr>
+          <th>指标</th>
+          <th>2026/3/8</th>
+          <th>环比</th>
+          <th>同比</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>营业收入</td>
+          <td>322,043</td>
+          <td><span class="green">+4%</span></td>
+          <td><span class="red">-7%</span></td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>说明：</strong><br />
+        2026年3月8日为三八妇女节 + 周末组合档期，营业收入达到阶段性高点。
+      </div>
+    </section>
+
+    <!-- 三、波动原因详细分析 -->
+    <section class="section">
+      <h2>三、波动原因详细分析</h2>
+
+      <!-- 1. 指标因子分解 -->
+      <section class="section">
+        <h3>1. 指标因子分解</h3>
+
+        <table>
+          <thead>
+          <tr>
+            <th>指标名称</th>
+            <th>本期数</th>
+            <th>环比</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>营业额</td>
+            <td>110,000</td>
+            <td><span class="green">+20%</span></td>
+          </tr>
+          <tr>
+            <td>优惠金额</td>
+            <td>30,000</td>
+            <td><span class="green">+20%</span></td>
+          </tr>
+          <tr>
+            <td>营业收入</td>
+            <td>322,043</td>
+            <td><span class="green">+4%</span></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <strong>解读：</strong><br />
+          营业额与优惠金额均环比增加 <span class="green">20%</span>，而营业收入仅环比增长
+          <span class="green">4%</span>，说明促销力度加大的同时，优惠金额同步上升，对营业收入增长幅度形成一定「对冲」，
+          导致收入增幅明显收敛。
+        </div>
+      </section>
+
+      <!-- 2. 商品维度分解 -->
+      <section class="section">
+        <h3>2. 商品维度分解</h3>
+
+        <table>
+          <thead>
+          <tr>
+            <th>商品</th>
+            <th>贡献度</th>
+            <th>销售金额</th>
+            <th>环比</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>草莓蛋糕</td>
+            <td>30%</td>
+            <td>80,000</td>
+            <td><span class="red">-40%</span></td>
+          </tr>
+          <tr>
+            <td>慕斯</td>
+            <td>20%</td>
+            <td>40,000</td>
+            <td><span class="red">-10%</span></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <strong>解读：</strong><br />
+          草莓蛋糕销售金额环比大幅下降 <span class="red">-40%</span>，是营业收入结构性下滑的主要来源；
+          慕斯销售也有 <span class="red">-10%</span> 的回落。单品热度波动表明：在节日场景下，消费者偏好出现明显分化，
+          需要通过货品策划与陈列引导，稳定主力品类的贡献度。
+        </div>
+      </section>
+
+      <!-- 3. 渠道维度分解 -->
+      <section class="section">
+        <h3>3. 渠道维度分解</h3>
+
+        <table>
+          <thead>
+          <tr>
+            <th>渠道</th>
+            <th>贡献度</th>
+            <th>营业收入</th>
+            <th>环比</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>美团外卖</td>
+            <td>15%</td>
+            <td>3,000</td>
+            <td><span class="red">-30%</span></td>
+          </tr>
+          <tr>
+            <td>小红书</td>
+            <td>5%</td>
+            <td>1,000</td>
+            <td><span class="red">-20%</span></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <strong>解读：</strong><br />
+          美团外卖与小红书渠道营业收入分别环比下滑 <span class="red">-30%</span> 和
+          <span class="red">-20%</span>，外部流量与转化承压，渠道贡献度下降。
+          当前营收依然以门店与主流商品为主，对外部渠道的依赖度有限，但后续需要关注其在增长结构中的长期角色。
+        </div>
+      </section>
+    </section>
+
+    <!-- 四、优化建议 -->
+    <section class="section">
+      <h2>四、优化建议</h2>
+      <ol>
+        <li>
+          <strong>商品策略：</strong>
+          针对草莓蛋糕等主力品类，提前规划节日促销与供应策略，结合节日主题推出打包组合或限时款，
+          避免主力单品在关键档期出现销量断崖，拖累整体收入。
+        </li>
+        <li>
+          <strong>渠道运营：</strong>
+          对美团外卖、小红书等外部渠道，优化节日期间的投放节奏与活动策略（如节日主题套餐、限定优惠券），
+          加强渠道内曝光与转化，提升节日场景下的线上贡献度。
+        </li>
+        <li>
+          <strong>优惠活动管理：</strong>
+          在营业额与优惠金额同步上升的情况下，加强对促销 ROI 的监控，适度调优优惠深度与门槛，
+          确保在拉动交易规模的同时，能够实现对净营业收入的有效提升。
+        </li>
+      </ol>
+    </section>
+
+    <!-- 总结 -->
+    <section class="section">
+      <h2>总结</h2>
+      <p>
+        2026年3月8日营业收入在三八妇女节与周末双重利好下达到阶段高位，整体呈现平稳的周期性上涨。
+        从因子分解看，营业额与优惠金额同步放大，推高交易规模的同时对净收入增速形成掣肘；
+        从结构上看，主力商品及外部渠道在本期表现偏弱，说明节日场景下存在一定的结构性波动空间。
+        后续通过强化主力单品经营、优化渠道运营策略以及精细化优惠管理，有望进一步提升类似档期的经营质量与收入弹性。
+      </p>
+    </section>
+
+    <footer>
+      生成时间：2026-03-08&nbsp;&nbsp;|&nbsp;&nbsp;报告类型：单日经营波动分析
+    </footer>
+  </div>
+</div>
+</body>
+</html>
+
