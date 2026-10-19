@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>营业概况 · 营业收入趋势</title>
+  <style>
+    :root {
+      --bg: #eef1f6;
+      --card: #fff;
+      --tile: #f7f8fa;
+      --text: #323233;
+      --sub: #646566;
+      --muted: #969799;
+      --line: #ebedf0;
+      --blue: #1989fa;
+      --red: #ee0a24;
+      --green: #07c160;
+      --today: #2f80ed;
+      --yest: #5cbf6a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: #d5d8de;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+    button, .hot { -webkit-tap-highlight-color: transparent; }
+
+    .stage { min-height: 100%; display: flex; justify-content: center; }
+    .app {
+      width: 100%;
+      max-width: 390px;
+      height: 100vh;
+      height: 100dvh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.04), 0 18px 40px rgba(0,0,0,.12);
+    }
+    .scroll { flex: 1; overflow: auto; padding: 0 12px 16px; -webkit-overflow-scrolling: touch; }
+
+    .statusbar {
+      height: 44px;
+      padding: 10px 16px 0 22px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      font-size: 15px;
+      font-weight: 650;
+      flex: none;
+    }
+    .status-right { display: flex; align-items: center; gap: 5px; }
+    .header {
+      height: 44px;
+      padding: 0 12px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: none;
+    }
+    .shop {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+    }
+    .shop b {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 17px;
+      font-weight: 650;
+    }
+    .header-actions { display: flex; align-items: center; gap: 2px; }
+    .icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; }
+    .plus {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.6px solid #323233;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px 12px 14px;
+      margin-bottom: 12px;
+    }
+    .update-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .days { display: flex; align-items: center; gap: 14px; flex: none; }
+    .days button { font-size: 14px; color: var(--text); line-height: 22px; }
+    .days button.on { color: var(--blue); font-weight: 600; }
+
+    .tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 18px;
+      margin-top: 10px;
+      border-bottom: 1px solid #f2f3f5;
+    }
+    .tab {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 0 9px;
+      color: var(--sub);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .module-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 0 9px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .tablist { display: flex; align-items: flex-end; gap: 18px; }
+    .tab.on { color: var(--blue); font-weight: 600; }
+    .tab.on::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: var(--blue);
+      border-radius: 1px;
+    }
+
+    .rev { padding: 12px 2px 0; }
+    .m-title {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .arr {
+      width: 6px; height: 6px;
+      border-top: 1.4px solid #c8c9cc;
+      border-right: 1.4px solid #c8c9cc;
+      transform: rotate(45deg);
+      margin-left: 2px;
+    }
+    .rev-value {
+      margin-top: 4px;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: 700;
+      letter-spacing: -.4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .meta { margin-top: 6px; }
+    .meta.inline {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+    }
+    .m-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .m-row .num { color: #646566; font-variant-numeric: tabular-nums; }
+    .delta { display: inline-flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; }
+    .delta.up { color: var(--red); }
+    .delta.down { color: var(--green); }
+    .delta.flat { color: var(--muted); }
+    .delta i { width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent; }
+    .delta.up i { border-bottom: 5px solid var(--red); }
+    .delta.down i { border-top: 5px solid var(--green); }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 10px 0 2px;
+      color: var(--sub);
+      font-size: 12px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .lg {
+      width: 16px; height: 0;
+      border-top: 2px solid var(--today);
+    }
+    .lg.dash { border-top: 2px dotted var(--yest); }
+    .lg.mid { border-top: 2px dashed #ed6a0c; }
+
+    .chart-box { position: relative; height: 176px; touch-action: pan-y; }
+    .chart { width: 100%; height: 176px; display: block; }
+    .guide {
+      position: absolute;
+      top: 8px;
+      bottom: 22px;
+      width: 1px;
+      background: #d8d8d8;
+      pointer-events: none;
+    }
+    .guide[hidden], .dot[hidden], .tip[hidden] { display: none; }
+    .dot {
+      position: absolute;
+      width: 8px; height: 8px;
+      margin: -4px 0 0 -4px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid var(--today);
+      pointer-events: none;
+    }
+    .dot.yest { border-color: var(--yest); }
+    .dot.mid { border-color: #ed6a0c; }
+    .tip {
+      position: absolute;
+      z-index: 3;
+      min-width: 168px;
+      background: rgba(50,50,51,.94);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      pointer-events: none;
+      box-shadow: 0 8px 18px rgba(0,0,0,.16);
+    }
+    .tip-time { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .tip-row { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 20px; }
+    .tip-row b { margin-left: auto; padding-left: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .sw { width: 12px; height: 2px; background: var(--today); border-radius: 1px; }
+    .sw.dash { height: 0; border-top: 2px dotted var(--yest); background: none; }
+    .sw.mid { height: 0; border-top: 2px dashed #ed6a0c; background: none; }
+    .channels {
+      display: flex;
+      margin-top: 2px;
+      overflow: auto;
+      border-bottom: 1px solid #f2f3f5;
+    }
+    .channels button {
+      flex: none;
+      padding: 10px 12px 8px;
+      color: #646566;
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .channels button.on { color: #323233; font-weight: 600; box-shadow: inset 0 -2px 0 #1989fa; }
+
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .metric { background: var(--tile); border-radius: 8px; padding: 12px 12px 10px; min-width: 0; }
+    .metric .m-title { font-size: 13px; color: #323233; }
+    .m-value {
+      margin-top: 6px;
+      font-size: 22px;
+      line-height: 28px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric .meta { margin-top: 8px; }
+    .metric .m-row { font-size: 11px; line-height: 16px; justify-content: space-between; }
+    .more {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      width: 100%;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .more .arr { transform: rotate(135deg); margin-top: -2px; }
+    .more.on .arr { transform: rotate(-45deg); margin-top: 3px; }
+
+    .rank-tabs { display: flex; gap: 16px; margin-top: 12px; border-bottom: 1px solid #f2f3f5; }
+    .rank-list { padding-top: 4px; }
+    .rank-item {
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 11px 0;
+    }
+    .rank-item + .rank-item { border-top: 1px solid #f5f6f7; }
+    .no { font-size: 14px; font-weight: 700; color: #c8c9cc; }
+    .no.t1 { color: #ee0a24; }
+    .no.t2 { color: #ed6a0c; }
+    .no.t3 { color: #f0a020; }
+    .rname { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rval { font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; }
+    .bar {
+      grid-column: 2 / -1;
+      height: 4px;
+      margin-top: -6px;
+      border-radius: 2px;
+      background: #f2f3f5;
+      overflow: hidden;
+    }
+    .bar i { display: block; height: 100%; background: #8eb6f5; border-radius: 2px; }
+
+    .tabbar {
+      flex: none;
+      height: 56px;
+      background: #fff;
+      border-top: 1px solid #f2f3f5;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: end;
+      padding: 0 4px 6px;
+      position: relative;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: #646566;
+      font-size: 10px;
+      line-height: 14px;
+      padding-bottom: 2px;
+    }
+    .nav.on { color: #323233; font-weight: 650; }
+    .ai {
+      position: absolute;
+      left: 50%;
+      top: -16px;
+      transform: translateX(-50%);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: radial-gradient(circle at 35% 30%, #b9a6ff, #6d5efc 42%, #3d8bff 78%);
+      box-shadow: 0 6px 16px rgba(80, 90, 220, .28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="app">
+      <div class="statusbar">
+        <span>19:52</span>
+        <span class="status-right" aria-hidden="true">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="0.6" fill="#323233"/><rect x="4.5" y="5" width="3" height="7" rx="0.6" fill="#323233"/><rect x="9" y="2.5" width="3" height="9.5" rx="0.6" fill="#323233"/><rect x="13.5" y="0" width="3" height="12" rx="0.6" fill="#323233"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12"><path d="M7.5 9.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Z" fill="#323233"/><path d="M4.2 7.4a4.7 4.7 0 0 1 6.6 0" stroke="#323233" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 5a8 8 0 0 1 11.4 0" stroke="#323233" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.6" y="0.6" width="20" height="10.8" rx="2" stroke="#323233" stroke-width="1.2" fill="none"/><rect x="2" y="2" width="14" height="8" rx="1" fill="#07c160"/><path d="M22 4v4a2 2 0 0 0 0-4Z" fill="#323233"/></svg>
+        </span>
+      </div>
+      <div class="header">
+        <button class="shop" type="button" aria-label="当前店铺">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 4.5h12M3 9h12M3 13.5h8" stroke="#323233" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <b>yz测试-连锁fde专用</b>
+        </button>
+        <div class="header-actions">
+          <button class="icon-btn" type="button" aria-label="设置">
+            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="#323233" stroke-width="1.6" fill="none"/><path d="M19.4 13.2a7.6 7.6 0 0 0 .05-2.4l1.7-1.3-1.8-3.1-2 .6a7.4 7.4 0 0 0-1.7-1L15.2 3h-3.6l-.5 2.9a7.4 7.4 0 0 0-1.7 1l-2-.6L5.6 9.5l1.7 1.3a7.6 7.6 0 0 0 0 2.4l-1.7 1.3 1.8 3.1 2-.6a7.4 7.4 0 0 0 1.7 1l.5 2.9h3.6l.5-2.9a7.4 7.4 0 0 0 1.7-1l2 .6 1.8-3.1-1.8-1.3Z" stroke="#323233" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-btn" type="button" aria-label="新建">
+            <span class="plus"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1.5v9M1.5 6h9" stroke="#323233" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <section class="card" aria-label="营业概况">
+          <div class="update-row">
+            <span id="updated"></span>
+            <div class="days" role="tablist" aria-label="统计日">
+              <button type="button" data-day="today" role="tab">今日</button>
+              <button type="button" data-day="yesterday" role="tab">昨日</button>
+            </div>
+          </div>
+          <div class="tabs">
+            <span class="module-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 11.5h11" stroke="#ee0a24" stroke-width="1.2" stroke-linecap="round"/><path d="M2.2 9.2 5 6.2l2.1 1.8 4.2-4.6" stroke="#ee0a24" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              营业概况
+            </span>
+            <div class="tablist" role="tablist" aria-label="概况分类">
+            <button class="tab" type="button" data-tab="performance" role="tab">业绩概况</button>
+            <button class="tab" type="button" data-tab="customer" role="tab">客户概况</button>
+            <button class="tab" type="button" data-tab="channel" role="tab">渠道概况</button>
+            </div>
+          </div>
+          <div id="panel"></div>
+        </section>
+
+        <section class="card" aria-label="排行">
+          <div class="update-row"><span id="rankUpdated"></span></div>
+          <div class="rank-tabs" role="tablist" aria-label="排行分类">
+            <button class="tab" type="button" data-rank="biz" role="tab">
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 11V6.5M5.5 11V3.5M9 11V5.5M12.5 11V2" stroke="#ee0a24" stroke-width="1.4" stroke-linecap="round"/></svg>
+              营业排行
+            </button>
+            <button class="tab" type="button" data-rank="shop" role="tab">店铺排行</button>
+            <button class="tab" type="button" data-rank="goods" role="tab">商品排行</button>
+          </div>
+          <div class="rank-list" id="rankList"></div>
+        </section>
+      </div>
+
+      <nav class="tabbar" aria-label="底部导航">
+        <button class="nav on" type="button"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M4 9.5 11 4l7 5.5V18a1 1 0 0 1-1 1h-4.2v-4.6H9.2V19H5a1 1 0 0 1-1-1V9.5Z" fill="#323233"/></svg>生意</button>
+        <button class="nav" type="button"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M4 6.5h14v9.2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6.5Z" stroke="#646566" stroke-width="1.4" fill="none"/><path d="M4 7.2 11 12l7-4.8" stroke="#646566" stroke-width="1.4" fill="none"/></svg>消息</button>
+        <span class="nav-gap" aria-hidden="true"></span>
+        <button class="ai" type="button" aria-label="智能助手"><svg width="22" height="22" viewBox="0 0 22 22"><rect x="5" y="6" width="12" height="9" rx="3" fill="#fff"/><circle cx="8.6" cy="10.4" r="1" fill="#6d5efc"/><circle cx="13.4" cy="10.4" r="1" fill="#6d5efc"/><path d="M8.4 13.1h5.2" stroke="#6d5efc" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+        <button class="nav" type="button"><svg width="22" height="22" viewBox="0 0 22 22"><rect x="4" y="4" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/><rect x="12" y="4" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/><rect x="4" y="12" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/><rect x="12" y="12" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/></svg>工作台</button>
+        <button class="nav" type="button"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M4.5 9.2 11 4.8l6.5 4.4V17a1 1 0 0 1-1 1h-3.2v-4.2H8.7V18H5.5a1 1 0 0 1-1-1V9.2Z" stroke="#646566" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>店铺</button>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    const revenueHours = {
+      today: [0,0,0,0,0,0,0,0,0,0, 4000,12000,18000,15000,28000,41000,38500,42000,32000,25000,20216.2, null,null,null],
+      yesterday: [0,0,0,0,0,0,0,0,0,0, 2000,8000,16000,14000,12000,22000,15000,16000,25000,28000,28000,27000,22000,13415.32],
+      dayBefore: [0,0,0,0,0,0,0,0,0,0, 1800,6200,14000,15500,13000,19000,17500,16800,21000,24500,25500,24000,19000,12200],
+      lastWeek: [0,0,0,0,0,0,0,0,0,0, 1500,5500,11000,12000,14000,16000,18000,17000,20000,23000,25000,22000,18000,11000]
+    };
+    const fullScale = { today: 1, yesterday: 1, dayBefore: 1, lastWeek: 1 };
+    const channelScale = {
+      store: { today: 0.7, yesterday: 0.68, dayBefore: 0.66, lastWeek: 0.64 },
+      wechat: { today: 0.18, yesterday: 0.2, dayBefore: 0.19, lastWeek: 0.22 },
+      meituan: { today: 0.08, yesterday: 0.07, dayBefore: 0.09, lastWeek: 0.08 },
+      other: { today: 0.04, yesterday: 0.05, dayBefore: 0.06, lastWeek: 0.06 }
+    };
+    const channelNames = [
+      ["store", "门店渠道"],
+      ["wechat", "微信小程序"],
+      ["meituan", "美团点评券"],
+      ["other", "其他渠道"]
+    ];
+
+    const grids = {
+      overview: [
+        { name: "营业收入", digits: 2, today: 275716.2, yesterday: 248415.32, dayBefore: 230000, lastWeek: 214000 },
+        { name: "优惠金额", digits: 2, today: 18640, yesterday: 21050, dayBefore: 19240, lastWeek: 19880 },
+        { name: "营业额", digits: 2, today: 294356.2, yesterday: 269465.32, dayBefore: 249240, lastWeek: 233880 },
+        { name: "支付订单数", digits: 0, today: 715, yesterday: 621, dayBefore: 588, lastWeek: 540 },
+        { name: "可用店铺余额", digits: 2, today: 128600.18, yesterday: null, dayBefore: null, lastWeek: null },
+        { name: "商品净销量", digits: 3, today: 1286, yesterday: 1104, dayBefore: 1048, lastWeek: 1022 },
+        { name: "商品净销售金额", digits: 2, today: 268430.8, yesterday: 241880, dayBefore: 226400, lastWeek: 220450 },
+        { name: "商品退款金额", digits: 2, today: 6820, yesterday: 4260, dayBefore: 4680, lastWeek: 5100 },
+        { name: "支付客户数", digits: 0, today: 715, yesterday: 621, dayBefore: 590, lastWeek: 598, more: true },
+        { name: "客单价", digits: 2, today: 391.52, yesterday: 403.71, dayBefore: 396.4, lastWeek: 388.2, more: true }
+      ],
+      performance: [
+        { name: "销售业绩", digits: 2, today: 186420, yesterday: 162880, dayBefore: 158200, lastWeek: 150220 },
+        { name: "开单业绩", digits: 2, today: 64210, yesterday: 58840, dayBefore: 56200, lastWeek: 54110 },
+        { name: "服务业绩", digits: 2, today: 25086.2, yesterday: 26695.32, dayBefore: 24880, lastWeek: 22650 },
+        { name: "开单人数", digits: 0, today: 186, yesterday: 164, dayBefore: 158, lastWeek: 151 }
+      ],
+      customer: [
+        { name: "支付客户数", digits: 0, today: 715, yesterday: 621, dayBefore: 590, lastWeek: 598 },
+        { name: "新成交客户", digits: 0, today: 128, yesterday: 106, dayBefore: 112, lastWeek: 97 },
+        { name: "会员支付金额", digits: 2, today: 96420.5, yesterday: 88210, dayBefore: 84600, lastWeek: 80140 },
+        { name: "客单价", digits: 2, today: 391.52, yesterday: 403.71, dayBefore: 396.4, lastWeek: 388.2 }
+      ],
+      channel: [
+        { name: "优惠金额", digits: 2, today: 18640, yesterday: 21050, dayBefore: 19240, lastWeek: 19880 },
+        { name: "支付订单数", digits: 0, today: 715, yesterday: 621, dayBefore: 588, lastWeek: 540 },
+        { name: "新增会员数", digits: 0, today: 52, yesterday: 41, dayBefore: 36, lastWeek: 0 },
+        { name: "客单价", digits: 2, today: 391.52, yesterday: 403.71, dayBefore: 396.4, lastWeek: 388.2, more: true },
+        { name: "营业额", digits: 2, today: 294356.2, yesterday: 269465.32, dayBefore: 249240, lastWeek: 233880, more: true }
+      ],
+      meituan: [
+        { name: "平台券核销金额", digits: 2, today: 8640, yesterday: 9280.5, dayBefore: 8760, lastWeek: 7540 }
+      ]
+    };
+
+    const ranks = {
+      biz: [["门店", 198420], ["微信小程序", 52180.2], ["移动店铺", 25116]],
+      shop: [["西湖文化广场店", 86240], ["湖滨银泰店", 62180.5], ["钱江新城店", 41660.2], ["城西银泰店", 28420]],
+      goods: [["招牌拿铁", 1286], ["巴斯克蛋糕", 860], ["美式咖啡", 642], ["芝士牛乳", 418]]
+    };
+
+    const state = { day: "today", tab: "performance", more: false, rank: "shop", channel: "store" };
+
+    const sum = (list) => list.reduce((total, value) => total + (value == null ? 0 : value), 0);
+    const money = (value, digits) => Number(value).toLocaleString("en-US", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
+
+    function ratioOf(current, base) {
+      if (current == null || base == null || base === 0) return { text: "—", cls: "flat", arrow: false };
+      const percent = current / base * 100;
+      if (Math.abs(percent - 100) < 0.005) return { text: "100.00%", cls: "flat", arrow: false };
+      return percent > 100
+        ? { text: percent.toFixed(2) + "%", cls: "up", arrow: true }
+        : { text: percent.toFixed(2) + "%", cls: "down", arrow: true };
+    }
+
+    function growthOf(current, base) {
+      if (current == null || base == null || base === 0) return { text: "—", cls: "flat", arrow: false };
+      const percent = (current - base) / base * 100;
+      if (Math.abs(percent) < 0.005) return { text: "0.00%", cls: "flat", arrow: false };
+      return percent > 0
+        ? { text: percent.toFixed(2) + "%", cls: "up", arrow: true }
+        : { text: Math.abs(percent).toFixed(2) + "%", cls: "down", arrow: true };
+    }
+
+    function rateSpan(rate) {
+      if (!rate.arrow) return '<span class="delta flat">' + rate.text + "</span>";
+      return '<span class="delta ' + rate.cls + '"><i></i>' + rate.text + "</span>";
+    }
+
+    const lastWeekName = "上周" + ["日", "一", "二", "三", "四", "五", "六"][new Date(2026, 9, 18).getDay()];
+
+    function dayMeta() {
+      if (state.day === "today") {
+        return {
+          mode: "today",
+          range: "更新于：10/19 00:00 - 10/19 19:52",
+          currentKey: "today",
+          baseLabel: "昨天全天",
+          ratioLabel: "占比昨天"
+        };
+      }
+      return {
+        mode: "yesterday",
+        range: "更新于：10/18 00:00 - 10/18 23:59",
+        currentKey: "yesterday"
+      };
+    }
+
+    function scaledHours(key, factor) {
+      return revenueHours[key].map((value) => value == null ? null : Math.round(value * factor * 100) / 100);
+    }
+
+    function metaRows(current, base, digits, labels, inline) {
+      const baseText = base == null ? "—" : money(base, digits);
+      const ratio = ratioOf(current, base);
+      const arrow = ratio.arrow ? "<i></i>" : "";
+      return '<div class="meta' + (inline ? " inline" : "") + '">' +
+        '<div class="m-row"><span>' + labels.baseLabel + '</span><span class="num">' + baseText + "</span></div>" +
+        '<div class="m-row"><span>' + labels.ratioLabel + '</span><span class="delta ' + ratio.cls + '">' + ratio.text + arrow + "</span></div>" +
+        "</div>";
+    }
+
+    function growthRows(current, dayBefore, lastWeek, inline) {
+      return '<div class="meta' + (inline ? " inline" : "") + '">' +
+        '<div class="m-row"><span>比前天</span>' + rateSpan(growthOf(current, dayBefore)) + "</div>" +
+        '<div class="m-row"><span>比' + lastWeekName + "</span>" + rateSpan(growthOf(current, lastWeek)) + "</div>" +
+        "</div>";
+    }
+
+    function scaleItem(item, scales) {
+      if (!scales) return item;
+      const next = Object.assign({}, item);
+      ["today", "yesterday", "dayBefore", "lastWeek"].forEach((key) => {
+        if (item[key] == null) return;
+        const value = item[key] * scales[key];
+        next[key] = item.digits === 0 ? Math.round(value) : Math.round(value * 100) / 100;
+      });
+      return next;
+    }
+
+    function metricCard(item, labels) {
+      const current = item[labels.currentKey];
+      const value = current == null ? "—" : money(current, item.digits);
+      const meta = labels.mode === "today"
+        ? metaRows(current, item.yesterday, item.digits, labels, false)
+        : growthRows(current, item.dayBefore, item.lastWeek, false);
+      return '<article class="metric"><div class="m-title">' + item.name + ' <i class="arr"></i></div>' +
+        '<div class="m-value">' + value + "</div>" + meta + "</article>";
+    }
+
+    function smoothPath(points, top, bottom) {
+      const groups = [];
+      let current = [];
+      points.forEach((point) => {
+        if (!point) {
+          if (current.length) groups.push(current);
+          current = [];
+        } else current.push(point);
+      });
+      if (current.length) groups.push(current);
+      return groups.map((pts) => {
+        let d = "M " + pts[0].x.toFixed(2) + " " + pts[0].y.toFixed(2);
+        for (let i = 0; i < pts.length - 1; i += 1) {
+          const p0 = pts[Math.max(i - 1, 0)];
+          const p1 = pts[i];
+          const p2 = pts[i + 1];
+          const p3 = pts[Math.min(i + 2, pts.length - 1)];
+          const c1x = p1.x + (p2.x - p0.x) / 6;
+          const c1y = Math.min(bottom, Math.max(top, p1.y + (p2.y - p0.y) / 6));
+          const c2x = p2.x - (p3.x - p1.x) / 6;
+          const c2y = Math.min(bottom, Math.max(top, p2.y - (p3.y - p1.y) / 6));
+          d += " C " + c1x.toFixed(2) + " " + c1y.toFixed(2) + ", " + c2x.toFixed(2) + " " + c2y.toFixed(2) + ", " + p2.x.toFixed(2) + " " + p2.y.toFixed(2);
+        }
+        return d;
+      }).join(" ");
+    }
+
+    function chartSvg(seriesList) {
+      const width = 340;
+      const height = 176;
+      const left = 42;
+      const right = 8;
+      const top = 10;
+      const bottom = 24;
+      const maxVal = Math.max.apply(null, seriesList.reduce((all, series) => all.concat(series.values.filter((value) => value != null)), [0]));
+      const padded = Math.max(maxVal * 1.08, 1);
+      const niceStep = (span, parts) => {
+        const raw = span / parts;
+        const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+        const options = [1, 2, 2.5, 5, 10].map((n) => n * mag);
+        for (let i = 0; i < options.length; i += 1) {
+          if (options[i] * parts >= span) return options[i];
+        }
+        return options[options.length - 1];
+      };
+      let parts = 4;
+      let step = niceStep(padded, parts);
+      if (step * parts / padded > 1.45) {
+        parts = 5;
+        step = niceStep(padded, parts);
+      }
+      const yMax = step * parts;
+      const plotW = width - left - right;
+      const plotH = height - top - bottom;
+      const yOf = (value) => top + plotH - (value / yMax) * plotH;
+      const xOf = (hour) => left + (plotW * hour) / 23;
+      const toPoints = (values) => values.map((value, hour) => value == null ? null : { x: xOf(hour), y: yOf(value), value: value, hour: hour });
+      const pointSets = seriesList.map((series) => toPoints(series.values));
+      const ticks = [];
+      for (let i = 0; i <= parts; i += 1) ticks.push(step * i);
+      const yLabels = ticks.map((tick) => {
+        const y = yOf(tick);
+        const text = tick === 0 ? "0" : (tick >= 10000 ? (tick / 10000).toFixed(1) + "万" : tick.toLocaleString("en-US"));
+        return '<text x="' + (left - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#c8c9cc">' + text + "</text>" +
+          '<line x1="' + left + '" y1="' + y + '" x2="' + (width - right) + '" y2="' + y + '" stroke="#f0f1f3" stroke-width="1"/>';
+      }).join("");
+      const xLabels = [0, 6, 12, 18, 23].map((hour) => {
+        const anchor = hour === 0 ? "start" : hour === 23 ? "end" : "middle";
+        const label = String(hour).padStart(2, "0") + ":00";
+        return '<text x="' + xOf(hour) + '" y="' + (height - 6) + '" text-anchor="' + anchor + '" font-size="10" fill="#c8c9cc">' + label + "</text>";
+      }).join("");
+      const paths = seriesList.map((series, index) => {
+        const dash = series.dash ? ' stroke-dasharray="' + series.dash + '"' : "";
+        return '<path d="' + smoothPath(pointSets[index], top, top + plotH) + '" fill="none" stroke="' + series.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"' + dash + "/>";
+      }).reverse().join("");
+      const hover = pointSets[0].map((point, hour) => ({
+        hour: hour,
+        x: xOf(hour),
+        points: pointSets.map((set) => set[hour])
+      }));
+      return {
+        html: '<svg class="chart" viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="营业收入小时趋势">' + yLabels + xLabels + paths + "</svg>",
+        meta: { w: width, h: height, hover: hover, slot: plotW / 23, series: seriesList }
+      };
+    }
+
+    function couponScale() {
+      const target = grids.meituan[0];
+      return {
+        today: target.today / sum(revenueHours.today),
+        yesterday: target.yesterday / sum(revenueHours.yesterday),
+        dayBefore: target.dayBefore / sum(revenueHours.dayBefore),
+        lastWeek: target.lastWeek / sum(revenueHours.lastWeek)
+      };
+    }
+
+    function revenueBlock(scales, title) {
+      const labels = dayMeta();
+      const series = labels.mode === "today"
+        ? [
+            { name: "今日", values: scaledHours("today", scales.today), color: "#2f80ed", dash: "", sw: "" },
+            { name: "昨天全天", values: scaledHours("yesterday", scales.yesterday), color: "#5cbf6a", dash: "0.8 5", sw: "dash" }
+          ]
+        : [
+            { name: "昨日", values: scaledHours("yesterday", scales.yesterday), color: "#2f80ed", dash: "", sw: "" },
+            { name: "前天", values: scaledHours("dayBefore", scales.dayBefore), color: "#ed6a0c", dash: "5 3", sw: "mid" },
+            { name: lastWeekName, values: scaledHours("lastWeek", scales.lastWeek), color: "#5cbf6a", dash: "0.8 5", sw: "dash" }
+          ];
+      const current = sum(series[0].values);
+      const compare = labels.mode === "today"
+        ? metaRows(current, sum(series[1].values), 2, labels, true)
+        : growthRows(current, sum(series[1].values), sum(series[2].values), true);
+      const chart = chartSvg(series);
+      const legend = series.map((item) => {
+        const line = item.dash ? (item.sw === "dash" ? "dotted" : "dashed") : "solid";
+        return '<span><i class="lg" style="border-top:2px ' + line + " " + item.color + '"></i>' + item.name + "</span>";
+      }).join("");
+      const dots = series.map((item, index) => '<div class="dot" data-i="' + index + '" hidden style="border-color:' + item.color + '"></div>').join("");
+      return {
+        html: '<div class="rev"><div class="m-title">' + title + ' <i class="arr"></i></div>' +
+          '<div class="rev-value">' + money(current, 2) + "</div>" + compare +
+          '<div class="legend">' + legend + "</div>" +
+          '<div class="chart-box">' + chart.html + '<div class="guide" hidden></div>' + dots +
+          '<div class="tip" hidden></div></div></div>',
+        meta: chart.meta
+      };
+    }
+
+    function renderPanel() {
+      const labels = dayMeta();
+      document.getElementById("updated").textContent = labels.range;
+      document.querySelectorAll("[data-day]").forEach((button) => {
+        const on = button.dataset.day === state.day;
+        button.classList.toggle("on", on);
+        button.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        const on = button.dataset.tab === state.tab;
+        button.classList.toggle("on", on);
+        if (button.tagName === "BUTTON") button.setAttribute("aria-selected", on ? "true" : "false");
+      });
+
+      const meituan = state.tab === "channel" && state.channel === "meituan";
+      const scales = state.tab === "channel" && !meituan ? channelScale[state.channel] : null;
+      const source = meituan ? [] : grids[state.tab];
+      const items = source.filter((item) => state.more || !item.more).map((item) => scaleItem(item, scales));
+      const gridHtml = items.length ? '<div class="metrics">' + items.map((item) => metricCard(item, labels)).join("") + "</div>" : "";
+      const moreBtn = state.tab === "overview" || (state.tab === "channel" && !meituan)
+        ? '<button class="more' + (state.more ? " on" : "") + '" type="button" data-more="1">' + (state.more ? "收起" : "更多数据") + ' <i class="arr"></i></button>'
+        : "";
+      if (state.tab === "performance" || state.tab === "channel") {
+        const block = revenueBlock(meituan ? couponScale() : (state.tab === "channel" ? channelScale[state.channel] : fullScale), meituan ? "平台券核销金额" : "营业收入");
+        const chips = state.tab === "channel"
+          ? '<div class="channels" role="tablist" aria-label="渠道">' + channelNames.map((item) => '<button type="button" data-channel="' + item[0] + '" class="' + (state.channel === item[0] ? "on" : "") + '" role="tab" aria-selected="' + (state.channel === item[0] ? "true" : "false") + '">' + item[1] + "</button>").join("") + "</div>"
+          : "";
+        document.getElementById("panel").innerHTML = chips + block.html + gridHtml + moreBtn;
+        document.querySelector(".chart")._meta = block.meta;
+        return;
+      }
+      document.getElementById("panel").innerHTML = gridHtml + moreBtn;
+    }
+
+    function renderRank() {
+      const labels = dayMeta();
+      document.getElementById("rankUpdated").textContent = labels.range;
+      document.querySelectorAll("[data-rank]").forEach((button) => {
+        const on = button.dataset.rank === state.rank;
+        button.classList.toggle("on", on);
+        button.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      const rows = ranks[state.rank];
+      const max = Math.max.apply(null, rows.map((row) => row[1]));
+      const digits = state.rank === "goods" ? 0 : 2;
+      document.getElementById("rankList").innerHTML = rows.map((row, index) => {
+        const hot = index < 3 ? " t" + (index + 1) : "";
+        return '<div class="rank-item"><span class="no' + hot + '">' + (index + 1) + '</span><span class="rname">' + row[0] + '</span><span class="rval">' + money(row[1], digits) + '</span></div>' +
+          '<div class="bar"><i style="width:' + (row[1] / max * 100).toFixed(1) + '%"></i></div>';
+      }).join("");
+    }
+
+    function hideTip() {
+      const box = document.querySelector(".chart-box");
+      if (!box) return;
+      box.querySelectorAll(".guide, .dot, .tip").forEach((node) => { node.hidden = true; });
+    }
+
+    function onChartMove(event) {
+      const box = event.target.closest ? event.target.closest(".chart-box") : null;
+      if (!box) { hideTip(); return; }
+      const svg = box.querySelector(".chart");
+      const meta = svg && svg._meta;
+      if (!meta) return;
+      const rect = svg.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width * meta.w;
+      let best = null;
+      let bestDistance = 1e9;
+      meta.hover.forEach((point) => {
+        const distance = Math.abs(point.x - x);
+        if (distance < bestDistance) { bestDistance = distance; best = point; }
+      });
+      if (!best || bestDistance > meta.slot * 0.75) { hideTip(); return; }
+      const xPx = best.x / meta.w * rect.width;
+      const guide = box.querySelector(".guide");
+      guide.hidden = false;
+      guide.style.left = xPx + "px";
+      box.querySelectorAll(".dot").forEach((dot) => {
+        const point = best.points[Number(dot.dataset.i)];
+        if (!point) { dot.hidden = true; return; }
+        dot.hidden = false;
+        dot.style.left = xPx + "px";
+        dot.style.top = (point.y / meta.h * rect.height) + "px";
+      });
+      const tip = box.querySelector(".tip");
+      const hour = String(best.hour).padStart(2, "0") + ":00";
+      let rows = '<div class="tip-time">' + hour + "</div>";
+      meta.series.forEach((series, index) => {
+        const point = best.points[index];
+        if (!point) return;
+        rows += '<div class="tip-row"><i class="sw ' + series.sw + '"></i><span>' + series.name + "</span><b>" + money(point.value, 2) + "</b></div>";
+      });
+      tip.innerHTML = rows;
+      tip.hidden = false;
+      const tipWidth = 180;
+      let left = xPx + 12;
+      if (left + tipWidth > rect.width) left = xPx - tipWidth - 8;
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = "6px";
+    }
+
+    document.body.addEventListener("click", (event) => {
+      const day = event.target.closest("[data-day]");
+      const tab = event.target.closest("[data-tab]");
+      const rank = event.target.closest("[data-rank]");
+      const more = event.target.closest("[data-more]");
+      const channel = event.target.closest("[data-channel]");
+      if (day) { state.day = day.dataset.day; renderPanel(); renderRank(); }
+      else if (tab && tab.dataset.tab !== "overview") { state.tab = tab.dataset.tab; state.more = false; renderPanel(); }
+      else if (channel) { state.channel = channel.dataset.channel; renderPanel(); }
+      else if (rank) { state.rank = rank.dataset.rank; renderRank(); }
+      else if (more) { state.more = !state.more; renderPanel(); }
+    });
+    document.getElementById("panel").addEventListener("pointermove", onChartMove);
+    document.getElementById("panel").addEventListener("pointerleave", hideTip);
+
+    renderPanel();
+    renderRank();
+  </script>
+</body>
+</html>
