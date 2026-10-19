@@ -493,6 +493,42 @@
     .group-title { margin: 14px 4px 8px; color: #969799; font-size: 13px; }
     .group-title:first-child { margin-top: 4px; }
     .metric-card + .metric-card { margin-top: 8px; }
+    .coach { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; width: auto; background: none; pointer-events: auto; }
+    .guide-mask {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, .55);
+      -webkit-mask: radial-gradient(circle 22px at var(--gx, 320px) var(--gy, 66px), transparent 21px, #000 22.5px);
+      mask: radial-gradient(circle 22px at var(--gx, 320px) var(--gy, 66px), transparent 21px, #000 22.5px);
+    }
+    .guide-arrow { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    .guide-copy {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+      z-index: 2;
+    }
+    .guide-copy h2 { margin: 0; font-size: 18px; line-height: 26px; font-weight: 650; }
+    .guide-copy p { margin: 8px 0 0; font-size: 16px; line-height: 24px; }
+    .guide-ok {
+      margin-top: 16px;
+      min-width: 128px;
+      height: 40px;
+      padding: 0 18px;
+      background: #fff;
+      color: #323233;
+      border-radius: 2px;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+    }
     .toast {
       position: absolute;
       left: 50%;
@@ -596,6 +632,15 @@
           <div id="setBody"></div>
         </div>
       </section>
+      <div class="coach" id="guide" role="dialog" aria-label="工作台布局设置">
+        <div class="guide-mask"></div>
+        <svg class="guide-arrow" id="guideArrow" aria-hidden="true"></svg>
+        <div class="guide-copy" id="guideCopy">
+          <h2>工作台布局设置</h2>
+          <p>布局设置支持模块设置和指标设置啦</p>
+          <button class="guide-ok" type="button" id="guideOk">我知道了</button>
+        </div>
+      </div>
       <div class="toast" id="toast" hidden></div>
     </div>
   </div>
@@ -1137,7 +1182,45 @@
       showToast.timer = setTimeout(() => { toast.hidden = true; }, 1600);
     }
 
+    function hideGuide() {
+      const guide = document.getElementById("guide");
+      if (guide) guide.hidden = true;
+    }
+
+    function placeGuide() {
+      const guide = document.getElementById("guide");
+      const btn = document.getElementById("openSettings");
+      if (!guide || guide.hidden || !btn) return;
+      const app = document.querySelector(".app");
+      const appRect = app.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      const cx = btnRect.left - appRect.left + btnRect.width / 2;
+      const cy = btnRect.top - appRect.top + btnRect.height / 2;
+      guide.querySelector(".guide-mask").style.setProperty("--gx", cx + "px");
+      guide.querySelector(".guide-mask").style.setProperty("--gy", cy + "px");
+      const copy = document.getElementById("guideCopy");
+      const copyTop = Math.max(cy + 118, 168);
+      copy.style.top = copyTop + "px";
+      const width = appRect.width;
+      const height = appRect.height;
+      const x1 = cx;
+      const yTip = cy + 24;
+      const x2 = width / 2 + 18;
+      const y2 = copyTop - 2;
+      const svg = document.getElementById("guideArrow");
+      svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+      svg.innerHTML = '<path d="M ' + x2.toFixed(1) + " " + y2.toFixed(1) +
+        " C " + (x2 + 36).toFixed(1) + " " + (y2 - 28).toFixed(1) +
+        ", " + (x1 + 10).toFixed(1) + " " + (yTip + 46).toFixed(1) +
+        ", " + x1.toFixed(1) + " " + (yTip + 12).toFixed(1) +
+        '" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="5 5" stroke-linecap="round"/>' +
+        '<polygon points="' + (x1 - 6.5).toFixed(1) + "," + (yTip + 9).toFixed(1) + " " +
+        (x1 + 6.5).toFixed(1) + "," + (yTip + 9).toFixed(1) + " " +
+        x1.toFixed(1) + "," + yTip.toFixed(1) + '" fill="#fff"/>';
+    }
+
     function openSettings() {
+      hideGuide();
       draftModules = clone(savedModules);
       draftMetrics = clone(savedMetrics);
       state.setTab = "module";
@@ -1268,7 +1351,10 @@
     document.getElementById("panel").addEventListener("pointermove", onChartMove);
     document.getElementById("panel").addEventListener("pointerleave", hideTip);
 
+    document.getElementById("guideOk").addEventListener("click", hideGuide);
+    window.addEventListener("resize", placeGuide);
     renderHome();
+    placeGuide();
   </script>
 </body>
 </html>
