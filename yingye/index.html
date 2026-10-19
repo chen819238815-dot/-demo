@@ -44,6 +44,7 @@
     }
     .scroll { flex: 1; overflow: auto; padding: 0 12px 16px; -webkit-overflow-scrolling: touch; }
 
+    .app.in-settings .statusbar { background: #fff; }
     .statusbar {
       height: 44px;
       padding: 10px 16px 0 22px;
@@ -351,6 +352,160 @@
       align-items: center;
       justify-content: center;
     }
+
+    #home, .settings { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    [hidden] { display: none !important; }
+
+    .set-nav {
+      height: 44px;
+      display: grid;
+      grid-template-columns: 56px 1fr 56px;
+      align-items: center;
+      padding: 0 8px;
+      background: #fff;
+      flex: none;
+    }
+    .set-nav h1 { margin: 0; text-align: center; font-size: 17px; font-weight: 600; }
+    .set-back { width: 36px; height: 36px; font-size: 28px; line-height: 1; color: #323233; }
+    .set-save { justify-self: end; color: #1989fa; font-size: 16px; padding: 8px; }
+    .set-tabs {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid #f2f3f5;
+      flex: none;
+    }
+    .set-tab {
+      position: relative;
+      flex: 1;
+      height: 44px;
+      color: #646566;
+      font-size: 15px;
+    }
+    .set-tab.on { color: #1989fa; font-weight: 600; }
+    .set-tab.on::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 64px;
+      height: 2px;
+      margin-left: -32px;
+      background: #1989fa;
+      border-radius: 1px;
+    }
+    .set-scroll { flex: 1; overflow: auto; background: #f7f8fa; padding: 8px 12px 28px; -webkit-overflow-scrolling: touch; }
+    .set-hint { margin: 4px 4px 10px; color: #969799; font-size: 12px; line-height: 18px; }
+    .node { position: relative; }
+    #setBody > .node + .node { margin-top: 12px; }
+    .branch .node + .node { margin-top: 8px; }
+    .mod-card {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px 0 14px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(50, 50, 51, 0.04);
+      user-select: none;
+    }
+    .mod-card.dim .mod-label,
+    .nest-row.dim .mod-label { color: #c8c9cc; }
+    .mod-card.nest-box { display: block; padding: 0 0 8px; }
+    .nest-row {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px 0 14px;
+    }
+    .nest-kids {
+      position: relative;
+      margin: 0 0 0 22px;
+      padding-left: 14px;
+    }
+    .toggle { margin-left: auto; }
+    .nest-kids::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: -4px;
+      width: 14px;
+      height: 28px;
+      border-left: 1px solid #dcdee0;
+      border-bottom: 1px solid #dcdee0;
+      border-bottom-left-radius: 8px;
+    }
+    .mod-label { flex: 1; min-width: 0; font-size: 15px; line-height: 22px; text-align: left; }
+    .grip {
+      width: 14px;
+      height: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, 3px);
+      grid-template-rows: repeat(3, 3px);
+      gap: 3px;
+      flex: none;
+    }
+    .grip i { width: 3px; height: 3px; border-radius: 50%; background: #c8c9cc; }
+    .toggle {
+      width: 46px;
+      height: 28px;
+      border-radius: 14px;
+      background: #e5e5ea;
+      position: relative;
+      flex: none;
+      transition: background .2s ease;
+    }
+    .toggle i {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+      transition: transform .2s ease;
+    }
+    .toggle.on { background: #1989fa; }
+    .toggle.on i { transform: translateX(18px); }
+    .branch { position: relative; margin-left: 18px; padding-left: 16px; }
+    .branch > .node::before {
+      content: "";
+      position: absolute;
+      left: -16px;
+      top: -8px;
+      width: 16px;
+      height: 32px;
+      border-left: 1px solid #dcdee0;
+      border-bottom: 1px solid #dcdee0;
+      border-bottom-left-radius: 8px;
+    }
+    .branch > .node:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: -16px;
+      top: 24px;
+      bottom: -8px;
+      border-left: 1px solid #dcdee0;
+    }
+    .node.dragging > .mod-card { box-shadow: 0 10px 24px rgba(25, 137, 250, .18); }
+    .group-title { margin: 14px 4px 8px; color: #969799; font-size: 13px; }
+    .group-title:first-child { margin-top: 4px; }
+    .metric-card + .metric-card { margin-top: 8px; }
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, .72);
+      color: #fff;
+      font-size: 14px;
+      line-height: 20px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      z-index: 30;
+    }
   </style>
 </head>
 <body>
@@ -364,13 +519,14 @@
           <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.6" y="0.6" width="20" height="10.8" rx="2" stroke="#323233" stroke-width="1.2" fill="none"/><rect x="2" y="2" width="14" height="8" rx="1" fill="#07c160"/><path d="M22 4v4a2 2 0 0 0 0-4Z" fill="#323233"/></svg>
         </span>
       </div>
+      <div id="home">
       <div class="header">
         <button class="shop" type="button" aria-label="当前店铺">
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 4.5h12M3 9h12M3 13.5h8" stroke="#323233" stroke-width="1.4" stroke-linecap="round"/></svg>
           <b>yz测试-连锁fde专用</b>
         </button>
         <div class="header-actions">
-          <button class="icon-btn" type="button" aria-label="设置">
+          <button class="icon-btn" type="button" id="openSettings" aria-label="设置">
             <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="#323233" stroke-width="1.6" fill="none"/><path d="M19.4 13.2a7.6 7.6 0 0 0 .05-2.4l1.7-1.3-1.8-3.1-2 .6a7.4 7.4 0 0 0-1.7-1L15.2 3h-3.6l-.5 2.9a7.4 7.4 0 0 0-1.7 1l-2-.6L5.6 9.5l1.7 1.3a7.6 7.6 0 0 0 0 2.4l-1.7 1.3 1.8 3.1 2-.6a7.4 7.4 0 0 0 1.7 1l.5 2.9h3.6l.5-2.9a7.4 7.4 0 0 0 1.7-1l2 .6 1.8-3.1-1.8-1.3Z" stroke="#323233" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>
           </button>
           <button class="icon-btn" type="button" aria-label="新建">
@@ -380,7 +536,7 @@
       </div>
 
       <div class="scroll">
-        <section class="card" aria-label="营业概况">
+        <section class="card" id="overviewSection" aria-label="营业概况">
           <div class="update-row">
             <span id="updated"></span>
             <div class="days" role="tablist" aria-label="统计日">
@@ -402,7 +558,7 @@
           <div id="panel"></div>
         </section>
 
-        <section class="card" aria-label="排行">
+        <section class="card" id="rankSection" aria-label="排行">
           <div class="update-row"><span id="rankUpdated"></span></div>
           <div class="rank-tabs" role="tablist" aria-label="排行分类">
             <button class="tab" type="button" data-rank="biz" role="tab">
@@ -424,6 +580,23 @@
         <button class="nav" type="button"><svg width="22" height="22" viewBox="0 0 22 22"><rect x="4" y="4" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/><rect x="12" y="4" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/><rect x="4" y="12" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/><rect x="12" y="12" width="6" height="6" rx="1.2" stroke="#646566" stroke-width="1.4" fill="none"/></svg>工作台</button>
         <button class="nav" type="button"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M4.5 9.2 11 4.8l6.5 4.4V17a1 1 0 0 1-1 1h-3.2v-4.2H8.7V18H5.5a1 1 0 0 1-1-1V9.2Z" stroke="#646566" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>店铺</button>
       </nav>
+      </div>
+      <section class="settings" id="settings" hidden aria-label="自定义设置">
+        <div class="set-nav">
+          <button class="set-back" type="button" id="setBack" aria-label="返回">‹</button>
+          <h1>自定义设置</h1>
+          <button class="set-save" type="button" id="setSave">保存</button>
+        </div>
+        <div class="set-tabs" role="tablist" aria-label="设置分类">
+          <button class="set-tab on" type="button" data-settab="module" role="tab" aria-selected="true">模块设置</button>
+          <button class="set-tab" type="button" data-settab="metric" role="tab" aria-selected="false">指标设置</button>
+        </div>
+        <div class="set-scroll">
+          <p class="set-hint" id="setHint">长按模块卡可调整顺序，修改后点击右上角保存</p>
+          <div id="setBody"></div>
+        </div>
+      </section>
+      <div class="toast" id="toast" hidden></div>
     </div>
   </div>
 
@@ -491,7 +664,103 @@
       goods: [["招牌拿铁", 1286], ["巴斯克蛋糕", 860], ["美式咖啡", 642], ["芝士牛乳", 418]]
     };
 
-    const state = { day: "today", tab: "performance", more: false, rank: "shop", channel: "store" };
+    const state = { day: "today", tab: "performance", more: false, rank: "shop", channel: "store", setTab: "module" };
+    const clone = (value) => JSON.parse(JSON.stringify(value));
+    const defaultModules = [
+      { id: "cashier", name: "收银核销快捷入口", on: false },
+      { id: "overview", name: "营业概况", on: true, children: [
+        { id: "performance", name: "业绩概况", on: true, children: [
+          { id: "performanceTrend", name: "营业收入时段趋势", on: true }
+        ] },
+        { id: "customer", name: "客户概况", on: true },
+        { id: "channel", name: "渠道概况", on: true, children: [
+          { id: "channelTrend", name: "营业收入时段趋势", on: true }
+        ] }
+      ] },
+      { id: "rank", name: "营业排行", on: true, children: [
+        { id: "rankChannel", name: "渠道排行", on: true },
+        { id: "rankShop", name: "店铺排行", on: true },
+        { id: "rankGoods", name: "商品排行", on: true }
+      ] },
+      { id: "remind", name: "店铺提醒", on: true, children: [
+        { id: "orderRemind", name: "订单提醒", on: true }
+      ] },
+      { id: "banner", name: "广告轮播图", on: true },
+      { id: "shortcuts", name: "常用功能", on: true }
+    ];
+    const metricNames = {
+      performance: grids.performance.map((item) => item.name),
+      customer: grids.customer.map((item) => item.name),
+      channel: grids.channel.map((item) => item.name)
+    };
+    function blankMetrics() {
+      const result = {};
+      Object.keys(metricNames).forEach((key) => {
+        result[key] = {};
+        metricNames[key].forEach((name) => { result[key][name] = true; });
+      });
+      return result;
+    }
+    let savedModules = clone(defaultModules);
+    let draftModules = clone(defaultModules);
+    let savedMetrics = blankMetrics();
+    let draftMetrics = blankMetrics();
+
+    function findNode(id, nodes) {
+      for (let i = 0; i < nodes.length; i += 1) {
+        if (nodes[i].id === id) return nodes[i];
+        if (nodes[i].children) {
+          const found = findNode(id, nodes[i].children);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function isShown(id, list) {
+      function walk(nodes, parentOn) {
+        for (let i = 0; i < nodes.length; i += 1) {
+          const node = nodes[i];
+          const on = parentOn && node.on;
+          if (node.id === id) return on;
+          if (node.children) {
+            const found = walk(node.children, on);
+            if (found !== null) return found;
+          }
+        }
+        return null;
+      }
+      return !!walk(list || savedModules, true);
+    }
+
+    function toggleButton(node) {
+      return '<button type="button" class="toggle' + (node.on ? " on" : "") + '" data-toggle="' + node.id + '" role="switch" aria-checked="' + (node.on ? "true" : "false") + '" aria-label="' + node.name + '"><i></i></button>';
+    }
+
+    function moduleCard(node, depth, parentOn) {
+      const grip = depth === 0
+        ? '<span class="grip" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>'
+        : "";
+      return '<div class="mod-card' + (parentOn ? "" : " dim") + '">' + grip +
+        '<span class="mod-label">' + node.name + "</span>" + toggleButton(node) + "</div>";
+    }
+
+    function nestRow(node, parentOn) {
+      return '<div class="nest-row' + (parentOn ? "" : " dim") + '"><span class="mod-label">' + node.name + "</span>" + toggleButton(node) + "</div>";
+    }
+
+    function moduleNodes(nodes, depth, parentOn) {
+      return nodes.map((node) => {
+        if (node.id === "performance" && node.children) {
+          const kids = node.children.map((child) => nestRow(child, parentOn && node.on)).join("");
+          return '<div class="node" data-mid="' + node.id + '" data-depth="' + depth + '">' +
+            '<div class="mod-card nest-box' + (parentOn ? "" : " dim") + '">' +
+            nestRow(node, parentOn) + '<div class="nest-kids">' + kids + "</div></div></div>";
+        }
+        const children = node.children ? '<div class="branch">' + moduleNodes(node.children, depth + 1, parentOn && node.on) + "</div>" : "";
+        return '<div class="node" data-mid="' + node.id + '" data-depth="' + depth + '">' + moduleCard(node, depth, parentOn) + children + "</div>";
+      }).join("");
+    }
 
     const sum = (list) => list.reduce((total, value) => total + (value == null ? 0 : value), 0);
     const money = (value, digits) => Number(value).toLocaleString("en-US", {
@@ -713,6 +982,9 @@
 
     function renderPanel() {
       const labels = dayMeta();
+      const visibleTabs = ["performance", "customer", "channel"].filter((id) => isShown(id));
+      if (visibleTabs.length && visibleTabs.indexOf(state.tab) < 0) state.tab = visibleTabs[0];
+      document.getElementById("overviewSection").hidden = !isShown("overview");
       document.getElementById("updated").textContent = labels.range;
       document.querySelectorAll("[data-day]").forEach((button) => {
         const on = button.dataset.day === state.day;
@@ -721,38 +993,55 @@
       });
       document.querySelectorAll("[data-tab]").forEach((button) => {
         const on = button.dataset.tab === state.tab;
+        button.hidden = !isShown(button.dataset.tab);
         button.classList.toggle("on", on);
         if (button.tagName === "BUTTON") button.setAttribute("aria-selected", on ? "true" : "false");
       });
 
       const meituan = state.tab === "channel" && state.channel === "meituan";
       const scales = state.tab === "channel" && !meituan ? channelScale[state.channel] : null;
-      const source = meituan ? [] : grids[state.tab];
-      const items = source.filter((item) => state.more || !item.more).map((item) => scaleItem(item, scales));
+      const source = meituan ? [] : (grids[state.tab] || []);
+      const items = source.filter((item) => {
+        if (!state.more && item.more) return false;
+        const group = savedMetrics[state.tab];
+        return !group || group[item.name] !== false;
+      }).map((item) => scaleItem(item, scales));
       const gridHtml = items.length ? '<div class="metrics">' + items.map((item) => metricCard(item, labels)).join("") + "</div>" : "";
-      const moreBtn = state.tab === "overview" || (state.tab === "channel" && !meituan)
+      const hiddenCount = source.filter((item) => item.more && (!savedMetrics[state.tab] || savedMetrics[state.tab][item.name] !== false)).length;
+      const moreBtn = hiddenCount && (state.tab === "overview" || (state.tab === "channel" && !meituan))
         ? '<button class="more' + (state.more ? " on" : "") + '" type="button" data-more="1">' + (state.more ? "收起" : "更多数据") + ' <i class="arr"></i></button>'
         : "";
-      if (state.tab === "performance" || state.tab === "channel") {
+      const chips = state.tab === "channel"
+        ? '<div class="channels" role="tablist" aria-label="渠道">' + channelNames.map((item) => '<button type="button" data-channel="' + item[0] + '" class="' + (state.channel === item[0] ? "on" : "") + '" role="tab" aria-selected="' + (state.channel === item[0] ? "true" : "false") + '">' + item[1] + "</button>").join("") + "</div>"
+        : "";
+      const trendId = state.tab === "performance" ? "performanceTrend" : state.tab === "channel" ? "channelTrend" : "";
+      if (trendId && isShown(trendId)) {
         const block = revenueBlock(meituan ? couponScale() : (state.tab === "channel" ? channelScale[state.channel] : fullScale), meituan ? "平台券核销金额" : "营业收入");
-        const chips = state.tab === "channel"
-          ? '<div class="channels" role="tablist" aria-label="渠道">' + channelNames.map((item) => '<button type="button" data-channel="' + item[0] + '" class="' + (state.channel === item[0] ? "on" : "") + '" role="tab" aria-selected="' + (state.channel === item[0] ? "true" : "false") + '">' + item[1] + "</button>").join("") + "</div>"
-          : "";
         document.getElementById("panel").innerHTML = chips + block.html + gridHtml + moreBtn;
         document.querySelector(".chart")._meta = block.meta;
         return;
       }
-      document.getElementById("panel").innerHTML = gridHtml + moreBtn;
+      document.getElementById("panel").innerHTML = chips + gridHtml + moreBtn;
     }
 
     function renderRank() {
       const labels = dayMeta();
+      const rankMap = [["biz", "rankChannel"], ["shop", "rankShop"], ["goods", "rankGoods"]];
+      const visibleRanks = rankMap.filter((item) => isShown(item[1])).map((item) => item[0]);
+      document.getElementById("rankSection").hidden = !isShown("rank") || !visibleRanks.length;
+      if (visibleRanks.length && visibleRanks.indexOf(state.rank) < 0) state.rank = visibleRanks[0];
       document.getElementById("rankUpdated").textContent = labels.range;
       document.querySelectorAll("[data-rank]").forEach((button) => {
         const on = button.dataset.rank === state.rank;
+        const id = { biz: "rankChannel", shop: "rankShop", goods: "rankGoods" }[button.dataset.rank];
+        button.hidden = !isShown(id);
         button.classList.toggle("on", on);
         button.setAttribute("aria-selected", on ? "true" : "false");
       });
+      if (!visibleRanks.length) {
+        document.getElementById("rankList").innerHTML = "";
+        return;
+      }
       const rows = ranks[state.rank];
       const max = Math.max.apply(null, rows.map((row) => row[1]));
       const digits = state.rank === "goods" ? 0 : 2;
@@ -812,7 +1101,159 @@
       tip.style.top = "6px";
     }
 
+    function renderSettings() {
+      document.querySelectorAll("[data-settab]").forEach((button) => {
+        const on = button.dataset.settab === state.setTab;
+        button.classList.toggle("on", on);
+        button.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      const hint = document.getElementById("setHint");
+      if (state.setTab === "module") {
+        hint.textContent = "长按模块卡可调整顺序，修改后点击右上角保存";
+        document.getElementById("setBody").innerHTML = moduleNodes(draftModules, 0, true);
+        if (dragId) {
+          const current = document.querySelector('#setBody > .node[data-mid="' + dragId + '"]');
+          if (current) current.classList.add("dragging");
+        }
+        return;
+      }
+      hint.textContent = "关闭后，对应指标不再展示在首页模块中";
+      const titles = { performance: "业绩概况", customer: "客户概况", channel: "渠道概况" };
+      document.getElementById("setBody").innerHTML = Object.keys(metricNames).map((key) => {
+        const cards = metricNames[key].map((name) => {
+          const on = draftMetrics[key][name] !== false;
+          return '<div class="mod-card metric-card"><span class="mod-label">' + name + "</span>" +
+            '<button type="button" class="toggle' + (on ? " on" : "") + '" data-metric="' + key + '" data-name="' + name + '" role="switch" aria-checked="' + (on ? "true" : "false") + '" aria-label="' + name + '"><i></i></button></div>';
+        }).join("");
+        return '<div class="group-title">' + titles[key] + "</div>" + cards;
+      }).join("");
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.hidden = false;
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => { toast.hidden = true; }, 1600);
+    }
+
+    function openSettings() {
+      draftModules = clone(savedModules);
+      draftMetrics = clone(savedMetrics);
+      state.setTab = "module";
+      dragId = "";
+      document.getElementById("home").hidden = true;
+      document.getElementById("settings").hidden = false;
+      document.querySelector(".app").classList.add("in-settings");
+      renderSettings();
+    }
+
+    function closeSettings() {
+      document.getElementById("settings").hidden = true;
+      document.getElementById("home").hidden = false;
+      document.querySelector(".app").classList.remove("in-settings");
+      dragId = "";
+    }
+
+    function renderHome() {
+      const scroll = document.querySelector("#home .scroll");
+      savedModules.forEach((node) => {
+        const section = node.id === "overview" ? document.getElementById("overviewSection") : node.id === "rank" ? document.getElementById("rankSection") : null;
+        if (section) scroll.appendChild(section);
+      });
+      renderPanel();
+      renderRank();
+    }
+
+    document.getElementById("openSettings").addEventListener("click", openSettings);
+    document.getElementById("setBack").addEventListener("click", closeSettings);
+    document.getElementById("setSave").addEventListener("click", () => {
+      savedModules = clone(draftModules);
+      savedMetrics = clone(draftMetrics);
+      closeSettings();
+      renderHome();
+      showToast("已保存");
+    });
+    document.querySelector(".set-tabs").addEventListener("click", (event) => {
+      const tab = event.target.closest("[data-settab]");
+      if (!tab) return;
+      state.setTab = tab.dataset.settab;
+      renderSettings();
+    });
+    document.getElementById("setBody").addEventListener("click", (event) => {
+      const toggle = event.target.closest("[data-toggle]");
+      const metric = event.target.closest("[data-metric]");
+      if (toggle) {
+        const node = findNode(toggle.dataset.toggle, draftModules);
+        if (!node) return;
+        node.on = !node.on;
+        renderSettings();
+        return;
+      }
+      if (metric) {
+        draftMetrics[metric.dataset.metric][metric.dataset.name] = draftMetrics[metric.dataset.metric][metric.dataset.name] === false;
+        renderSettings();
+      }
+    });
+
+    const setBody = document.getElementById("setBody");
+    let press = null;
+    let dragId = "";
+    setBody.addEventListener("pointerdown", (event) => {
+      if (state.setTab !== "module" || event.target.closest(".toggle")) return;
+      const card = event.target.closest(".mod-card");
+      if (!card || card.parentElement.parentElement !== setBody) return;
+      const node = card.parentElement;
+      press = {
+        id: node.dataset.mid,
+        x: event.clientX,
+        y: event.clientY,
+        pointerId: event.pointerId,
+        timer: setTimeout(() => {
+          dragId = node.dataset.mid;
+          node.classList.add("dragging");
+          if (setBody.setPointerCapture) setBody.setPointerCapture(event.pointerId);
+        }, 280)
+      };
+    });
+    setBody.addEventListener("pointermove", (event) => {
+      if (!press || press.pointerId !== event.pointerId) return;
+      if (!dragId) {
+        if (Math.abs(event.clientX - press.x) + Math.abs(event.clientY - press.y) > 8) {
+          clearTimeout(press.timer);
+          press = null;
+        }
+        return;
+      }
+      const siblings = Array.prototype.slice.call(setBody.querySelectorAll(":scope > .node"));
+      const target = siblings.find((el) => {
+        if (el.dataset.mid === dragId) return false;
+        const rect = el.getBoundingClientRect();
+        return event.clientY > rect.top && event.clientY < rect.bottom;
+      });
+      if (!target) return;
+      const from = draftModules.findIndex((item) => item.id === dragId);
+      const to = draftModules.findIndex((item) => item.id === target.dataset.mid);
+      if (from < 0 || to < 0 || from === to) return;
+      const moved = draftModules.splice(from, 1)[0];
+      draftModules.splice(to, 0, moved);
+      const scroll = document.querySelector(".set-scroll");
+      const top = scroll.scrollTop;
+      renderSettings();
+      scroll.scrollTop = top;
+    });
+    function endDrag(event) {
+      if (!press || (event && press.pointerId !== event.pointerId)) return;
+      clearTimeout(press.timer);
+      press = null;
+      dragId = "";
+      document.querySelectorAll(".node.dragging").forEach((el) => el.classList.remove("dragging"));
+    }
+    setBody.addEventListener("pointerup", endDrag);
+    setBody.addEventListener("pointercancel", endDrag);
+
     document.body.addEventListener("click", (event) => {
+      if (event.target.closest("#settings")) return;
       const day = event.target.closest("[data-day]");
       const tab = event.target.closest("[data-tab]");
       const rank = event.target.closest("[data-rank]");
@@ -827,8 +1268,7 @@
     document.getElementById("panel").addEventListener("pointermove", onChartMove);
     document.getElementById("panel").addEventListener("pointerleave", hideTip);
 
-    renderPanel();
-    renderRank();
+    renderHome();
   </script>
 </body>
 </html>
