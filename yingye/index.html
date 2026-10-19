@@ -202,6 +202,7 @@
       font-size: 12px;
     }
     .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend-name { color: #323233; font-weight: 600; }
     .lg {
       width: 16px; height: 0;
       border-top: 2px solid var(--today);
@@ -1024,7 +1025,7 @@
         ? metaRows(current, sum(series[1].values), 2, labels, false)
         : growthRows(current, sum(series[1].values), sum(series[2].values), false);
       const chart = chartSvg(series);
-      const legend = series.map((item) => {
+      const legend = '<b class="legend-name">' + title + "</b>" + series.map((item) => {
         const line = item.dash ? (item.sw === "dash" ? "dotted" : "dashed") : "solid";
         return '<span><i class="lg" style="border-top:2px ' + line + " " + item.color + '"></i>' + item.name + "</span>";
       }).join("");
