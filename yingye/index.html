@@ -730,13 +730,9 @@
     const defaultModules = [
       { id: "cashier", name: "收银核销快捷入口", on: false },
       { id: "overview", name: "营业概况", on: true, children: [
-        { id: "performance", name: "业绩概况", on: true, children: [
-          { id: "performanceTrend", name: "营业收入时段趋势", on: true }
-        ] },
+        { id: "performance", name: "业绩概况", on: true },
         { id: "customer", name: "客户概况", on: true },
-        { id: "channel", name: "渠道概况", on: true, children: [
-          { id: "channelTrend", name: "营业收入时段趋势", on: true }
-        ] }
+        { id: "channel", name: "渠道概况", on: true }
       ] },
       { id: "rank", name: "营业排行", on: true, children: [
         { id: "rankChannel", name: "渠道排行", on: true },
@@ -1075,14 +1071,12 @@
       const chips = state.tab === "channel"
         ? '<div class="channels" role="tablist" aria-label="渠道">' + channelNames.map((item) => '<button type="button" data-channel="' + item[0] + '" class="' + (state.channel === item[0] ? "on" : "") + '" role="tab" aria-selected="' + (state.channel === item[0] ? "true" : "false") + '">' + item[1] + "</button>").join("") + "</div>"
         : "";
-      const trendId = state.tab === "performance" ? "performanceTrend" : state.tab === "channel" ? "channelTrend" : "";
       const hasRevenue = state.tab === "performance" || state.tab === "channel";
       let cells = cards.join("");
       let chartMeta = null;
       if (hasRevenue) {
-        const allowTrend = !!(trendId && isShown(trendId));
-        const open = allowTrend && !!state.trendOpen[state.tab];
-        const block = revenueBlock(meituan ? couponScale() : (state.tab === "channel" ? channelScale[state.channel] : fullScale), meituan ? "平台券核销金额" : "营业收入", { showIcon: allowTrend, open: open });
+        const open = !!state.trendOpen[state.tab];
+        const block = revenueBlock(meituan ? couponScale() : (state.tab === "channel" ? channelScale[state.channel] : fullScale), meituan ? "平台券核销金额" : "营业收入", { showIcon: true, open: open });
         cells = block.card + (cards[0] || "") + (open ? block.chartHtml : "") + cards.slice(1).join("");
         chartMeta = open ? block.meta : null;
       }
