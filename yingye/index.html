@@ -276,6 +276,22 @@
     }
     .metric .meta { margin-top: 8px; }
     .metric .m-row { font-size: 11px; line-height: 16px; justify-content: space-between; }
+    .rev-card { margin-top: 12px; }
+    .rev-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .trend-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      color: #1989fa;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+    .trend-btn.on { background: rgba(25, 137, 250, .12); }
+    .trend-panel { margin-top: 8px; }
+    .trend-tools { display: flex; justify-content: flex-end; }
+    .trend-tools button { height: 28px; padding: 0 2px; color: #969799; font-size: 13px; }
     .more {
       display: flex;
       align-items: center;
@@ -632,11 +648,11 @@
           <div id="setBody"></div>
         </div>
       </section>
-      <div class="coach" id="guide" role="dialog" aria-label="工作台布局设置">
+      <div class="coach" id="guide" role="dialog" aria-label="布局设置">
         <div class="guide-mask"></div>
         <svg class="guide-arrow" id="guideArrow" aria-hidden="true"></svg>
         <div class="guide-copy" id="guideCopy">
-          <h2>工作台布局设置</h2>
+          <h2>布局设置</h2>
           <p>布局设置支持模块设置和指标设置啦</p>
           <button class="guide-ok" type="button" id="guideOk">我知道了</button>
         </div>
@@ -709,7 +725,7 @@
       goods: [["招牌拿铁", 1286], ["巴斯克蛋糕", 860], ["美式咖啡", 642], ["芝士牛乳", 418]]
     };
 
-    const state = { day: "today", tab: "performance", more: false, rank: "shop", channel: "store", setTab: "module" };
+    const state = { day: "today", tab: "performance", more: false, rank: "shop", channel: "store", setTab: "module", trendOpen: { performance: false, channel: false } };
     const clone = (value) => JSON.parse(JSON.stringify(value));
     const defaultModules = [
       { id: "cashier", name: "收银核销快捷入口", on: false },
@@ -993,8 +1009,10 @@
       };
     }
 
-    function revenueBlock(scales, title) {
+    function revenueBlock(scales, title, options) {
       const labels = dayMeta();
+      const showIcon = options && options.showIcon;
+      const open = options && options.open;
       const series = labels.mode === "today"
         ? [
             { name: "今日", values: scaledHours("today", scales.today), color: "#2f80ed", dash: "", sw: "" },
@@ -1007,22 +1025,20 @@
           ];
       const current = sum(series[0].values);
       const compare = labels.mode === "today"
-        ? metaRows(current, sum(series[1].values), 2, labels, true)
-        : growthRows(current, sum(series[1].values), sum(series[2].values), true);
+        ? metaRows(current, sum(series[1].values), 2, labels, false)
+        : growthRows(current, sum(series[1].values), sum(series[2].values), false);
       const chart = chartSvg(series);
       const legend = series.map((item) => {
         const line = item.dash ? (item.sw === "dash" ? "dotted" : "dashed") : "solid";
         return '<span><i class="lg" style="border-top:2px ' + line + " " + item.color + '"></i>' + item.name + "</span>";
       }).join("");
       const dots = series.map((item, index) => '<div class="dot" data-i="' + index + '" hidden style="border-color:' + item.color + '"></div>').join("");
-      return {
-        html: '<div class="rev"><div class="m-title">' + title + ' <i class="arr"></i></div>' +
-          '<div class="rev-value">' + money(current, 2) + "</div>" + compare +
-          '<div class="legend">' + legend + "</div>" +
-          '<div class="chart-box">' + chart.html + '<div class="guide" hidden></div>' + dots +
-          '<div class="tip" hidden></div></div></div>',
-        meta: chart.meta
-      };
+      const icon = showIcon
+        ? '<button class="trend-btn' + (open ? " on" : "") + '" type="button" data-trend="open" aria-label="查看营业收入趋势" aria-pressed="' + (open ? "true" : "false") + '"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.2 12.6 6.2 8.4 9 10.4 15.6 4.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.4 4.2h4.2V8.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
+        : "";
+      const card = '<article class="metric rev-card"><div class="rev-head"><div class="m-title">' + title + ' <i class="arr"></i></div>' + icon + '</div><div class="m-value">' + money(current, 2) + "</div>" + compare + "</article>";
+      const chartHtml = '<section class="trend-panel" aria-label="营业收入趋势"><div class="trend-tools"><button type="button" data-trend="close">删除</button></div><div class="legend">' + legend + '</div><div class="chart-box">' + chart.html + '<div class="guide" hidden></div>' + dots + '<div class="tip" hidden></div></div></section>';
+      return { card: card, chartHtml: chartHtml, meta: chart.meta };
     }
 
     function renderPanel() {
@@ -1060,10 +1076,14 @@
         ? '<div class="channels" role="tablist" aria-label="渠道">' + channelNames.map((item) => '<button type="button" data-channel="' + item[0] + '" class="' + (state.channel === item[0] ? "on" : "") + '" role="tab" aria-selected="' + (state.channel === item[0] ? "true" : "false") + '">' + item[1] + "</button>").join("") + "</div>"
         : "";
       const trendId = state.tab === "performance" ? "performanceTrend" : state.tab === "channel" ? "channelTrend" : "";
-      if (trendId && isShown(trendId)) {
-        const block = revenueBlock(meituan ? couponScale() : (state.tab === "channel" ? channelScale[state.channel] : fullScale), meituan ? "平台券核销金额" : "营业收入");
-        document.getElementById("panel").innerHTML = chips + block.html + gridHtml + moreBtn;
-        document.querySelector(".chart")._meta = block.meta;
+      const hasRevenue = state.tab === "performance" || state.tab === "channel";
+      if (hasRevenue) {
+        const allowTrend = !!(trendId && isShown(trendId));
+        const open = allowTrend && !!state.trendOpen[state.tab];
+        const block = revenueBlock(meituan ? couponScale() : (state.tab === "channel" ? channelScale[state.channel] : fullScale), meituan ? "平台券核销金额" : "营业收入", { showIcon: allowTrend, open: open });
+        document.getElementById("panel").innerHTML = chips + block.card + (open ? block.chartHtml : "") + gridHtml + moreBtn;
+        const chart = document.querySelector(".chart");
+        if (chart) chart._meta = block.meta;
         return;
       }
       document.getElementById("panel").innerHTML = chips + gridHtml + moreBtn;
@@ -1337,12 +1357,14 @@
 
     document.body.addEventListener("click", (event) => {
       if (event.target.closest("#settings")) return;
+      const trend = event.target.closest("[data-trend]");
       const day = event.target.closest("[data-day]");
       const tab = event.target.closest("[data-tab]");
       const rank = event.target.closest("[data-rank]");
       const more = event.target.closest("[data-more]");
       const channel = event.target.closest("[data-channel]");
-      if (day) { state.day = day.dataset.day; renderPanel(); renderRank(); }
+      if (trend) { state.trendOpen[state.tab] = trend.dataset.trend === "open"; renderPanel(); }
+      else if (day) { state.day = day.dataset.day; renderPanel(); renderRank(); }
       else if (tab && tab.dataset.tab !== "overview") { state.tab = tab.dataset.tab; state.more = false; renderPanel(); }
       else if (channel) { state.channel = channel.dataset.channel; renderPanel(); }
       else if (rank) { state.rank = rank.dataset.rank; renderRank(); }
